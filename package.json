@@ -1,0 +1,14 @@
+{
+  "name": "appydave-tools",
+  "version": "0.0.1",
+  "description": "AppyDave YouTube Automation Tools",
+  "scripts": {
+    "release": "semantic-release"
+  },
+  "devDependencies": {
+    "@klueless-js/semantic-release-rubygem": "github:klueless-js/semantic-release-rubygem",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^23.0.8"
+  }
+}

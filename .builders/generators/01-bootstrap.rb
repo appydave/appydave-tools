@@ -33,7 +33,7 @@ KManager.action :bootstrap do
         # run_command('git init')
       end
       .blueprint(
-        active: true,
+        active: false,
         name: :bin_hook,
         description: 'initialize repository',
         on_exist: :write) do
@@ -53,7 +53,7 @@ KManager.action :bootstrap do
         run_command("gh repo edit -d \"#{dom[:application_description]}\"")
       end
       .package_json(
-        active: false,
+        active: true,
         name: :package_json,
         description: 'Set up the package.json file for semantic versioning'
       ) do
