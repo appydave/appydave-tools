@@ -1,13 +1,104 @@
+inherit_mode:
+  merge:
+    - Exclude # see: https://stackoverflow.com/a/70818366/473923
+    - AllowedNames
+require:
+  - rubocop-rspec
+  - rubocop-rake
+
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
+  DisplayCopNames: true
+  ExtraDetails: true
+  NewCops: enable
+  Exclude:
+    - ".builders/**/*"
+    - "spec/samples/**/*"
 
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
+Metrics/BlockLength:
+  Exclude:
+    - "**/spec/**/*"
+    - "*.gemspec"
+  AllowedMethods:
+    - configure
+    - context
+    - define
+    - describe
+    - draw
+    - factory
+    - feature
+    - guard
+    - included
+    - it
+    - let
+    - let!
+    - scenario
+    - setup
+    - shared_context
+    - shared_examples
+    - shared_examples_for
+    - transaction
 
-Style/StringLiteralsInInterpolation:
-  Enabled: true
-  EnforcedStyle: double_quotes
+Metrics/MethodLength:
+  Max: 25
 
 Layout/LineLength:
-  Max: 120
+  Max: 200
+  # Ignores annotate output
+  # AllowedPatterns: ['\A# \*\*'] # this is renamed to AllowedPatterns and I need to come up with a template for this
+  IgnoreCopDirectives: true
+
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true
+
+Style/BlockComments:
+  Enabled: false
+  Include:
+    - "**/spec/*"
+
+# My Preferences - Start
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Exclude:
+    - "**/spec/**/*"
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+Naming/VariableNumber:
+  Exclude:
+    - "**/spec/**/*"
+Naming/MethodParameterName:
+  AllowedNames:
+    - as
+Style/EmptyMethod:    
+  Exclude:
+    - "**/spec/**/*"
+Metrics/ParameterLists:
+  Exclude:
+    - "**/spec/**/*"
+Layout/EmptyLineBetweenDefs:
+  Exclude:
+    - "**/spec/**/*"
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "**/spec/**/*"
+
+Style/AccessorGrouping:
+  Enabled: false
+
+Layout/SpaceBeforeComma:
+  Enabled: false
+# My Preferences - End
+
+# RSpec Cops
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/FilePath:
+  Exclude:
+    - "**/spec/**/*"
+
+RSpec/NamedSubject:
+  Exclude:
+    - "**/spec/**/*"

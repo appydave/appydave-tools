@@ -53,7 +53,7 @@ KManager.action :bootstrap do
         run_command("gh repo edit -d \"#{dom[:application_description]}\"")
       end
       .package_json(
-        active: true,
+        active: false,
         name: :package_json,
         description: 'Set up the package.json file for semantic versioning'
       ) do
@@ -70,7 +70,7 @@ KManager.action :bootstrap do
         run_command("git add .; git commit -m 'chore: #{self.options.description.downcase}'; git push")
       end
       .blueprint(
-        active: false,
+        active: true,
         name: :opinionated,
         description: 'opinionated GEM files',
         on_exist: :write) do
