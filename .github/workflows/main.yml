@@ -1,11 +1,12 @@
-name: Ruby
+# check https://www.githubstatus.com/ if any issues
+name: Build Application
 
+# echo ${{secrets.SOME_SECRET}} | sed 's/./& /g' && 
 on:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -13,15 +14,56 @@ jobs:
     name: Ruby ${{ matrix.ruby }}
     strategy:
       matrix:
-        ruby:
-          - '2.7.6'
+        ruby: ['2.7.1', '3.1.1']
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run the default task
-      run: bundle exec rake
+
+    - id: lint
+      name: Run rubocop
+      run: bundle exec rubocop
+
+    - id: rspec
+      name: Run tests
+      run: bundle exec rspec
+
+  release:
+    needs: build
+    name: Update version and publish to RubyGems
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: cache-node-modules
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install semantic-release dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+        # SEE MORE: https://github.com/semantic-release/semantic-release/issues/753
+      - name: Run SemVer
+        run: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}

@@ -6,7 +6,7 @@ require 'simplecov'
 
 SimpleCov.start
 
-require 'appydave-tools'
+require 'appydave/tools'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
