@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# template_variant: :ruby
+
+require 'English'
+
+# NOTE: you may need change file permissions
+#       chmod +x hooks/pre-commit
+
+exit 0 if ARGV.include?('--no-verify')
+
+warning_keywords = %w[console.log]
+keywords = %w[binding.pry console.dir byebug debugger]
+files_changed = `git diff-index --name-only HEAD --`.split
+
+# puts '----------------------------------------------------------------------'
+# puts remove files changed from the pre-commit checking if they are one of the following files
+# puts '----------------------------------------------------------------------'
+# files_changed = files_changed - ['hooks/pre-commit']
+# files_changed = files_changed - ['hooks/update-version']
+
+# byebug may need to be in these files
+files_changed -= ['Gemfile']
+files_changed -= ['Gemfile.lock']
+files_changed -= ['.gitignore']
+files_changed -= ['README.md']
+
+files_changed = files_changed.reject { |f| f.downcase.end_with?('.json') }
+files_changed = files_changed.reject { |f| f.downcase.end_with?('.yml') }
+
+# ignore files from specific folders
+
+file_groups = files_changed.select do |item|
+  item.start_with?('.githooks') # ||
+  # item.start_with?('lib/generators')
+end
+
+files_changed -= file_groups
+
+# remove files that are changed because they are deleted
+files_changed = files_changed.select { |filename| File.file?(filename) }
+
+# puts '----------------------------------------------------------------------'
+# puts 'Files Changed'
+# puts '----------------------------------------------------------------------'
+# puts files_changed
+# puts '----------------------------------------------------------------------'
+
+unless files_changed.length.zero?
+  # puts "#{keywords.join('|')}"
+  # puts "#{files_changed.join(' ')}"
+
+  `git grep -q -E "#{warning_keywords.join('|')}" #{files_changed.join(' ')}`
+
+  if $CHILD_STATUS.exitstatus.zero?
+    puts '' # Check following lines:''
+    puts $CHILD_STATUS.exitstatus
+    files_changed.each do |file|
+      warning_keywords.each do |keyword|
+        # puts "#{keyword} ::: #{file}"
+        `git grep -q -E #{keyword} #{file}`
+        if $CHILD_STATUS.exitstatus.zero?
+          line = `git grep -n #{keyword} #{file} | awk -F ":" '{print $2}'`.split.join(', ')
+          puts "WARNING:\t\033[31m#{file}\033[0m contains #{keyword} at line \033[33m#{line}\033[0m."
+        end
+      end
+    end
+  end
+
+  `git grep -q -E "#{keywords.join('|')}" #{files_changed.join(' ')}`
+
+  if $CHILD_STATUS.exitstatus.zero?
+    puts '' # Check following lines:''
+    puts $CHILD_STATUS.exitstatus
+    files_changed.each do |file|
+      keywords.each do |keyword|
+        # puts "#{keyword} ::: #{file}"
+        `git grep -q -E #{keyword} #{file}`
+        if $CHILD_STATUS.exitstatus.zero?
+          line = `git grep -n #{keyword} #{file} | awk -F ":" '{print $2}'`.split.join(', ')
+          puts "ERROR  :\t\033[31m#{file}\033[0m contains #{keyword} at line \033[33m#{line}\033[0m."
+        end
+      end
+    end
+    puts '# Force commit with --no-verify'
+    exit 1
+  end
+end
