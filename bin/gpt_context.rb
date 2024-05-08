@@ -10,7 +10,7 @@
 require 'optparse'
 require 'clipboard'
 require_relative '../lib/appydave/tools/gpt_context/file_collector'
-                    #  lib/appydave/tools/gpt_context/file_collector.rb
+
 options = {
   include_patterns: [],
   exclude_patterns: [],
@@ -53,7 +53,7 @@ end.parse!
 if options[:include_patterns].empty? && options[:exclude_patterns].empty? && options[:format].nil?
   script_name = File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME))
 
-  puts "No options provided to GPT Context. Please specify patterns to include or exclude."
+  puts 'No options provided to GPT Context. Please specify patterns to include or exclude.'
   puts "For help, run: #{script_name} --help"
   exit
 end
