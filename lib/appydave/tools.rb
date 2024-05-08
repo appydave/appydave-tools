@@ -2,6 +2,8 @@
 
 require 'appydave/tools/version'
 
+require 'appydave/tools/gpt_context/file_collector'
+
 module Appydave
   module Tools
     # raise Appydave::Tools::Error, 'Sample message'

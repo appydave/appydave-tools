@@ -21,6 +21,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+/transient
 !/tmp/.keep
 *.bundle
 *.so
@@ -30,6 +31,7 @@ mkmf.log
 
 # Ruby Version
 .ruby-version
+.tool-versions
 
 # Environment File
 .env

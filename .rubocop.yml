@@ -39,6 +39,9 @@ Metrics/BlockLength:
     - shared_examples_for
     - transaction
 
+RSpec/ExampleLength:
+  Max: 25
+
 Metrics/MethodLength:
   Max: 25
 
