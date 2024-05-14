@@ -6,21 +6,28 @@ module Appydave
     module GptContext
       # Gathers file names and content based on include and exclude patterns
       class FileCollector
-        attr_reader :include_patterns, :exclude_patterns, :format
+        attr_reader :include_patterns, :exclude_patterns, :format, :working_directory
 
-        def initialize(include_patterns: [], exclude_patterns: [], format: nil)
+        def initialize(include_patterns: [], exclude_patterns: [], format: nil, working_directory: nil)
           @include_patterns = include_patterns
           @exclude_patterns = exclude_patterns
           @format = format
+          @working_directory = working_directory
         end
 
         def build
-          case format
-          when 'tree'
-            build_tree
-          else
-            build_content
-          end
+          FileUtils.cd(working_directory) if working_directory && Dir.exist?(working_directory)
+
+          result = case format
+                   when 'tree'
+                     build_tree
+                   else
+                     build_content
+                   end
+
+          FileUtils.cd(Dir.home) if working_directory
+
+          result
         end
 
         private
@@ -74,7 +81,7 @@ module Appydave
         end
 
         def excluded?(file_path)
-          exclude_patterns.any? { |pattern| File.fnmatch(pattern, file_path) }
+          exclude_patterns.any? { |pattern| File.fnmatch(pattern, file_path, File::FNM_PATHNAME | File::FNM_DOTMATCH) }
         end
       end
     end

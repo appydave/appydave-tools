@@ -7,15 +7,15 @@
 #
 #   Get GPT Context Gatherer code
 #   ./bin/gpt_context.rb -i 'bin/**/*gather*.rb' -i 'lib/openai_101/tools/**/*gather*.rb'
-require 'optparse'
-require 'clipboard'
-require_relative '../lib/appydave/tools/gpt_context/file_collector'
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'appydave/tools'
 
 options = {
   include_patterns: [],
   exclude_patterns: [],
   format: nil,
-  debug: false
+  debug: 'none'
 }
 
 OptionParser.new do |opts|
@@ -33,8 +33,12 @@ OptionParser.new do |opts|
     options[:format] = format
   end
 
-  opts.on('-d', '--debug', 'Enable debug mode') do
-    options[:debug] = true
+  # None - No debug output
+  # Output - Output the content to the console, this is the same as found in the clipboard
+  # Params - Output the options that were passed to the script
+  # Debug - Output content, options and debug information
+  opts.on('-d', '--debug [MODE]', 'Enable debug mode [none, output, params, debug]', 'none', 'output', 'params', 'debug') do |debug|
+    options[:debug] = debug || 'output'
   end
 
   opts.on_tail('-h', '--help', 'Show this message') do
@@ -58,20 +62,23 @@ if options[:include_patterns].empty? && options[:exclude_patterns].empty? && opt
   exit
 end
 
-pp options if options[:debug]
+pp options if options[:debug] == 'params'
 
 gatherer = Appydave::Tools::GptContext::FileCollector.new(
   include_patterns: options[:include_patterns],
   exclude_patterns: options[:exclude_patterns],
-  format: options[:format]
+  format: options[:format],
+  working_directory: Dir.pwd
 )
 
 content = gatherer.build
 
-if options[:debug]
+if %w[output debug].include?(options[:debug])
   puts '-' * 80
   puts content
   puts '-' * 80
 end
+
+pp options if options[:debug] == 'debug'
 
 Clipboard.copy(content)

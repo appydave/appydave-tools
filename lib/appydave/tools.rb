@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
-require 'appydave/tools/version'
+require 'optparse'
+require 'clipboard'
+require 'fileutils'
 
+require 'appydave/tools/version'
 require 'appydave/tools/gpt_context/file_collector'
 
 module Appydave
@@ -14,8 +17,7 @@ module Appydave
 end
 
 if ENV.fetch('KLUE_DEBUG', 'false').downcase == 'true'
-  namespace = 'AppydaveTools::Version'
-  file_path = $LOADED_FEATURES.find { |f| f.include?('appydave/tools/version') }
-  version   = Appydave::Tools::VERSION.ljust(9)
-  puts "#{namespace.ljust(35)} : #{version.ljust(9)} : #{file_path}"
+  $LOADED_FEATURES.find { |f| f.include?('appydave/tools/version') }
+  Appydave::Tools::VERSION.ljust(9)
+  # puts "#{namespace.ljust(35)} : #{version.ljust(9)} : #{file_path}"
 end

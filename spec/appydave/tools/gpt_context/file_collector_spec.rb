@@ -5,15 +5,23 @@ RSpec.describe Appydave::Tools::GptContext::FileCollector do # , :tools_enabled 
     subject { described_class.new(include_patterns: include_patterns, exclude_patterns: exclude_patterns) }
 
     let(:include_patterns) { ['spec/fixtures/gpt-content-gatherer/**/*.txt'] }
-    let(:exclude_patterns) { ['spec/fixtures/gpt-content-gatherer/excluded/*.txt'] }
+    let(:exclude_patterns) do
+      [
+        'spec/fixtures/gpt-content-gatherer/excluded/*.txt',
+        '**/deep/**/*'
+      ]
+    end
 
     context 'when gathering content' do
       it 'concatenates content from files matching include patterns' do
         expect(subject.build).to include('File 1 content', 'File 2 content')
+        puts subject.build
       end
 
       it 'excludes content from files matching exclude patterns' do
         expect(subject.build).not_to include('Excluded file content')
+        expect(subject.build).not_to include('Deep 1')
+        expect(subject.build).not_to include('Deep 1')
       end
 
       it 'includes file paths as headers in the gathered content' do
@@ -39,7 +47,6 @@ RSpec.describe Appydave::Tools::GptContext::FileCollector do # , :tools_enabled 
         ]
       )
       allow(File).to receive(:directory?).and_return(false)
-      # allow(subject).to receive(:excluded?).and_return(false)
     end
 
     it 'prints a tree view of the included files and directories with improved ASCII art' do
@@ -53,8 +60,6 @@ RSpec.describe Appydave::Tools::GptContext::FileCollector do # , :tools_enabled 
                 └─ subdir
                   └─ file3.txt
       TREE
-
-      # puts subject.build
 
       expect(subject.build.strip).to eq(expected_output.strip)
     end
