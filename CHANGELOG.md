@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/klueless-io/appydave-tools/compare/v0.1.0...v0.2.0) (2024-05-14)
+
+
+### Features
+
+* gpt context gatherer ([00e2c34](https://github.com/klueless-io/appydave-tools/commit/00e2c343eb97a2c436b265861a912dccf803149d))
+
 # [0.1.0](https://github.com/klueless-io/appydave-tools/compare/v0.0.2...v0.1.0) (2024-05-08)
 
 
