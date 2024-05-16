@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/klueless-io/appydave-tools/compare/v0.3.0...v0.3.1) (2024-05-16)
+
+
+### Bug Fixes
+
+* add settings config to configuration component ([2c8afd1](https://github.com/klueless-io/appydave-tools/commit/2c8afd164fd6aa00fa47a01c9007c784a8adf820))
+
 # [0.3.0](https://github.com/klueless-io/appydave-tools/compare/v0.2.0...v0.3.0) (2024-05-16)
 
 
