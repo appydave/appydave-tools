@@ -16,7 +16,7 @@ module Appydave
 
           def register(key, klass)
             @configurations ||= {}
-            @configurations[key] = klass.new(config_base_path: config_path)
+            @configurations[key] = klass.new
           end
 
           def method_missing(method_name, *args, &block)

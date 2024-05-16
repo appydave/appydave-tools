@@ -63,4 +63,52 @@ RSpec.describe Appydave::Tools::Configuration::Config do
       expect(described_class.respond_to?(:unknown_component)).to be(false)
     end
   end
+
+  context 'when configuring a settings component' do
+    before do
+      described_class.configure do |config|
+        config.config_path = config_base_path
+        config.register(:settings, Appydave::Tools::Configuration::SettingsConfig)
+      end
+    end
+
+    it 'registers the settings configuration' do
+      expect(described_class.settings).to be_an_instance_of(Appydave::Tools::Configuration::SettingsConfig)
+    end
+
+    describe '.settings' do
+      let(:settings) { described_class.settings }
+
+      context 'when loading the settings' do
+        it 'loads the settings' do
+          settings.load
+          expect(settings.data).to eq({})
+        end
+
+        context 'when setting a new value' do
+          it 'sets a new value' do
+            settings.set('email', 'appydave@appydave.com')
+            expect(settings.get('email')).to eq('appydave@appydave.com')
+          end
+
+          context 'when forgetting to save the settings' do
+            it 'does not persist the changes' do
+              settings.load
+              expect(settings.get('email')).to be_nil
+            end
+
+            context 'when saving the settings' do
+              it 'persists the changes' do
+                settings.set('email', 'appydavecoding@appydave.com')
+                settings.save
+
+                reloaded_settings = Appydave::Tools::Configuration::SettingsConfig.new
+                expect(reloaded_settings.get('email')).to eq('appydavecoding@appydave.com')
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end

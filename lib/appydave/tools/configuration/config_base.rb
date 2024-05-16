@@ -10,7 +10,7 @@ module Appydave
       class ConfigBase
         attr_reader :config_path, :data
 
-        def initialize(config_name)
+        def initialize(config_name = 'unknown')
           @config_path = File.join(Config.config_path, "#{config_name}.json")
           @data = load
         end
