@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/klueless-io/appydave-tools/compare/v0.2.0...v0.3.0) (2024-05-16)
+
+
+### Features
+
+* configuration component ([2bf26f6](https://github.com/klueless-io/appydave-tools/commit/2bf26f690da17b651977eab79e7a3cd37ed2a3b5))
+
 # [0.2.0](https://github.com/klueless-io/appydave-tools/compare/v0.1.0...v0.2.0) (2024-05-14)
 
 
