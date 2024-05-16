@@ -1,29 +1,22 @@
 # frozen_string_literal: true
 
-require 'json'
-require 'fileutils'
-
 module Appydave
   module Tools
     module Configuration
-      # Specific configuration classes
+      # Global settings that can be referenced by other configurations or tools
       class SettingsConfig < ConfigBase
         def initialize
           super('settings')
         end
+
+        def set(key, value)
+          data[key] = value
+        end
+
+        def get(key, default = nil)
+          data.fetch(key, default)
+        end
       end
-
-      # class GptContextConfig < ConfigBase
-      #   def initialize
-      #     super('gpt_context')
-      #   end
-      # end
-
-      # class ImageMoverConfig < ConfigBase
-      #   def initialize
-      #     super('image_mover')
-      #   end
-      # end
     end
   end
 end

@@ -10,8 +10,8 @@ require 'appydave/tools/version'
 require 'appydave/tools/gpt_context/file_collector'
 
 require 'appydave/tools/configuration/config_base'
-require 'appydave/tools/configuration/settings_config'
 require 'appydave/tools/configuration/config'
+require 'appydave/tools/configuration/settings_config'
 
 module Appydave
   module Tools
