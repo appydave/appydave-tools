@@ -109,3 +109,5 @@ RSpec/NamedSubject:
 RSpec/MultipleExpectations:
   Max: 5
 
+RSpec/NestedGroups:
+  Max: 8
