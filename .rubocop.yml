@@ -95,9 +95,6 @@ Layout/SpaceBeforeComma:
 # My Preferences - End
 
 # RSpec Cops
-RSpec/NestedGroups:
-  Max: 5
-
 RSpec/FilePath:
   Exclude:
     - "**/spec/**/*"

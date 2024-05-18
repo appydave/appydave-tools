@@ -22,8 +22,12 @@ module Appydave
         def load
           return JSON.parse(File.read(config_path)) if File.exist?(config_path)
 
-          {}
+          default_data
         rescue JSON::ParserError
+          default_data
+        end
+
+        def default_data
           {}
         end
       end
