@@ -8,7 +8,8 @@ module Appydave
       class ProjectName
         include Appydave::Tools::Configuration::Configurable
 
-        attr_reader :sequence, :channel_code, :project_name
+        attr_accessor :sequence, :project_name
+        attr_reader :channel_code
 
         def initialize(file_name)
           parse_file_name(file_name)
@@ -22,8 +23,8 @@ module Appydave
           end.downcase
         end
 
-        def to_s
-          generate_name
+        def channel_code=(code)
+          @channel_code = (code if config.channels.code?(code))
         end
 
         private
