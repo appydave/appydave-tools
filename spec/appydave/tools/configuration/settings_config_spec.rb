@@ -11,10 +11,10 @@ RSpec.describe Appydave::Tools::Configuration::SettingsConfig do
   let(:config_data) { { 'theme' => 'dark', 'language' => 'en' } }
 
   before do
+    File.write(config_file, config_data.to_json)
     Appydave::Tools::Configuration::Config.configure do |configure|
       configure.config_path = temp_folder
     end
-    File.write(config_file, config_data.to_json)
   end
 
   after do

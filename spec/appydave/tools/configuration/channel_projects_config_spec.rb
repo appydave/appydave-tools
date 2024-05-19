@@ -24,10 +24,10 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
   end
 
   before do
+    File.write(config_file, config_data.to_json)
     Appydave::Tools::Configuration::Config.configure do |config|
       config.config_path = temp_folder
     end
-    File.write(config_file, config_data.to_json)
   end
 
   after do
