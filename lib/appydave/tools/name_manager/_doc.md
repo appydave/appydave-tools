@@ -1,6 +1,7 @@
 # Naming Manager
 
 [ChatGPT conversation](https://chatgpt.com/g/g-4dMsIRK3E-ruby-script-assistant/c/cab5e2f7-a607-402f-80b7-9ca262bab8ee)
+[Project Naming Convention](https://chatgpt.com/c/f1cc4bdd-a5ba-494c-bced-461a7f8ce41c)
 
 ## Channel Names
 

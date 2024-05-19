@@ -21,12 +21,10 @@ module Appydave
             @configurations[key] = klass.new
           end
 
-          def method_missing(method_name, *args, &block)
-            if @configurations.key?(method_name)
-              @configurations[method_name]
-            else
-              super
-            end
+          def method_missing(method_name, *_args)
+            raise Appydave::Tools::Error, "Configuration not available: #{method_name}" unless @configurations.key?(method_name)
+
+            @configurations[method_name]
           end
 
           def respond_to_missing?(method_name, include_private = false)
