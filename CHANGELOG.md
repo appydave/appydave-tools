@@ -1,3 +1,11 @@
+## [0.3.4](https://github.com/klueless-io/appydave-tools/compare/v0.3.3...v0.3.4) (2024-05-19)
+
+
+### Bug Fixes
+
+* Add debug capability to ConfigBase and update configurations ([d33c943](https://github.com/klueless-io/appydave-tools/commit/d33c9431a50fa44b2f4db7ccbaf2522105710aa7))
+* resolve cop ([d56f670](https://github.com/klueless-io/appydave-tools/commit/d56f670ec69ea74438947dd1bb7296e7fa28f0f1))
+
 ## [0.3.3](https://github.com/klueless-io/appydave-tools/compare/v0.3.2...v0.3.3) (2024-05-18)
 
 
