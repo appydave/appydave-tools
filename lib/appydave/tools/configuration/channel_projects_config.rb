@@ -5,10 +5,6 @@ module Appydave
     module Configuration
       # Channel projects configuration
       class ChannelProjectsConfig < ConfigBase
-        def initialize
-          super('channel_projects')
-        end
-
         # Retrieve channel information by channel name (string or symbol)
         def get_channel_info(channel_name)
           channel_name = channel_name.to_s

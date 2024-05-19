@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Appydave::Tools::Configuration::ChannelsConfig do
+  let(:channels_config) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
   let(:config_file) { File.join(temp_folder, 'channels.json') }
   let(:config_data) do
     {
       'channels' => {
         'appydave' => {
-          'code' => 'appydave',
+          'code' => 'ad',
           'name' => 'AppyDave',
           'youtube_handle' => '@appydave'
         },
@@ -32,17 +33,32 @@ RSpec.describe Appydave::Tools::Configuration::ChannelsConfig do
   end
 
   describe '#initialize' do
-    it 'initializes with channels config file path and loads data' do
-      channels_config = described_class.new
+    describe '.name' do
+      subject { channels_config.name }
 
-      expect(channels_config.config_path).to eq(config_file)
-      expect(channels_config.data).to eq(config_data)
+      it { is_expected.to eq('Channels') }
+    end
+
+    describe '.config_name' do
+      subject { channels_config.config_name }
+
+      it { is_expected.to eq('channels') }
+    end
+
+    describe '.config_path' do
+      subject { channels_config.config_path }
+
+      it { is_expected.to eq(config_file) }
+    end
+
+    describe '.data' do
+      subject { channels_config.data }
+
+      it { is_expected.to eq(config_data) }
     end
   end
 
   describe '#get_channel' do
-    let(:channels_config) { described_class.new }
-
     it 'retrieves existing channel information by string code' do
       channel = channels_config.get_channel('appydave')
 
@@ -66,7 +82,6 @@ RSpec.describe Appydave::Tools::Configuration::ChannelsConfig do
   end
 
   describe '#set_channel' do
-    let(:channels_config) { described_class.new }
     let(:new_channel) do
       Appydave::Tools::Configuration::ChannelsConfig::ChannelInfo.new('some_key',
                                                                       'code' => 'nc',
@@ -83,6 +98,19 @@ RSpec.describe Appydave::Tools::Configuration::ChannelsConfig do
 
       expect(reloaded_channel.name).to eq('New Channel')
       expect(reloaded_channel.youtube_handle).to eq('@newchannel')
+    end
+  end
+
+  describe '#key?' do
+    it 'returns true for an existing channel code' do
+      expect(channels_config.key?('appydave')).to be true
+    end
+  end
+
+  describe '#code?' do
+    it 'returns true for an existing channel code' do
+      expect(channels_config.code?('appydave')).to be false
+      expect(channels_config.code?('ac')).to be true
     end
   end
 

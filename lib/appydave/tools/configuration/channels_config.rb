@@ -5,10 +5,6 @@ module Appydave
     module Configuration
       # Channels configuration
       class ChannelsConfig < ConfigBase
-        def initialize
-          super('channels')
-        end
-
         # Retrieve channel information by channel code (string or symbol)
         def get_channel(channel_key)
           channel_key = channel_key.to_s
@@ -27,6 +23,16 @@ module Appydave
           data['channels'].map do |key, info|
             ChannelInfo.new(key, info)
           end
+        end
+
+        def key?(key)
+          key = key.to_s
+          data['channels'].key?(key)
+        end
+
+        def code?(code)
+          code = code.to_s
+          data['channels'].values.any? { |info| info['code'] == code }
         end
 
         private

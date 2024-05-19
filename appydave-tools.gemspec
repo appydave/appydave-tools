@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   # spec.extensions    = ['ext/appydave_tools/extconf.rb']
 
   spec.add_dependency 'clipboard', '~> 1'
-  # spec.add_dependency 'k_log', '~> 0'
+  spec.add_dependency 'k_log', '~> 0'
   # spec.add_dependency 'k_type', '~> 0'
   # spec.add_dependency 'k_util', '~> 0'
 end

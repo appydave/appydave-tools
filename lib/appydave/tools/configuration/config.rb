@@ -6,6 +6,8 @@ module Appydave
       # Configuration class for handling multiple configurations
       class Config
         class << self
+          include KLog::Logging
+
           attr_accessor :config_path
           attr_reader :configurations
 
@@ -44,6 +46,11 @@ module Appydave
             puts "Edit configuration: #{config_path}"
             open_vscode = "code  --folder-uri '#{config_path}'" # --new-window
             Open3.capture3(open_vscode)
+          end
+
+          def debug
+            log.kv 'Configuration Path', config_path
+            configurations.each_value(&:debug)
           end
 
           private

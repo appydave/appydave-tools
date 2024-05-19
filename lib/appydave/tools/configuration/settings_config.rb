@@ -5,10 +5,6 @@ module Appydave
     module Configuration
       # Global settings that can be referenced by other configurations or tools
       class SettingsConfig < ConfigBase
-        def initialize
-          super('settings')
-        end
-
         def set(key, value)
           data[key] = value
         end

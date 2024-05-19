@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
+  let(:channel_projects) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
-  let(:config_file) { File.join(temp_folder, 'channel_projects.json') }
+  let(:config_file) { File.join(temp_folder, 'channel-projects.json') }
   let(:config_data) do
     {
       'channel_projects' => {
@@ -34,19 +35,34 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
   end
 
   describe '#initialize' do
-    it 'initializes with channel projects config file path and loads data' do
-      channel_projects_config = described_class.new
+    describe '.name' do
+      subject { channel_projects.name }
 
-      expect(channel_projects_config.config_path).to eq(config_file)
-      expect(channel_projects_config.data).to eq(config_data)
+      it { is_expected.to eq('ChannelProjects') }
+    end
+
+    describe '.config_name' do
+      subject { channel_projects.config_name }
+
+      it { is_expected.to eq('channel-projects') }
+    end
+
+    describe '.config_path' do
+      subject { channel_projects.config_path }
+
+      it { is_expected.to eq(config_file) }
+    end
+
+    describe '.data' do
+      subject { channel_projects.data }
+
+      it { is_expected.to eq(config_data) }
     end
   end
 
   describe '#get_channel_info' do
-    let(:channel_projects_config) { described_class.new }
-
     it 'retrieves existing channel information by string name' do
-      channel_info = channel_projects_config.get_channel_info('appydave')
+      channel_info = channel_projects.get_channel_info('appydave')
 
       expect(channel_info.content_projects).to eq('/somepath/Dropbox/team-appydave')
       expect(channel_info.video_projects).to eq('/somepath/tube-channels/appy-dave/active')
@@ -55,7 +71,7 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
     end
 
     it 'retrieves existing channel information by symbol name' do
-      channel_info = channel_projects_config.get_channel_info(:appydave)
+      channel_info = channel_projects.get_channel_info(:appydave)
 
       expect(channel_info.content_projects).to eq('/somepath/Dropbox/team-appydave')
       expect(channel_info.video_projects).to eq('/somepath/tube-channels/appy-dave/active')
@@ -64,7 +80,7 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
     end
 
     it 'returns default channel information for a non-existent channel' do
-      channel_info = channel_projects_config.get_channel_info('nonexistent_channel')
+      channel_info = channel_projects.get_channel_info('nonexistent_channel')
 
       expect(channel_info.content_projects).to eq('')
       expect(channel_info.video_projects).to eq('')
@@ -74,7 +90,6 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
   end
 
   describe '#set_channel_info' do
-    let(:channel_projects_config) { described_class.new }
     let(:new_channel_info) do
       Appydave::Tools::Configuration::ChannelProjectsConfig::ChannelInfo.new(
         'content_projects' => '/new/path/to/dropbox/folder',
@@ -85,11 +100,11 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
     end
 
     it 'sets new channel information and persists it' do
-      channel_projects_config.set_channel_info('new_channel', new_channel_info)
-      channel_projects_config.save
+      channel_projects.set_channel_info('new_channel', new_channel_info)
+      channel_projects.save
 
-      reloaded_channel_projects_config = described_class.new
-      reloaded_channel_info = reloaded_channel_projects_config.get_channel_info('new_channel')
+      reloaded_channel_projects = described_class.new
+      reloaded_channel_info = reloaded_channel_projects.get_channel_info('new_channel')
 
       expect(reloaded_channel_info.content_projects).to eq('/new/path/to/dropbox/folder')
       expect(reloaded_channel_info.video_projects).to eq('/new/path/to/active/projects')
@@ -99,9 +114,7 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
   end
 
   describe '#channel_projects' do
-    subject { channel_projects_config.channel_projects }
-
-    let(:channel_projects_config) { described_class.new }
+    subject { channel_projects.channel_projects }
 
     it { is_expected.to have_attributes(length: 2) }
   end

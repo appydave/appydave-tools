@@ -5,6 +5,7 @@ require 'fileutils'
 require 'json'
 require 'open3'
 require 'optparse'
+require 'k_log'
 
 require 'appydave/tools/version'
 require 'appydave/tools/gpt_context/file_collector'
@@ -14,6 +15,7 @@ require 'appydave/tools/configuration/config'
 require 'appydave/tools/configuration/settings_config'
 require 'appydave/tools/configuration/channel_projects_config'
 require 'appydave/tools/configuration/channels_config'
+require 'appydave/tools/name_manager/project_name'
 
 module Appydave
   module Tools
