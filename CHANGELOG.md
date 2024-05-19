@@ -1,3 +1,10 @@
+## [0.3.7](https://github.com/klueless-io/appydave-tools/compare/v0.3.6...v0.3.7) (2024-05-19)
+
+
+### Bug Fixes
+
+* add test for project_name generation ([3a87d9b](https://github.com/klueless-io/appydave-tools/commit/3a87d9b6f942e1b4e6576adaea58eaf799f5d74f))
+
 ## [0.3.6](https://github.com/klueless-io/appydave-tools/compare/v0.3.5...v0.3.6) (2024-05-19)
 
 
