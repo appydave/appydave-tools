@@ -1,3 +1,11 @@
+## [0.3.6](https://github.com/klueless-io/appydave-tools/compare/v0.3.5...v0.3.6) (2024-05-19)
+
+
+### Bug Fixes
+
+* add default configuration and support for project name ([65d7c3e](https://github.com/klueless-io/appydave-tools/commit/65d7c3e8b05bbf9db4510762cccbd419ca988611))
+* fix issue in CI[#1](https://github.com/klueless-io/appydave-tools/issues/1) ([867937e](https://github.com/klueless-io/appydave-tools/commit/867937e2ed271e4afe8dbbe3b3cee9d5ff15d986))
+
 ## [0.3.5](https://github.com/klueless-io/appydave-tools/compare/v0.3.4...v0.3.5) (2024-05-19)
 
 
