@@ -1,3 +1,10 @@
+## [0.3.5](https://github.com/klueless-io/appydave-tools/compare/v0.3.4...v0.3.5) (2024-05-19)
+
+
+### Bug Fixes
+
+* add support for configurable ([82852f8](https://github.com/klueless-io/appydave-tools/commit/82852f805809b133278de70be24314e83a1d4b05))
+
 ## [0.3.4](https://github.com/klueless-io/appydave-tools/compare/v0.3.3...v0.3.4) (2024-05-19)
 
 
