@@ -21,6 +21,8 @@ module Appydave
           result = case format
                    when 'tree'
                      build_tree
+                   when 'both'
+                     "#{build_tree}\n\n#{build_content}"
                    else
                      build_content
                    end

@@ -6,6 +6,8 @@ module Appydave
     module NameManager
       # Parses and generates project names for Appydave video projects
       class ProjectName
+        include Appydave::Tools::Configuration::Configurable
+
         attr_reader :sequence, :channel_code, :project_name
 
         def initialize(file_name)
@@ -29,10 +31,20 @@ module Appydave
         def parse_file_name(file_name)
           file_name = File.basename(file_name, File.extname(file_name))
           parts = file_name.split('-')
+          length = parts.length
 
-          @sequence = parts[0]
-          @project_name = parts[-1]
-          @channel_code = parts.length == 3 ? parts[1] : nil
+          @sequence = part(parts, 0)
+          code = part(parts, 1)
+          if config.channels.code?(code)
+            @channel_code = code
+            @project_name = parts[2..length].join('-')
+          else
+            @project_name = parts[1..length].join('-')
+          end
+        end
+
+        def part(parts, index)
+          parts[index] if parts.length > index
         end
       end
     end

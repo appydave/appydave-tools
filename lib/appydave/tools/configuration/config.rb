@@ -10,9 +10,16 @@ module Appydave
 
           attr_accessor :config_path
           attr_reader :configurations
+          attr_reader :default_block
 
           def configure
-            yield self
+            if block_given?
+              yield self
+            elsif default_block
+              default_block.call(self)
+            else
+              raise Appydave::Tools::Error, 'No configuration block provided'
+            end
             ensure_config_directory
           end
 
@@ -33,6 +40,10 @@ module Appydave
 
           def save
             configurations.each_value(&:save)
+          end
+
+          def set_default(&block)
+            @default_block = block
           end
 
           def load

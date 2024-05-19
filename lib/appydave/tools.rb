@@ -18,7 +18,8 @@ require 'appydave/tools/configuration/channel_projects_config'
 require 'appydave/tools/configuration/channels_config'
 require 'appydave/tools/name_manager/project_name'
 
-Appydave::Tools::Configuration::Config.configure do |config|
+Appydave::Tools::Configuration::Config.set_default do |config|
+  config.config_path = File.expand_path('~/.config/appydave')
   config.register(:settings, Appydave::Tools::Configuration::SettingsConfig)
   config.register(:channels, Appydave::Tools::Configuration::ChannelsConfig)
   config.register(:channel_projects, Appydave::Tools::Configuration::ChannelProjectsConfig)
