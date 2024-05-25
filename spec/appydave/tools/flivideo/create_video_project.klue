@@ -1,0 +1,41 @@
+component :create_video_project do
+  desc <<-TEXT
+    Setup a new video project for standalone YouTube video or Podcast.
+  TEXT
+
+  pattern "Command"
+
+  comments <<~TEXT
+    - Allows the creation of a new project, specifying if it's for a YouTube video or a Podcast.
+    - For YouTube videos, the project will be single-episode based.
+    - For Podcasts, the project can include multiple episodes.
+    - Stores project-specific settings and metadata.
+    - Will create recording, chapter and support folders for project_type: video
+
+    
+  TEXT
+
+  enum :project_type, %w(video podcast)
+
+  method :run(:project_type, :project_code, :channel_code, :project_name)
+
+  sample :new_video_project, <<~RUBY
+    # Create a new video project for AppyDave
+    create_project.run(:video, 'a20', 'ad', 'Some Video')
+    # Create: 
+    # ~/video-projects/a20-ad-some-video
+    # ~/video-projects/a20-ad-some-video/.fv.json
+    # ~/video-projects/a20-ad-some-video/assets
+    # ~/video-projects/a20-ad-some-video/chapters
+    # ~/video-projects/a20-ad-some-video/recordings
+    # ~/video-projects/a20-ad-some-video/.trash
+  RUBY
+
+  sample :new_podcast_project, <<~RUBY
+    # Create a new podcast project for AppyCast
+    create_project.run(:podcast, 'a21', 'ac', 'Some Podcast')
+    # Creates folder:
+    # ~/video-projects/a21-ac-some-podcast
+    # ~/video-projects/a21-ac-some-podcast/.fv.json
+  RUBY
+end

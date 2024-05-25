@@ -73,4 +73,35 @@ RSpec.describe Appydave::Tools::Configuration::SettingsConfig do
       expect(reloaded_settings.get('auto_update')).to eq('enabled')
     end
   end
+
+  describe 'well known settings' do
+    let(:settings) { described_class.new }
+
+    before do
+      settings.set('ecamm-recording-folder', '/path/to/ecamm')
+      settings.set('download-folder', '/path/to/download')
+      settings.set('download-image-folder', '/path/to/download/images')
+      settings.save
+    end
+
+    it 'retrieves ecamm recording folder' do
+      expect(settings.ecamm_recording_folder).to eq('/path/to/ecamm')
+    end
+
+    it 'retrieves download folder' do
+      expect(settings.download_folder).to eq('/path/to/download')
+    end
+
+    it 'retrieves download image folder when set' do
+      expect(settings.download_image_folder).to eq('/path/to/download/images')
+    end
+
+    it 'retrieves download folder when download image folder is not set' do
+      settings.set('download-image-folder', nil)
+      settings.save
+
+      reloaded_settings = described_class.new
+      expect(reloaded_settings.download_image_folder).to eq('/path/to/download')
+    end
+  end
 end

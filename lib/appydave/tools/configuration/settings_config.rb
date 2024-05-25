@@ -12,6 +12,20 @@ module Appydave
         def get(key, default = nil)
           data.fetch(key, default)
         end
+
+        # Well known settings
+
+        def ecamm_recording_folder
+          get('ecamm-recording-folder')
+        end
+
+        def download_folder
+          get('download-folder')
+        end
+
+        def download_image_folder
+          get('download-image-folder') || download_folder
+        end
       end
     end
   end
