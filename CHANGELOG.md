@@ -1,3 +1,10 @@
+## [0.3.8](https://github.com/klueless-io/appydave-tools/compare/v0.3.7...v0.3.8) (2024-05-25)
+
+
+### Bug Fixes
+
+* update settings ([0b0c256](https://github.com/klueless-io/appydave-tools/commit/0b0c256793b607db87001752071b0476c6390c5f))
+
 ## [0.3.7](https://github.com/klueless-io/appydave-tools/compare/v0.3.6...v0.3.7) (2024-05-19)
 
 
