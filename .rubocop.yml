@@ -105,7 +105,7 @@ RSpec/NamedSubject:
     - "**/spec/**/*"
 
 RSpec/MultipleExpectations:
-  Max: 5
+  Max: 8
 
 RSpec/NestedGroups:
   Max: 8

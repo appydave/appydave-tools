@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+# "locations": {
+#   "content_projects": "/Users/davidcruwys/Library/CloudStorage/Dropbox/team-aitldr",
+#   "video_projects": "/Volumes/Expansion/Sync/tube-channels/aitldr/active",
+#   "published_projects": "/Volumes/Expansion/content-archive/4brand/published/aitldr",
+#   "abandoned_projects": "/Volumes/Expansion/content-archive/4brand/failed/aitldr"
+# }
+
 RSpec.describe Appydave::Tools::Configuration::Models::ChannelsConfig do
   let(:channels_config) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
@@ -10,12 +17,24 @@ RSpec.describe Appydave::Tools::Configuration::Models::ChannelsConfig do
         'appydave' => {
           'code' => 'ad',
           'name' => 'AppyDave',
-          'youtube_handle' => '@appydave'
+          'youtube_handle' => '@appydave',
+          'locations' => {
+            'content_projects' => 'path/content/appydave',
+            'video_projects' => 'path/video/appydave',
+            'published_projects' => 'path/published/appydave',
+            'abandoned_projects' => 'path/abandoned/appydave'
+          }
         },
         'appydave_coding' => {
           'code' => 'ac',
           'name' => 'AppyDave Coding',
-          'youtube_handle' => '@appydavecoding'
+          'youtube_handle' => '@appydavecoding',
+          'locations' => {
+            'content_projects' => 'path/content/appydave_coding',
+            'video_projects' => 'path/video/appydave_coding',
+            'published_projects' => 'path/published/appydave_coding',
+            'abandoned_projects' => 'path/abandoned/appydave_coding'
+          }
         }
       }
     }
@@ -78,6 +97,17 @@ RSpec.describe Appydave::Tools::Configuration::Models::ChannelsConfig do
 
       expect(channel.name).to eq('')
       expect(channel.youtube_handle).to eq('')
+    end
+
+    describe '.locations' do
+      it 'retrieves existing channel locations' do
+        channel = channels_config.get_channel('appydave')
+
+        expect(channel.locations.content_projects).to eq('path/content/appydave')
+        expect(channel.locations.video_projects).to eq('path/video/appydave')
+        expect(channel.locations.published_projects).to eq('path/published/appydave')
+        expect(channel.locations.abandoned_projects).to eq('path/abandoned/appydave')
+      end
     end
   end
 

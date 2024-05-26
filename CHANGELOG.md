@@ -68,7 +68,7 @@
 
 ### Bug Fixes
 
-* updating configuration with channels and channel_projects ([d4f54aa](https://github.com/klueless-io/appydave-tools/commit/d4f54aa0f455f535b6e265f23e6fba123d099d26))
+* updating configuration with channels and channel_folders  ([d4f54aa](https://github.com/klueless-io/appydave-tools/commit/d4f54aa0f455f535b6e265f23e6fba123d099d26))
 
 ## [0.3.2](https://github.com/klueless-io/appydave-tools/compare/v0.3.1...v0.3.2) (2024-05-16)
 

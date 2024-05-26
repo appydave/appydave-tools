@@ -19,8 +19,8 @@ RSpec.describe Appydave::Tools::Configuration::Configurable do
         config.channels
       end
 
-      def channel_projects
-        config.channel_projects
+      def bank_reconciliation
+        config.bank_reconciliation
       end
 
       def unknown
@@ -45,8 +45,8 @@ RSpec.describe Appydave::Tools::Configuration::Configurable do
         expect(test_configurable.channels).to be_an_instance_of(Appydave::Tools::Configuration::Models::ChannelsConfig)
       end
 
-      it 'returns the channel projects configuration' do
-        expect(test_configurable.channel_projects).to be_an_instance_of(Appydave::Tools::Configuration::Models::ChannelProjectsConfig)
+      it 'returns the bank reconciliation configuration' do
+        expect(test_configurable.bank_reconciliation).to be_an_instance_of(Appydave::Tools::Configuration::Models::BankReconciliationConfig)
       end
     end
 

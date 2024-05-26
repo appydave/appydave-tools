@@ -63,6 +63,11 @@ module Appydave
             configurations.each_value(&:debug)
           end
 
+          def print
+            log.kv 'Configuration Path', config_path
+            configurations.each_value(&:print)
+          end
+
           private
 
           def ensure_config_directory
@@ -75,11 +80,3 @@ module Appydave
     end
   end
 end
-
-# Configuration example usage
-# Appydave::Tools::Configuration::Config.configure do |config|
-#   config.config_path = File.expand_path('~/.config/appydave') # optional, as this is already the default
-#   # config.register(:settings, SettingsConfig)
-#   # config.register(:gpt_context, GptContextConfig)
-#   # Additional configurations can be registered as needed.
-# end

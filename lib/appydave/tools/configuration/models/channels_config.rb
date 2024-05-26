@@ -36,6 +36,12 @@ module Appydave
             data['channels'].values.any? { |info| info['code'] == code }
           end
 
+          def print
+            log.heading 'Channel Configuration'
+
+            tp channels, :key, :code, :name, :youtube_handle
+          end
+
           private
 
           def default_data
@@ -46,26 +52,55 @@ module Appydave
             {
               'code' => '',
               'name' => '',
-              'youtube_handle' => ''
+              'youtube_handle' => '',
+              'locations' => {
+                'content_projects' => '',
+                'video_projects' => '',
+                'published_projects' => '',
+                'abandoned_projects' => ''
+              }
             }
           end
 
           # Type-safe class to access channel properties
           class ChannelInfo
-            attr_accessor :key, :code, :name, :youtube_handle
+            attr_accessor :key, :code, :name, :youtube_handle, :locations
 
             def initialize(key, data)
               @key = key
               @code = data['code']
               @name = data['name']
               @youtube_handle = data['youtube_handle']
+              @locations = ChannelLocation.new(data['locations'] || {})
             end
 
             def to_h
               {
                 'code' => @code,
                 'name' => @name,
-                'youtube_handle' => @youtube_handle
+                'youtube_handle' => @youtube_handle,
+                'locations' => locations.to_h
+              }
+            end
+          end
+
+          # Type-safe class to access channel location properties
+          class ChannelLocation
+            attr_accessor :content_projects, :video_projects, :published_projects, :abandoned_projects
+
+            def initialize(data)
+              @content_projects = data['content_projects']
+              @video_projects = data['video_projects']
+              @published_projects = data['published_projects']
+              @abandoned_projects = data['abandoned_projects']
+            end
+
+            def to_h
+              {
+                'content_projects' => @content_projects,
+                'video_projects' => @video_projects,
+                'published_projects' => @published_projects,
+                'abandoned_projects' => @abandoned_projects
               }
             end
           end

@@ -27,6 +27,14 @@ module Appydave
           def download_image_folder
             get('download-image-folder') || download_folder
           end
+
+          def print
+            log.subheading 'Settings Configuration'
+
+            data.each do |key, value|
+              log.kv key, value
+            end
+          end
         end
       end
     end

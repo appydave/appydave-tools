@@ -33,6 +33,10 @@ module Appydave
             ChartOfAccount.new(entry_data) if entry_data
           end
 
+          def print
+            log.heading 'Bank Reconciliation Configuration'
+          end
+
           private
 
           def default_data

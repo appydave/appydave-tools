@@ -139,7 +139,13 @@ RSpec.describe Appydave::Tools::Configuration::Config do
               new_channel_info = Appydave::Tools::Configuration::Models::ChannelsConfig::ChannelInfo.new('nc',
                                                                                                          'code' => 'nc',
                                                                                                          'name' => 'New Channel',
-                                                                                                         'youtube_handle' => '@newchannel')
+                                                                                                         'youtube_handle' => '@newchannel',
+                                                                                                         'locations' => {
+                                                                                                           'content_projects' => '/path/to/content/projects',
+                                                                                                           'video_projects' => '/path/to/video/projects',
+                                                                                                           'published_projects' => '/path/to/published/projects',
+                                                                                                           'abandoned_projects' => '/path/to/abandoned/projects'
+                                                                                                         })
 
               channels.set_channel('nc', new_channel_info)
               channels.save
@@ -149,53 +155,36 @@ RSpec.describe Appydave::Tools::Configuration::Config do
 
               expect(reloaded_channel_info.name).to eq('New Channel')
               expect(reloaded_channel_info.youtube_handle).to eq('@newchannel')
+
+              expect(reloaded_channel_info.locations.content_projects).to eq('/path/to/content/projects')
+              expect(reloaded_channel_info.locations.video_projects).to eq('/path/to/video/projects')
+              expect(reloaded_channel_info.locations.published_projects).to eq('/path/to/published/projects')
+              expect(reloaded_channel_info.locations.abandoned_projects).to eq('/path/to/abandoned/projects')
             end
           end
         end
       end
     end
 
-    context 'with channel projects component' do
+    context 'with bank reconciliation component' do
       before do
         described_class.configure do |config|
           config.config_path = config_base_path
-          config.register(:channel_projects, Appydave::Tools::Configuration::Models::ChannelProjectsConfig)
+          config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
         end
       end
 
-      it 'registers the channel projects configuration' do
-        expect(described_class.channel_projects).to be_an_instance_of(Appydave::Tools::Configuration::Models::ChannelProjectsConfig)
+      it 'registers the bank reconciliation configuration' do
+        expect(described_class.bank_reconciliation).to be_an_instance_of(Appydave::Tools::Configuration::Models::BankReconciliationConfig)
       end
 
-      describe '.channel_projects' do
-        let(:channel_projects) { described_class.channel_projects }
+      describe '.bank_reconciliation' do
+        let(:bank_reconciliation) { described_class.bank_reconciliation }
 
-        context 'when loading the channel projects' do
-          it 'loads the channel projects' do
-            channel_projects.load
-            expect(channel_projects.data).to eq({ 'channel_projects' => {} })
-          end
-
-          context 'when setting new channel project information' do
-            it 'sets new channel project information' do
-              new_channel_info = Appydave::Tools::Configuration::Models::ChannelProjectsConfig::ChannelInfo.new(
-                'content_projects' => '/new/path/to/dropbox/folder',
-                'video_projects' => '/new/path/to/active/projects',
-                'published_projects' => '/new/path/to/published/archive',
-                'abandoned_projects' => '/new/path/to/failed/archive'
-              )
-
-              channel_projects.set_channel_info('new_channel', new_channel_info)
-              channel_projects.save
-
-              reloaded_channel_projects = Appydave::Tools::Configuration::Models::ChannelProjectsConfig.new
-              reloaded_channel_info = reloaded_channel_projects.get_channel_info('new_channel')
-
-              expect(reloaded_channel_info.content_projects).to eq('/new/path/to/dropbox/folder')
-              expect(reloaded_channel_info.video_projects).to eq('/new/path/to/active/projects')
-              expect(reloaded_channel_info.published_projects).to eq('/new/path/to/published/archive')
-              expect(reloaded_channel_info.abandoned_projects).to eq('/new/path/to/failed/archive')
-            end
+        context 'when loading the bank reconciliation' do
+          it 'loads the bank reconciliation' do
+            bank_reconciliation.load
+            expect(bank_reconciliation.data).to eq({ 'bank_accounts' => [], 'chart_of_accounts' => [] })
           end
         end
       end
