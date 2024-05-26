@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/klueless-io/appydave-tools/compare/v0.5.0...v0.6.0) (2024-05-26)
+
+
+### Features
+
+* refactor channels with locations, removed channel projects ([6b64574](https://github.com/klueless-io/appydave-tools/commit/6b645742b0029a001792c8d405dcae0b1036f2c0))
+
 # [0.5.0](https://github.com/klueless-io/appydave-tools/compare/v0.4.1...v0.5.0) (2024-05-26)
 
 
