@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/klueless-io/appydave-tools/compare/v0.4.0...v0.4.1) (2024-05-26)
+
+
+### Bug Fixes
+
+* move configuration models in to own namespace ([0a8dc48](https://github.com/klueless-io/appydave-tools/commit/0a8dc486c3f610a91dac1941bc986a1d5b05e24e))
+
 # [0.4.0](https://github.com/klueless-io/appydave-tools/compare/v0.3.8...v0.4.0) (2024-05-26)
 
 
