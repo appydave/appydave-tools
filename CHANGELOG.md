@@ -1,3 +1,17 @@
+# [0.4.0](https://github.com/klueless-io/appydave-tools/compare/v0.3.8...v0.4.0) (2024-05-26)
+
+
+### Bug Fixes
+
+* remove from ci for now ([e4c9e22](https://github.com/klueless-io/appydave-tools/commit/e4c9e225e6fe35a00a7b4d83ff9f2795da737589))
+* remove from ci for now ([30a114c](https://github.com/klueless-io/appydave-tools/commit/30a114c7cd0085ab92aeb906e1962ca3618631e8))
+* remove from ci for now ([7062c3d](https://github.com/klueless-io/appydave-tools/commit/7062c3d69634ab281107b755533f3332b708eb56))
+
+
+### Features
+
+* Add line limit option and update default format handling ([a0eb426](https://github.com/klueless-io/appydave-tools/commit/a0eb426329ee2a997081cf1a5c219c05d07ff824))
+
 ## [0.3.8](https://github.com/klueless-io/appydave-tools/compare/v0.3.7...v0.3.8) (2024-05-25)
 
 
