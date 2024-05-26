@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/klueless-io/appydave-tools/compare/v0.6.0...v0.6.1) (2024-05-26)
+
+
+### Bug Fixes
+
+* improved configuration printing ([89d769d](https://github.com/klueless-io/appydave-tools/commit/89d769d0741fc75b44db90931cf981feea83027f))
+
 # [0.6.0](https://github.com/klueless-io/appydave-tools/compare/v0.5.0...v0.6.0) (2024-05-26)
 
 
