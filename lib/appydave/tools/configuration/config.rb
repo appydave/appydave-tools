@@ -29,6 +29,7 @@ module Appydave
           end
 
           def method_missing(method_name, *_args)
+            raise Appydave::Tools::Error, 'Configuration has never been registered' if @configurations.nil?
             raise Appydave::Tools::Error, "Configuration not available: #{method_name}" unless @configurations.key?(method_name)
 
             @configurations[method_name]

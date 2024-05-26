@@ -13,16 +13,16 @@ require 'appydave/tools/gpt_context/file_collector'
 
 require 'appydave/tools/configuration/openai'
 require 'appydave/tools/configuration/configurable'
-require 'appydave/tools/configuration/config_base'
 require 'appydave/tools/configuration/config'
-require 'appydave/tools/configuration/settings_config'
-require 'appydave/tools/configuration/channel_projects_config'
-require 'appydave/tools/configuration/channels_config'
+require 'appydave/tools/configuration/models/config_base'
+require 'appydave/tools/configuration/models/settings_config'
+require 'appydave/tools/configuration/models/channel_projects_config'
+require 'appydave/tools/configuration/models/channels_config'
 require 'appydave/tools/name_manager/project_name'
 
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = File.expand_path('~/.config/appydave')
-  config.register(:settings, Appydave::Tools::Configuration::SettingsConfig)
+  config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
   config.register(:channels, Appydave::Tools::Configuration::ChannelsConfig)
   config.register(:channel_projects, Appydave::Tools::Configuration::ChannelProjectsConfig)
 end

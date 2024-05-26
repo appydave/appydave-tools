@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::Configuration::ChannelsConfig do
+RSpec.describe Appydave::Tools::Configuration::Models::ChannelsConfig do
   let(:channels_config) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
   let(:config_file) { File.join(temp_folder, 'channels.json') }
@@ -83,10 +83,10 @@ RSpec.describe Appydave::Tools::Configuration::ChannelsConfig do
 
   describe '#set_channel' do
     let(:new_channel) do
-      Appydave::Tools::Configuration::ChannelsConfig::ChannelInfo.new('some_key',
-                                                                      'code' => 'nc',
-                                                                      'name' => 'New Channel',
-                                                                      'youtube_handle' => '@newchannel')
+      Appydave::Tools::Configuration::Models::ChannelsConfig::ChannelInfo.new('some_key',
+                                                                              'code' => 'nc',
+                                                                              'name' => 'New Channel',
+                                                                              'youtube_handle' => '@newchannel')
     end
 
     it 'sets new channel information and persists it' do

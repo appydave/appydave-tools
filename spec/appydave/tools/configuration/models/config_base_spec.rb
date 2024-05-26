@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::Configuration::ConfigBase do
+RSpec.describe Appydave::Tools::Configuration::Models::ConfigBase do
   # let(:config_name) { 'test_config' }
   let(:config) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }

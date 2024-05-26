@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
+RSpec.describe Appydave::Tools::Configuration::Models::ChannelProjectsConfig do
   let(:channel_projects) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
   let(:config_file) { File.join(temp_folder, 'channel-projects.json') }
@@ -91,7 +91,7 @@ RSpec.describe Appydave::Tools::Configuration::ChannelProjectsConfig do
 
   describe '#set_channel_info' do
     let(:new_channel_info) do
-      Appydave::Tools::Configuration::ChannelProjectsConfig::ChannelInfo.new(
+      Appydave::Tools::Configuration::Models::ChannelProjectsConfig::ChannelInfo.new(
         'content_projects' => '/new/path/to/dropbox/folder',
         'video_projects' => '/new/path/to/active/projects',
         'published_projects' => '/new/path/to/published/archive',

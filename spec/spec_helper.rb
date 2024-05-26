@@ -8,11 +8,12 @@ SimpleCov.start
 
 require 'appydave/tools'
 
+puts 'xxxxxx'
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = Dir.mktmpdir
-  config.register(:settings, Appydave::Tools::Configuration::SettingsConfig)
-  config.register(:channels, Appydave::Tools::Configuration::ChannelsConfig)
-  config.register(:channel_projects, Appydave::Tools::Configuration::ChannelProjectsConfig)
+  config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
+  config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
+  config.register(:channel_projects, Appydave::Tools::Configuration::Models::ChannelProjectsConfig)
 end
 
 RSpec.configure do |config|

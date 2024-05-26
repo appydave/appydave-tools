@@ -1,7 +1,11 @@
 # Configuration Component
 
 [ChatGPT conversation](https://chatgpt.com/g/g-4dMsIRK3E-ruby-script-assistant/c/d8ea5960-071b-48aa-9fd9-554ca302c7dd)
-[ChatGPT confersation for Schema](https://chatgpt.com/c/bb93e7ac-f139-44f9-8b9c-4e74ac2fa461)
+[ChatGPT conversation for Schema](https://chatgpt.com/c/bb93e7ac-f139-44f9-8b9c-4e74ac2fa461)
+
+  attr_accessor :code,
+                :narration
+
 
 ## Schema
 

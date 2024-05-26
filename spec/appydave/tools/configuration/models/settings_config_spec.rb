@@ -4,7 +4,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 
-RSpec.describe Appydave::Tools::Configuration::SettingsConfig do
+RSpec.describe Appydave::Tools::Configuration::Models::SettingsConfig do
   let(:settings) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
   let(:config_file) { File.join(temp_folder, 'settings.json') }
