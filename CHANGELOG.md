@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/klueless-io/appydave-tools/compare/v0.4.1...v0.5.0) (2024-05-26)
+
+
+### Features
+
+* add configuration support for bank_reconciliation tool ([cfd6909](https://github.com/klueless-io/appydave-tools/commit/cfd6909d7c1de4c1acd9b84aaea28c9c7a07cc3f))
+
 ## [0.4.1](https://github.com/klueless-io/appydave-tools/compare/v0.4.0...v0.4.1) (2024-05-26)
 
 
