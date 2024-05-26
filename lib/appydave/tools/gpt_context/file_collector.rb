@@ -6,26 +6,30 @@ module Appydave
     module GptContext
       # Gathers file names and content based on include and exclude patterns
       class FileCollector
-        attr_reader :include_patterns, :exclude_patterns, :format, :working_directory
+        attr_reader :include_patterns, :exclude_patterns, :format, :working_directory, :line_limit
 
-        def initialize(include_patterns: [], exclude_patterns: [], format: nil, working_directory: nil)
+        def initialize(include_patterns: [], exclude_patterns: [], format: 'tree,content', working_directory: nil, line_limit: nil)
           @include_patterns = include_patterns
           @exclude_patterns = exclude_patterns
           @format = format
           @working_directory = working_directory
+          @line_limit = line_limit
         end
 
         def build
           FileUtils.cd(working_directory) if working_directory && Dir.exist?(working_directory)
 
-          result = case format
-                   when 'tree'
-                     build_tree
-                   when 'both'
-                     "#{build_tree}\n\n#{build_content}"
-                   else
-                     build_content
-                   end
+          formats = format.split(',')
+          result = formats.map do |fmt|
+            case fmt
+            when 'tree'
+              build_tree
+            when 'content'
+              build_content
+            else
+              ''
+            end
+          end.join("\n\n")
 
           FileUtils.cd(Dir.home) if working_directory
 
@@ -41,12 +45,19 @@ module Appydave
             Dir.glob(pattern).each do |file_path|
               next if excluded?(file_path) || File.directory?(file_path)
 
-              content = "# file: #{file_path}\n\n#{File.read(file_path)}"
+              content = "# file: #{file_path}\n\n#{read_file_content(file_path)}"
               concatenated_content << content
             end
           end
 
           concatenated_content.join("\n\n")
+        end
+
+        def read_file_content(file_path)
+          lines = File.readlines(file_path)
+          return lines.first(line_limit).join if line_limit
+
+          lines.join
         end
 
         def build_tree

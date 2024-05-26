@@ -19,6 +19,7 @@ Metrics/BlockLength:
   Exclude:
     - "**/spec/**/*"
     - "*.gemspec"
+    - "bin/gpt_context.rb"
   AllowedMethods:
     - configure
     - context
@@ -108,3 +109,6 @@ RSpec/MultipleExpectations:
 
 RSpec/NestedGroups:
   Max: 8
+
+RSpec/DescribeClass:
+  Enabled: false

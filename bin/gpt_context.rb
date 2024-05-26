@@ -14,7 +14,8 @@ require 'appydave/tools'
 options = {
   include_patterns: [],
   exclude_patterns: [],
-  format: nil,
+  format: 'tree,content',
+  line_limit: nil,
   debug: 'none'
 }
 
@@ -29,8 +30,12 @@ OptionParser.new do |opts|
     options[:exclude_patterns] << pattern
   end
 
-  opts.on('-f', '--format FORMAT', 'Output format: default or tree') do |format|
+  opts.on('-f', '--format FORMAT', 'Output format: content or tree, if not provided then both are used') do |format|
     options[:format] = format
+  end
+
+  opts.on('-l', '--line-limit LIMIT', 'Limit the number of lines included from each file') do |limit|
+    options[:line_limit] = limit.to_i
   end
 
   # None - No debug output
@@ -68,6 +73,7 @@ gatherer = Appydave::Tools::GptContext::FileCollector.new(
   include_patterns: options[:include_patterns],
   exclude_patterns: options[:exclude_patterns],
   format: options[:format],
+  line_limit: options[:line_limit],
   working_directory: Dir.pwd
 )
 
