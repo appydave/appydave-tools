@@ -8,10 +8,10 @@ SimpleCov.start
 
 require 'appydave/tools'
 
-puts 'xxxxxx'
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = Dir.mktmpdir
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
+  config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
   config.register(:channel_projects, Appydave::Tools::Configuration::Models::ChannelProjectsConfig)
 end
