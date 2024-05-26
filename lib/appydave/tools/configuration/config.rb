@@ -63,9 +63,25 @@ module Appydave
             configurations.each_value(&:debug)
           end
 
-          def print
-            log.kv 'Configuration Path', config_path
-            configurations.each_value(&:print)
+          # def print
+          #   log.kv 'Configuration Path', config_path
+          #   configurations.each_value(&:print)
+          # end
+
+          def print(*keys)
+            if keys.empty?
+              keys = configurations.keys
+            else
+              keys.map!(&:to_sym)
+            end
+
+            keys.each do |key|
+              if configurations[key]
+                configurations[key].print
+              else
+                log.error "Configuration not available: #{key}"
+              end
+            end
           end
 
           private

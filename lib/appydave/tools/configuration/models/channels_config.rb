@@ -39,10 +39,29 @@ module Appydave
           def print
             log.heading 'Channel Configuration'
 
-            tp channels, :key, :code, :name, :youtube_handle
+            print_channels = channels.map do |channel|
+              {
+                key: channel.key,
+                code: channel.code,
+                name: channel.name,
+                youtube_handle: channel.youtube_handle,
+                content_projects: print_location(channel.locations.content_projects),
+                video_projects: print_location(channel.locations.video_projects),
+                published_projects: print_location(channel.locations.published_projects),
+                abandoned_projects: print_location(channel.locations.abandoned_projects)
+              }
+            end
+
+            tp print_channels, :key, :code, :name, :youtube_handle, :content_projects, :video_projects, :published_projects, :abandoned_projects
           end
 
           private
+
+          def print_location(location)
+            return 'Not Set' unless location
+
+            File.exist?(location) ? 'TRUE' : 'false'
+          end
 
           def default_data
             { 'channels' => {} }

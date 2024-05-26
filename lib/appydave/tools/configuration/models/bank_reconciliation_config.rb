@@ -34,7 +34,13 @@ module Appydave
           end
 
           def print
-            log.heading 'Bank Reconciliation Configuration'
+            log.subheading 'Bank Reconciliation - Accounts'
+
+            tp bank_accounts, :account_number, :bsb, :name, :bank
+
+            log.subheading 'Bank Reconciliation - Chart of Accounts'
+
+            tp chart_of_accounts, :code, :narration
           end
 
           private

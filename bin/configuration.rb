@@ -1,12 +1,19 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Example of a simple command line tool to manage configuration files
+# ad_config -p settings,channels
+# ad_config -p
+# ad_config -l
+# ad_config -c
+# ad_config -e
+
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 
 require 'pry'
 require 'appydave/tools'
 
-options = {}
+options = { keys: [] }
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: config_tool.rb [options]'
@@ -23,8 +30,9 @@ OptionParser.new do |opts|
     options[:command] = :create
   end
 
-  opts.on('-p', '--print', 'Print configuration details') do
+  opts.on('-p', '--print [KEYS]', Array, 'Print configuration details for specified keys') do |keys|
     options[:command] = :print
+    options[:keys] = keys
   end
 
   opts.on_tail('-h', '--help', 'Show this message') do
@@ -41,13 +49,13 @@ when :list
   configurations = Appydave::Tools::Configuration::Config.configurations.map do |name, config|
     { name: name, path: config.config_path, exists: File.exist?(config.config_path) }
   end
-  tp configurations, :name, :exists, { config_path => { column_width: 150 } }
+  tp configurations, :name, :exists, { path: { width: 150 } }
 when :create
   Appydave::Tools::Configuration::Config.configure
   Appydave::Tools::Configuration::Config.save
 when :print
   Appydave::Tools::Configuration::Config.configure
-  Appydave::Tools::Configuration::Config.print
+  Appydave::Tools::Configuration::Config.print(*options[:keys])
 else
   puts 'No valid command provided. Use --help for usage information.'
 end

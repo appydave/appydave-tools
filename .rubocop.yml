@@ -115,3 +115,6 @@ RSpec/DescribeClass:
 
 RSpec/PendingWithoutReason:
   Enabled: false
+
+Metrics/AbcSize:
+  Max: 25
