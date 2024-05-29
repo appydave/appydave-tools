@@ -6,6 +6,7 @@ module Appydave
       module Models
         # Bank reconciliation configuration
         class BankReconciliationConfig < ConfigBase
+          # def
           # Retrieve all bank accounts
           def bank_accounts
             data['bank_accounts'].map do |account|
@@ -54,13 +55,13 @@ module Appydave
 
           # Inner class to represent a bank account
           class BankAccount
-            attr_accessor :account_number, :bsb, :name, :bank
+            attr_accessor :account_number, :bsb, :name, :platform
 
             def initialize(data)
               @account_number = data['account_number']
               @bsb = data['bsb']
               @name = data['name']
-              @bank = data['bank']
+              @platform = data['platform']
             end
 
             def to_h
@@ -68,7 +69,7 @@ module Appydave
                 'account_number' => @account_number,
                 'bsb' => @bsb,
                 'name' => @name,
-                'bank' => @bank
+                'platform' => @platform
               }
             end
           end

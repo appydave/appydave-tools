@@ -11,13 +11,13 @@ RSpec.describe Appydave::Tools::Configuration::Models::BankReconciliationConfig 
           'account_number' => '123456',
           'bsb' => '123-456',
           'name' => 'Main Account',
-          'bank' => 'Big Bank'
+          'platform' => 'Big Bank'
         },
         {
           'account_number' => '654321',
           'bsb' => nil,
-          'name' => 'Credit Card',
-          'bank' => 'Credit Union'
+          'name' => 'Staff Payment',
+          'platform' => 'Wise'
         }
       ],
       'chart_of_accounts' => [
@@ -73,7 +73,7 @@ RSpec.describe Appydave::Tools::Configuration::Models::BankReconciliationConfig 
       expect(account.account_number).to eq('123456')
       expect(account.bsb).to eq('123-456')
       expect(account.name).to eq('Main Account')
-      expect(account.bank).to eq('Big Bank')
+      expect(account.platform).to eq('Big Bank')
     end
 
     it 'retrieves a bank account by account number without BSB' do
@@ -82,8 +82,8 @@ RSpec.describe Appydave::Tools::Configuration::Models::BankReconciliationConfig 
       expect(account).not_to be_nil
       expect(account.account_number).to eq('654321')
       expect(account.bsb).to be_nil
-      expect(account.name).to eq('Credit Card')
-      expect(account.bank).to eq('Credit Union')
+      expect(account.name).to eq('Staff Payment')
+      expect(account.platform).to eq('Wise')
     end
 
     it 'returns nil for non-existent account' do

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'clipboard'
+require 'csv'
 require 'fileutils'
 require 'json'
 require 'open3'
@@ -19,6 +20,10 @@ require 'appydave/tools/configuration/models/settings_config'
 require 'appydave/tools/configuration/models/bank_reconciliation_config'
 require 'appydave/tools/configuration/models/channels_config'
 require 'appydave/tools/name_manager/project_name'
+require 'appydave/tools/bank_reconciliation/clean/clean_transactions'
+require 'appydave/tools/bank_reconciliation/clean/read_transactions'
+require 'appydave/tools/bank_reconciliation/clean/mapper'
+require 'appydave/tools/bank_reconciliation/models/transaction'
 
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = File.expand_path('~/.config/appydave')

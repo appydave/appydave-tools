@@ -1,0 +1,4 @@
+BSB Number,Account Number,Transaction Date,Narration,Cheque Number,Debit,Credit,Balance,Transaction Type
+303-111,1234567,12/12/2023,"CapitalTransfer",,-50.00,,0.50,TFD
+303-111,1234567,11/12/2023,"Expense",,,70,70.50,DEP
+303-111,1234567,11/12/2023,"Expense",,,70,70.50,DEP

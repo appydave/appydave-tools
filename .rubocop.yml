@@ -80,6 +80,7 @@ Style/EmptyMethod:
 Metrics/ParameterLists:
   Exclude:
     - "**/spec/**/*"
+    - "**/models/**/*"
 Layout/EmptyLineBetweenDefs:
   Exclude:
     - "**/spec/**/*"
@@ -118,3 +119,14 @@ RSpec/PendingWithoutReason:
 
 Metrics/AbcSize:
   Max: 25
+  Exclude:
+    - "bin/*"
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "**/models/**/*"
+    - "lib/appydave/tools/bank_reconciliation/clean/mapper.rb"
+Metrics/PerceivedComplexity:
+  Exclude:
+    - "**/models/**/*"
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
