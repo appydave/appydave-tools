@@ -1,3 +1,10 @@
+# [0.7.0](https://github.com/klueless-io/appydave-tools/compare/v0.6.1...v0.7.0) (2024-05-29)
+
+
+### Features
+
+* new tool for doing bank reconciliations with chart of account matching ([9b82605](https://github.com/klueless-io/appydave-tools/commit/9b8260571f6046470d5963354ee1c80e493a0f28))
+
 ## [0.6.1](https://github.com/klueless-io/appydave-tools/compare/v0.6.0...v0.6.1) (2024-05-26)
 
 
