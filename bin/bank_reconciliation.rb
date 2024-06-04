@@ -32,19 +32,42 @@ class BankReconciliationCLI
   private
 
   def clean_transactions(args)
-    options = {}
+    options = { include: [] }
     OptionParser.new do |opts|
       opts.banner = 'Usage: bank_reconciliation.rb clean [options]'
-      opts.on('-i', '--include PATTERN', 'GLOB pattern for source transaction files') { |v| options[:include] = v }
-      opts.on('-f', '--transaction FOLDER', 'Transaction CSV folder where original banking CSV files are stored') { |v| options[:transaction_folder] = v }
-      opts.on('-o', '--output FILE', 'Output CSV file name') { |v| options[:output] = v }
+
+      opts.on('-i', '--include PATTERN', 'GLOB pattern for source transaction files') do |v|
+        options[:include] << v
+      end
+
+      opts.on('-f', '--transaction FOLDER', 'Transaction CSV folder where original banking CSV files are stored') do |v|
+        options[:transaction_folder] = v
+      end
+
+      opts.on('-o', '--output FILE', 'Output CSV file name') do |v|
+        options[:output] = v
+      end
+
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit
       end
     end.parse!(args)
 
-    # Implement cleaning and normalizing transactions
+    transaction_folder = options[:transaction_folder] || '/default/transaction/folder'
+    output_file = options[:output] || 'clean_transactions.csv'
+    include_patterns = options[:include].empty? ? ['*'] : options[:include]
+
+    puts "Cleaning transactions with options: #{options}"
+
+    # Ensure the clean directory exists
+    clean_dir = File.dirname(output_file)
+    FileUtils.mkdir_p(clean_dir)
+
+    # Initialize the CleanTransactions class and process the files
+    cleaner = Appydave::Tools::BankReconciliation::Clean::CleanTransactions.new(transaction_folder: transaction_folder)
+    cleaner.clean_transactions(include_patterns, output_file)
+
     puts "Cleaning transactions with options: #{options}"
   end
 
@@ -94,6 +117,8 @@ class BankReconciliationCLI
     puts "Run 'bank_reconciliation.rb [command] --help' for more information on a command."
   end
 end
+
+Appydave::Tools::Configuration::Config.configure
 
 BankReconciliationCLI.new.run
 # BankReconciliationCLI.new.run if __FILE__ == $PROGRAM_NAME

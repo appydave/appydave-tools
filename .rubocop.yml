@@ -45,6 +45,9 @@ RSpec/ExampleLength:
 
 Metrics/MethodLength:
   Max: 25
+  Exclude:
+    - "**/spec/**/*"
+    - "bin/*.rb"
 
 Layout/LineLength:
   Max: 200
