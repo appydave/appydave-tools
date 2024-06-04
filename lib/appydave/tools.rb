@@ -8,6 +8,7 @@ require 'open3'
 require 'openai'
 require 'optparse'
 require 'k_log'
+require 'pry'
 
 require 'appydave/tools/version'
 require 'appydave/tools/gpt_context/file_collector'
@@ -24,6 +25,8 @@ require 'appydave/tools/bank_reconciliation/clean/clean_transactions'
 require 'appydave/tools/bank_reconciliation/clean/read_transactions'
 require 'appydave/tools/bank_reconciliation/clean/mapper'
 require 'appydave/tools/bank_reconciliation/models/transaction'
+
+require 'appydave/tools/subtitle_master/clean'
 
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = File.expand_path('~/.config/appydave')
