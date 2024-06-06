@@ -1,3 +1,16 @@
+# [0.8.0](https://github.com/klueless-io/appydave-tools/compare/v0.7.0...v0.8.0) (2024-06-06)
+
+
+### Bug Fixes
+
+* update bank reconciliation components ([0f5dea1](https://github.com/klueless-io/appydave-tools/commit/0f5dea1f75baced1458619ead3fc5bd5bc69e0d5))
+
+
+### Features
+
+* subtitle master for cleaning the SRT files created by whisper AI ([9f7bd37](https://github.com/klueless-io/appydave-tools/commit/9f7bd3795f4361e0615307874a88370ab49f97a7))
+* subtitle master for cleaning the SRT files created by whisper AI ([0475a9e](https://github.com/klueless-io/appydave-tools/commit/0475a9ec07f2735e52ce54db6afa96e30e00c0e6))
+
 # [0.7.0](https://github.com/klueless-io/appydave-tools/compare/v0.6.1...v0.7.0) (2024-05-29)
 
 
