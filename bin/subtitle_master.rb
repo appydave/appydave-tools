@@ -86,7 +86,7 @@ class SubtitleMasterCLI
     end.parse!(args)
 
     unless options[:file] && options[:output]
-      puts "Missing required options. Use -h for help."
+      puts 'Missing required options. Use -h for help.'
       exit
     end
 

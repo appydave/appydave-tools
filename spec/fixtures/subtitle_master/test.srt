@@ -1,0 +1,47 @@
+1
+00:00:00,060 --> 00:00:00,620
+<u>I</u> had a wonderful relationship with Mid Journey.
+
+2
+00:00:00,620 --> 00:00:00,740
+I<u> had</u> a wonderful relationship with Mid Journey.
+
+3
+00:00:00,740 --> 00:00:00,840
+I had<u> a</u> wonderful relationship with Mid Journey.
+
+4
+00:00:00,840 --> 00:00:01,240
+I had a<u> wonderful</u> relationship with Mid Journey.
+
+5
+00:00:01,240 --> 00:00:02,000
+I had a wonderful<u> relationship</u> with Mid Journey.
+
+6
+00:00:02,000 --> 00:00:02,240
+I had a wonderful relationship<u> with</u> Mid Journey.
+
+7
+00:00:02,240 --> 00:00:02,440
+I had a wonderful relationship with<u> Mid</u> Journey.
+
+8
+00:00:02,440 --> 00:00:02,760
+I had a wonderful relationship with Mid<u> Journey.</u>
+
+9
+00:00:03,060 --> 00:00:03,320
+<u>We've</u> shared many experiences and created a lot of memories over the last 12 months.
+
+10
+00:00:03,320 --> 00:00:03,600
+We've<u> shared</u> many experiences and created a lot of memories over the last 12 months.
+
+11
+00:00:03,600 --> 00:00:04,120
+We've shared<u> many</u> experiences and created a lot of memories over the last 12 months.
+
+12
+00:00:04,120 --> 00:00:05,040
+We've shared many<u> experiences</u> and created a lot of memories over the last 12 months.

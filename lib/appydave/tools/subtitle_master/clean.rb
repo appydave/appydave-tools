@@ -3,22 +3,22 @@
 module Appydave
   module Tools
     module SubtitleMaster
+      # Clean and normalize subtitles
       class Clean
         def initialize(file_path)
           @file_path = file_path
         end
 
         def clean
-          content = File.read(@file_path)
+          content = File.read(@file_path, encoding: 'UTF-8')
           content = remove_underscores(content)
-          content = normalize_lines(content)
-          content
+          normalize_lines(content)
         end
 
         private
 
         def remove_underscores(content)
-          content.gsub(/<\/?u>/, '')
+          content.gsub(%r{</?u>}, '')
         end
 
         def normalize_lines(content)
@@ -27,7 +27,7 @@ module Appydave
           current_subtitle = { text: '', start_time: nil, end_time: nil }
 
           lines.each do |line|
-            if line =~ /^\d+$/
+            if line =~ /^\d+$/ || line.strip.empty?
               next
             elsif line =~ /^\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}$/
               if current_subtitle[:start_time]
@@ -41,7 +41,6 @@ module Appydave
             else
               current_subtitle[:text] += ' ' unless current_subtitle[:text].empty?
               current_subtitle[:text] += line.strip
-              current_subtitle[:end_time] = current_subtitle[:end_time]
             end
           end
 
@@ -70,7 +69,7 @@ module Appydave
             normalized_content << (index + 1).to_s
             normalized_content << "#{subtitle[:start_time]} --> #{subtitle[:end_time]}"
             normalized_content << subtitle[:text]
-            normalized_content << ""
+            normalized_content << ''
           end
 
           normalized_content.join("\n")

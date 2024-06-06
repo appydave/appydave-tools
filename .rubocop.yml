@@ -124,12 +124,15 @@ Metrics/AbcSize:
   Max: 25
   Exclude:
     - "bin/*"
+    - "lib/appydave/tools/subtitle_master/clean.rb"
 Metrics/CyclomaticComplexity:
   Exclude:
     - "**/models/**/*"
     - "lib/appydave/tools/bank_reconciliation/clean/mapper.rb"
+    - "lib/appydave/tools/subtitle_master/clean.rb"
 Metrics/PerceivedComplexity:
   Exclude:
     - "**/models/**/*"
+    - "lib/appydave/tools/subtitle_master/clean.rb"
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
