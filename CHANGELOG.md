@@ -1,3 +1,10 @@
+# [0.9.0](https://github.com/klueless-io/appydave-tools/compare/v0.8.0...v0.9.0) (2024-06-07)
+
+
+### Features
+
+* youtube manageger -> getvideo by id, detail/content report ([1ad0f6f](https://github.com/klueless-io/appydave-tools/commit/1ad0f6f7b0d56a3de31869d632591ebfbf33119e))
+
 # [0.8.0](https://github.com/klueless-io/appydave-tools/compare/v0.7.0...v0.8.0) (2024-06-06)
 
 
