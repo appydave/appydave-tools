@@ -43,11 +43,6 @@ Metrics/BlockLength:
 RSpec/ExampleLength:
   Max: 25
 
-Metrics/MethodLength:
-  Max: 25
-  Exclude:
-    - "**/spec/**/*"
-    - "bin/*.rb"
 
 Layout/LineLength:
   Max: 200
@@ -80,6 +75,8 @@ Naming/MethodParameterName:
 Style/EmptyMethod:    
   Exclude:
     - "**/spec/**/*"
+Style/EmptyFile:
+  Enabled: false
 Metrics/ParameterLists:
   Exclude:
     - "**/spec/**/*"
@@ -120,19 +117,27 @@ RSpec/DescribeClass:
 RSpec/PendingWithoutReason:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 Metrics/AbcSize:
   Max: 25
   Exclude:
     - "bin/*"
-    - "lib/appydave/tools/subtitle_master/clean.rb"
+    - "**/spec/**/*"
+    - "lib/appydave/**/*.rb"
 Metrics/CyclomaticComplexity:
   Exclude:
-    - "**/models/**/*"
-    - "lib/appydave/tools/bank_reconciliation/clean/mapper.rb"
-    - "lib/appydave/tools/subtitle_master/clean.rb"
+    - "**/spec/**/*"
+    - "lib/appydave/**/*.rb"
 Metrics/PerceivedComplexity:
   Exclude:
-    - "**/models/**/*"
-    - "lib/appydave/tools/subtitle_master/clean.rb"
-RSpec/MultipleMemoizedHelpers:
-  Enabled: false
+    - "**/spec/**/*"
+    - "lib/appydave/**/*.rb"
+
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - "**/spec/**/*"
+    - "bin/*.rb"
+    - "lib/appydave/**/*.rb"

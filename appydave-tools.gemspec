@@ -42,8 +42,13 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'clipboard', '~> 1'
   spec.add_dependency 'csv', '~> 3'
   spec.add_dependency 'dotenv', '~> 3'
+  spec.add_dependency 'google-api-client', '~> 0.53' # open code: gemo google-api-client
   spec.add_dependency 'k_log', '~> 0'
   spec.add_dependency 'ruby-openai', '~> 7'
+  # spec.add_dependency 'signet'
+  spec.add_dependency 'googleauth'
+  spec.add_dependency 'webrick'
+
   # spec.add_dependency 'k_type', '~> 0'
   # spec.add_dependency 'k_util', '~> 0'
 end

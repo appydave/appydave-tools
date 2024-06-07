@@ -8,9 +8,17 @@ require 'open3'
 require 'openai'
 require 'optparse'
 require 'k_log'
+
+require 'google/apis/youtube_v3'
+require 'googleauth'
+require 'googleauth/stores/file_token_store'
+require 'webrick'
+
 require 'pry'
 
 require 'appydave/tools/version'
+require 'appydave/tools/indifferent_access_hash'
+
 require 'appydave/tools/gpt_context/file_collector'
 
 require 'appydave/tools/configuration/openai'
@@ -27,6 +35,12 @@ require 'appydave/tools/bank_reconciliation/clean/mapper'
 require 'appydave/tools/bank_reconciliation/models/transaction'
 
 require 'appydave/tools/subtitle_master/clean'
+
+require 'appydave/tools/youtube_manager/youtube_base'
+require 'appydave/tools/youtube_manager/authorization'
+require 'appydave/tools/youtube_manager/get_video'
+require 'appydave/tools/youtube_manager/reports/video_details_report'
+require 'appydave/tools/youtube_manager/reports/video_content_report'
 
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = File.expand_path('~/.config/appydave')
