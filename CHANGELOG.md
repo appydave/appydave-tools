@@ -1,3 +1,12 @@
+## [0.9.2](https://github.com/klueless-io/appydave-tools/compare/v0.9.1...v0.9.2) (2024-06-11)
+
+
+### Bug Fixes
+
+* check for ci errors with openai ([2a9d549](https://github.com/klueless-io/appydave-tools/commit/2a9d549eb95246568ca54c1ec0fb9735cc26cac9))
+* prepare openai for CI testing ([09c0d5a](https://github.com/klueless-io/appydave-tools/commit/09c0d5a998d00abb52eb3f09125bb955af1917d9))
+* prepare openai for CI testing [#2](https://github.com/klueless-io/appydave-tools/issues/2) ([82247fc](https://github.com/klueless-io/appydave-tools/commit/82247fc2f421bd88859d25b0fbe88493b6e6d87e))
+
 ## [0.9.1](https://github.com/klueless-io/appydave-tools/compare/v0.9.0...v0.9.1) (2024-06-11)
 
 
