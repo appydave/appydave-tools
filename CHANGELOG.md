@@ -1,3 +1,10 @@
+## [0.9.1](https://github.com/klueless-io/appydave-tools/compare/v0.9.0...v0.9.1) (2024-06-11)
+
+
+### Bug Fixes
+
+* youtube manager update console output ([c06c6cb](https://github.com/klueless-io/appydave-tools/commit/c06c6cb64f14cb0319c918cb6e1f4e65acd41f83))
+
 # [0.9.0](https://github.com/klueless-io/appydave-tools/compare/v0.8.0...v0.9.0) (2024-06-07)
 
 
