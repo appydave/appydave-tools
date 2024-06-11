@@ -17,14 +17,12 @@ Appydave::Tools::Configuration::Config.set_default do |config|
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
 end
 
-
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/vcr_cassettes'
   config.hook_into :webmock
   config.configure_rspec_metadata!
   config.allow_http_connections_when_no_cassette = true
 end
-
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -41,7 +39,7 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.before(:each) do
+  config.before do
     if ENV['TOOLS_ENABLED'] == 'true'
       # Can turn on if tools enabled flag is active, this is a manual flag that you can set in RSpec context/describe block
       WebMock.allow_net_connect!
