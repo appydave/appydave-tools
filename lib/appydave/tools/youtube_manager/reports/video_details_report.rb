@@ -26,8 +26,8 @@ module Appydave
             log.kv 'License', data[:license]
             log.kv 'Recording Location', data[:recording_location]
             log.kv 'Recording Date', data[:recording_date]
-            log.kv 'Tags', data[:tags].join(', ')
-            log.kv data[:description][0..100]
+            log.kv 'Tags', data[:tags]&.join(', ')
+            log.kv 'Description', data[:description][0..100]
           end
         end
       end

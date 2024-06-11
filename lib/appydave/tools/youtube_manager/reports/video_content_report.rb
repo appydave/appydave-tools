@@ -15,7 +15,7 @@ module Appydave
             log.kv 'View Count', data[:view_count]
             log.kv 'Like Count', data[:like_count]
             log.kv 'Dislike Count', data[:dislike_count]
-            log.kv 'Tags', data[:tags].join(', ')
+            log.kv 'Tags', data[:tags]&.join(', ')
             log.line
             puts data[:description]
             log.line
