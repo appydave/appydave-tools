@@ -75,8 +75,17 @@ Naming/MethodParameterName:
 Style/EmptyMethod:    
   Exclude:
     - "**/spec/**/*"
-Style/EmptyFile:
+Lint/EmptyFile:
   Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Exclude:
+    - "**/spec/**/*"
+
+RSpec/SpecFilePathSuffix:
+  Exclude:
+    - "**/spec/**/*"
+
 Metrics/ParameterLists:
   Exclude:
     - "**/spec/**/*"
@@ -97,10 +106,6 @@ Layout/SpaceBeforeComma:
 # My Preferences - End
 
 # RSpec Cops
-RSpec/FilePath:
-  Exclude:
-    - "**/spec/**/*"
-
 RSpec/NamedSubject:
   Exclude:
     - "**/spec/**/*"
