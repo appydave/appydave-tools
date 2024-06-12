@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::IndifferentAccessHash do
+RSpec.describe Appydave::Tools::Types::IndifferentAccessHash do
   subject { instance }
 
   let(:instance) { described_class.new(data) }

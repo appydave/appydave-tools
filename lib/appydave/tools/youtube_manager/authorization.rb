@@ -11,7 +11,8 @@ module Appydave
 
         SCOPE = [
           'https://www.googleapis.com/auth/youtube.readonly',
-          'https://www.googleapis.com/auth/youtube'
+          'https://www.googleapis.com/auth/youtube',
+          'https://www.googleapis.com/auth/youtube.force-ssl'
         ].freeze
 
         def self.authorize
@@ -22,11 +23,11 @@ module Appydave
           authorizer = Google::Auth::UserAuthorizer.new(client_id, SCOPE, token_store)
           user_id = 'default'
           credentials = authorizer.get_credentials(user_id)
-          credentials = wait_for_authorization(authorizer) if credentials.nil?
+          credentials = wait_for_authorization(authorizer, user_id) if credentials.nil?
           credentials
         end
 
-        def self.wait_for_authorization(authorizer)
+        def self.wait_for_authorization(authorizer, user_id)
           url = authorizer.get_authorization_url(base_url: REDIRECT_URI)
           puts 'Open the following URL in your browser and authorize the application:'
           puts url

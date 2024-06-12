@@ -8,6 +8,7 @@ require 'open3'
 require 'openai'
 require 'optparse'
 require 'k_log'
+require 'active_model'
 
 require 'google/apis/youtube_v3'
 require 'googleauth'
@@ -17,7 +18,12 @@ require 'webrick'
 require 'pry'
 
 require 'appydave/tools/version'
-require 'appydave/tools/indifferent_access_hash'
+require 'appydave/tools/types/indifferent_access_hash'
+require 'appydave/tools/types/hash_type'
+require 'appydave/tools/types/array_type'
+
+ActiveModel::Type.register(:array, Appydave::Tools::Types::ArrayType)
+ActiveModel::Type.register(:hash, Appydave::Tools::Types::HashType)
 
 require 'appydave/tools/gpt_context/file_collector'
 
@@ -38,6 +44,9 @@ require 'appydave/tools/bank_reconciliation/models/transaction'
 require 'appydave/tools/subtitle_master/clean'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
+
+require 'appydave/tools/youtube_manager/models/youtube_details'
+require 'appydave/tools/youtube_manager/models/captions'
 require 'appydave/tools/youtube_manager/youtube_base'
 require 'appydave/tools/youtube_manager/authorization'
 require 'appydave/tools/youtube_manager/get_video'

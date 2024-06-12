@@ -39,6 +39,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   # spec.extensions    = ['ext/appydave_tools/extconf.rb']
 
+  spec.add_dependency 'activemodel', '~> 7'
   spec.add_dependency 'clipboard', '~> 1'
   spec.add_dependency 'csv', '~> 3'
   spec.add_dependency 'dotenv', '~> 3'

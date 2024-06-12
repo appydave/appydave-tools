@@ -10,14 +10,14 @@ module Appydave
 
           def print(data)
             # log.heading 'Video Details Report'
-            log.subheading data[:title]
-            log.kv 'Published At', data[:published_at]
-            log.kv 'View Count', data[:view_count]
-            log.kv 'Like Count', data[:like_count]
-            log.kv 'Dislike Count', data[:dislike_count]
-            log.kv 'Tags', data[:tags]&.join(', ')
+            log.subheading data.title
+            log.kv 'Published At', data.published_at
+            log.kv 'View Count', data.view_count
+            log.kv 'Like Count', data.like_count
+            log.kv 'Dislike Count', data.dislike_count
+            log.kv 'Tags', data.tags.join(', ')
             log.line
-            puts data[:description]
+            puts data.description
             log.line
           end
         end

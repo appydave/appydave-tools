@@ -7,6 +7,8 @@ require 'appydave/tools'
 
 # Process command line arguments for YouTubeVideoManager operations
 class YouTubeVideoManagerCLI
+  include KLog::Logging
+
   def initialize
     @commands = {
       'get' => method(:fetch_video_details)
@@ -30,14 +32,19 @@ class YouTubeVideoManagerCLI
     options = parse_options(args, 'get')
     manager = Appydave::Tools::YouTubeManager::GetVideo.new
     manager.get(options[:video_id])
-    # json = JSON.pretty_generate(details)
-    # puts json
 
-    # report = Appydave::Tools::YouTubeManager::Reports::VideoDetailsReport.new
-    # report.print(manager.data)
+    if manager.video?
+      # json = JSON.pretty_generate(details)
+      # puts json
 
-    report = Appydave::Tools::YouTubeManager::Reports::VideoContentReport.new
-    report.print(manager.data)
+      # report = Appydave::Tools::YouTubeManager::Reports::VideoDetailsReport.new
+      # report.print(manager.data)
+
+      report = Appydave::Tools::YouTubeManager::Reports::VideoContentReport.new
+      report.print(manager.data)
+    else
+      log.error "Video not found! Maybe it's private or deleted. ID: #{options[:video_id]}"
+    end
   end
 
   def parse_options(args, command)

@@ -7,13 +7,25 @@ module Appydave
       class GetVideo < YouTubeBase
         attr_reader :video_id
         attr_reader :data
-        attr_reader :video
 
         def get(video_id)
+          @data = nil
           @video_id = video_id
           response = @service.list_videos('snippet,contentDetails,status,statistics', id: video_id)
-          @video = response.items.first
+          video = response.items.first
 
+          return unless video
+
+          build_data(video)
+        end
+
+        def video?
+          !data.nil?
+        end
+
+        private
+
+        def build_data(video)
           data = {
             id: video.id,
             title: video.snippet.title,
@@ -37,8 +49,56 @@ module Appydave
             caption: video.content_details.caption,
             licensed_content: video.content_details.licensed_content
           }
+          # HAVE NOT FIGURED OUT THE PERMISSION ISSUE WITH THIS YET
+          # captions: get_captions(video.id) # Fetch captions and associate them
+          @data = Appydave::Tools::YouTubeManager::Models::YouTubeDetails.new(data)
+        end
 
-          @data = Appydave::Tools::IndifferentAccessHash.new(data)
+        def get_captions(video_id)
+          captions_response = @service.list_captions('snippet', video_id)
+          captions_response.items.map do |caption|
+            puts "Caption ID: #{caption.id}"
+            puts "Language: #{caption.snippet.language}"
+            puts "Status: #{caption.snippet.status}"
+            puts "Track Kind: #{caption.snippet.track_kind}"
+            puts "Name: #{caption.snippet.name}"
+            puts "Is Auto-Synced: #{caption.snippet.is_auto_synced}"
+            puts "Is CC: #{caption.snippet.is_cc}"
+            puts "Is Draft: #{caption.snippet.is_draft}"
+            puts "Last Updated: #{caption.snippet.last_updated}"
+
+            next unless caption.snippet.status == 'serving'
+
+            caption_data = {
+              caption_id: caption.id,
+              language: caption.snippet.language,
+              name: caption.snippet.name,
+              status: caption.snippet.status,
+              content: download_caption(caption)
+            }
+            caption_data
+          end.compact
+        end
+
+        def download_caption(caption)
+          content = ''
+          formats = %w[srv1 vtt srt ttml] # Try multiple formats to find a compatible one
+          formats.each do |format|
+            break if content.present?
+
+            begin
+              @service.download_caption(caption.id, tfmt: format) do |result, error|
+                if error.nil?
+                  content = result
+                else
+                  puts "An error occurred while downloading caption #{caption.id} with format #{format}: #{error.message}"
+                end
+              end
+            rescue Google::Apis::ClientError => e
+              puts "An error occurred while downloading caption #{caption.id} with format #{format}: #{e.message}"
+            end
+          end
+          content
         end
       end
     end
