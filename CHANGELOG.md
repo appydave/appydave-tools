@@ -1,3 +1,10 @@
+## [0.9.4](https://github.com/klueless-io/appydave-tools/compare/v0.9.3...v0.9.4) (2024-06-12)
+
+
+### Bug Fixes
+
+* move youtube management data to activemodel ([12d3351](https://github.com/klueless-io/appydave-tools/commit/12d3351b2243c436d0f59e2f2822d9d82cc6ebd6))
+
 ## [0.9.3](https://github.com/klueless-io/appydave-tools/compare/v0.9.2...v0.9.3) (2024-06-12)
 
 
