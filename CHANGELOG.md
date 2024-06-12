@@ -1,3 +1,11 @@
+## [0.9.3](https://github.com/klueless-io/appydave-tools/compare/v0.9.2...v0.9.3) (2024-06-12)
+
+
+### Bug Fixes
+
+* preperation fo the youtube automation tool ([42c1e1d](https://github.com/klueless-io/appydave-tools/commit/42c1e1d3a4ea53491b72140bbf35850e41ce0f1c))
+* update rubocop version number ([b64739d](https://github.com/klueless-io/appydave-tools/commit/b64739d46a5b3ea6177c2f7512c720b6ed4e6257))
+
 ## [0.9.2](https://github.com/klueless-io/appydave-tools/compare/v0.9.1...v0.9.2) (2024-06-11)
 
 
