@@ -8,8 +8,8 @@
 # }
 
 RSpec.describe Appydave::Tools::Configuration::Models::ChannelsConfig do
-  let(:channels_config) { described_class.new }
   let(:temp_folder) { Dir.mktmpdir }
+  let(:channels_config) { described_class.new }
   let(:config_file) { File.join(temp_folder, 'channels.json') }
   let(:config_data) do
     {

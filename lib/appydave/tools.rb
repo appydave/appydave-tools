@@ -28,6 +28,7 @@ require 'appydave/tools/configuration/models/config_base'
 require 'appydave/tools/configuration/models/settings_config'
 require 'appydave/tools/configuration/models/bank_reconciliation_config'
 require 'appydave/tools/configuration/models/channels_config'
+require 'appydave/tools/configuration/models/youtube_automation_config'
 require 'appydave/tools/name_manager/project_name'
 require 'appydave/tools/bank_reconciliation/clean/clean_transactions'
 require 'appydave/tools/bank_reconciliation/clean/read_transactions'
@@ -36,6 +37,7 @@ require 'appydave/tools/bank_reconciliation/models/transaction'
 
 require 'appydave/tools/subtitle_master/clean'
 
+require 'appydave/tools/youtube_automation/gpt_agent'
 require 'appydave/tools/youtube_manager/youtube_base'
 require 'appydave/tools/youtube_manager/authorization'
 require 'appydave/tools/youtube_manager/get_video'
@@ -47,6 +49,7 @@ Appydave::Tools::Configuration::Config.set_default do |config|
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
   config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
+  config.register(:youtube_automation, Appydave::Tools::Configuration::Models::YoutubeAutomationConfig)
 end
 
 module Appydave

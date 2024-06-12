@@ -15,6 +15,7 @@ module Appydave
 
           def initialize
             @config_path = File.join(Config.config_path, "#{config_name}.json")
+            puts "Config path: #{config_path}"
             @data = load
           end
 
