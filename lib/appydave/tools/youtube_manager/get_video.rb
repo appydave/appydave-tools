@@ -5,6 +5,8 @@ module Appydave
     module YouTubeManager
       # Manage YouTube video details
       class GetVideo < YouTubeBase
+        include KLog::Logging
+
         attr_reader :video_id
         attr_reader :data
 

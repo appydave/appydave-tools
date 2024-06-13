@@ -23,3 +23,6 @@ module Appydave
     end
   end
 end
+
+ActiveModel::Type.register(:hash, Appydave::Tools::Types::HashType)
+

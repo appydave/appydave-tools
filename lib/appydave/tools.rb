@@ -22,8 +22,12 @@ require 'appydave/tools/types/indifferent_access_hash'
 require 'appydave/tools/types/hash_type'
 require 'appydave/tools/types/array_type'
 
-ActiveModel::Type.register(:array, Appydave::Tools::Types::ArrayType)
-ActiveModel::Type.register(:hash, Appydave::Tools::Types::HashType)
+require 'appydave/tools/cli_actions/base_action'
+
+# May want to move this into the tools location
+require 'appydave/tools/cli_actions/prompt_completion_action'
+require 'appydave/tools/cli_actions/get_video_action'
+require 'appydave/tools/cli_actions/update_video_action'
 
 require 'appydave/tools/gpt_context/file_collector'
 

@@ -23,3 +23,5 @@ module Appydave
     end
   end
 end
+
+ActiveModel::Type.register(:array, Appydave::Tools::Types::ArrayType)
