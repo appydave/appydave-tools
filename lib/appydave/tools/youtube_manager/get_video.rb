@@ -26,6 +26,8 @@ module Appydave
         private
 
         def build_data(video)
+          category_title = get_category_title(video.snippet.category_id)
+
           data = {
             id: video.id,
             title: video.snippet.title,
@@ -33,6 +35,13 @@ module Appydave
             published_at: video.snippet.published_at,
             channel_id: video.snippet.channel_id,
             channel_title: video.snippet.channel_title,
+            category_id: video.snippet.category_id,
+            tags: video.snippet.tags,
+            thumbnails: video.snippet.thumbnails.to_h,
+            default_audio_language: video.snippet.default_audio_language,
+            default_language: video.snippet.default_language,
+            live_broadcast_content: video.snippet.live_broadcast_content,
+            category_title: category_title,
             view_count: video.statistics.view_count,
             like_count: video.statistics.like_count,
             dislike_count: video.statistics.dislike_count,
@@ -42,30 +51,35 @@ module Appydave
             license: video.status.license,
             recording_location: video.recording_details&.location,
             recording_date: video.recording_details&.recording_date,
-            tags: video.snippet.tags,
-            thumbnails: video.snippet.thumbnails.to_h,
             duration: video.content_details.duration,
             definition: video.content_details.definition,
             caption: video.content_details.caption,
             licensed_content: video.content_details.licensed_content
           }
+          get_captions(video.id) # Fetch captions and associate them
           # HAVE NOT FIGURED OUT THE PERMISSION ISSUE WITH THIS YET
           # captions: get_captions(video.id) # Fetch captions and associate them
           @data = Appydave::Tools::YouTubeManager::Models::YouTubeDetails.new(data)
         end
 
+        def get_category_title(category_id)
+          response = @service.list_video_categories('snippet', id: category_id)
+          category = response.items.first
+          category&.snippet&.title
+        end
+
         def get_captions(video_id)
-          captions_response = @service.list_captions('snippet', video_id)
+          captions_response = @service.list_captions('id,snippet', video_id)
           captions_response.items.map do |caption|
-            puts "Caption ID: #{caption.id}"
-            puts "Language: #{caption.snippet.language}"
-            puts "Status: #{caption.snippet.status}"
-            puts "Track Kind: #{caption.snippet.track_kind}"
-            puts "Name: #{caption.snippet.name}"
-            puts "Is Auto-Synced: #{caption.snippet.is_auto_synced}"
-            puts "Is CC: #{caption.snippet.is_cc}"
-            puts "Is Draft: #{caption.snippet.is_draft}"
-            puts "Last Updated: #{caption.snippet.last_updated}"
+            # puts "Caption ID: #{caption.id}"
+            # puts "Language: #{caption.snippet.language}"
+            # puts "Status: #{caption.snippet.status}"
+            # puts "Track Kind: #{caption.snippet.track_kind}"
+            # puts "Name: #{caption.snippet.name}"
+            # puts "Is Auto-Synced: #{caption.snippet.is_auto_synced}"
+            # puts "Is CC: #{caption.snippet.is_cc}"
+            # puts "Is Draft: #{caption.snippet.is_draft}"
+            # puts "Last Updated: #{caption.snippet.last_updated}"
 
             next unless caption.snippet.status == 'serving'
 
@@ -83,6 +97,7 @@ module Appydave
         def download_caption(caption)
           content = ''
           formats = %w[srv1 vtt srt ttml] # Try multiple formats to find a compatible one
+          success = false
           formats.each do |format|
             break if content.present?
 
@@ -90,14 +105,18 @@ module Appydave
               @service.download_caption(caption.id, tfmt: format) do |result, error|
                 if error.nil?
                   content = result
-                else
-                  puts "An error occurred while downloading caption #{caption.id} with format #{format}: #{error.message}"
+                  success = true
+                  # else
+                  # log.info "An error occurred while downloading caption #{caption.id} with format #{format}: #{error.message}"
                 end
               end
             rescue Google::Apis::ClientError => e
-              puts "An error occurred while downloading caption #{caption.id} with format #{format}: #{e.message}"
+              log.error "An error occurred while downloading caption #{caption.id} with format #{format}: #{e.message}"
             end
           end
+
+          log.error 'Error occurred while downloading captions, make sure you have the correct permissions.' unless success
+
           content
         end
       end

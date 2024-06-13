@@ -50,6 +50,7 @@ require 'appydave/tools/youtube_manager/models/captions'
 require 'appydave/tools/youtube_manager/youtube_base'
 require 'appydave/tools/youtube_manager/authorization'
 require 'appydave/tools/youtube_manager/get_video'
+require 'appydave/tools/youtube_manager/update_video'
 require 'appydave/tools/youtube_manager/reports/video_details_report'
 require 'appydave/tools/youtube_manager/reports/video_content_report'
 
