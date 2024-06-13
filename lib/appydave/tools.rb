@@ -21,6 +21,7 @@ require 'appydave/tools/version'
 require 'appydave/tools/types/indifferent_access_hash'
 require 'appydave/tools/types/hash_type'
 require 'appydave/tools/types/array_type'
+require 'appydave/tools/types/base_model'
 
 require 'appydave/tools/cli_actions/base_action'
 
