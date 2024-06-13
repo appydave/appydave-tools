@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/klueless-io/appydave-tools/compare/v0.10.0...v0.10.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* add base model ([b2952d6](https://github.com/klueless-io/appydave-tools/commit/b2952d661c48dd7f8b7f384d365010ef89713758))
+
 # [0.10.0](https://github.com/klueless-io/appydave-tools/compare/v0.9.5...v0.10.0) (2024-06-13)
 
 
