@@ -3,6 +3,7 @@
 module Appydave
   module Tools
     module CliActions
+      # Action to update a YouTube video metadata (title, description, tags, category)
       class UpdateVideoAction < BaseAction
         protected
 
@@ -15,10 +16,10 @@ module Appydave
         end
 
         def validate_options(options)
-          unless options[:video_id]
-            puts 'Missing required options: --video-id. Use -h for help.'
-            exit
-          end
+          return if options[:video_id]
+
+          puts 'Missing required options: --video-id. Use -h for help.'
+          exit
         end
 
         def execute(options)

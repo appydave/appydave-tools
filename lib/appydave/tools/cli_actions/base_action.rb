@@ -3,6 +3,7 @@
 module Appydave
   module Tools
     module CliActions
+      # Base class for CLI actions
       class BaseAction
         def action(args)
           options = parse_options(args)

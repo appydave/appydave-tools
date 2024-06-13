@@ -5,6 +5,7 @@ require 'openai'
 module Appydave
   module Tools
     module CliActions
+      # Action to run a completion prompt against the model
       class PromptCompletionAction < BaseAction
         DEFAULT_MODEL = 'gpt-4o'
         DEFAULT_PLATFORM = 'openai'
@@ -27,7 +28,7 @@ module Appydave
           end
 
           if options[:key_value]
-            key_value_pairs = options[:key_value].split(',').map { |pair| pair.split('=') }.to_h
+            key_value_pairs = options[:key_value].split(',').to_h { |pair| pair.split('=') }
             options[:key_value] = key_value_pairs
           else
             options[:key_value] = {}
@@ -47,7 +48,6 @@ module Appydave
           puts "Prompt: #{prompt_text}"
           puts "Model: #{model}"
           puts "Key-Value Pairs: #{key_value_pairs}"
-          
 
           # USE Library class to run this type of code
           # client = OpenAI::Client.new(api_key: ENV['OPENAI_API_KEY'])

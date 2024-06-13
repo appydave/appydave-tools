@@ -25,4 +25,3 @@ module Appydave
 end
 
 ActiveModel::Type.register(:hash, Appydave::Tools::Types::HashType)
-
