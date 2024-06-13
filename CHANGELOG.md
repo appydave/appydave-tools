@@ -1,3 +1,15 @@
+# [0.10.0](https://github.com/klueless-io/appydave-tools/compare/v0.9.5...v0.10.0) (2024-06-13)
+
+
+### Bug Fixes
+
+* cops ([ce8e657](https://github.com/klueless-io/appydave-tools/commit/ce8e657e4a167e7327d86782096bcf5e0a8e226e))
+
+
+### Features
+
+* starting the prompt tools component ([089043b](https://github.com/klueless-io/appydave-tools/commit/089043bca08dfb79a1b5f3741b55bb66f808adae))
+
 ## [0.9.5](https://github.com/klueless-io/appydave-tools/compare/v0.9.4...v0.9.5) (2024-06-13)
 
 
