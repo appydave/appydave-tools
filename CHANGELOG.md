@@ -1,3 +1,10 @@
+## [0.9.5](https://github.com/klueless-io/appydave-tools/compare/v0.9.4...v0.9.5) (2024-06-13)
+
+
+### Bug Fixes
+
+* implement update video command ([c46473d](https://github.com/klueless-io/appydave-tools/commit/c46473dc550e34c041418adfd52444014e094917))
+
 ## [0.9.4](https://github.com/klueless-io/appydave-tools/compare/v0.9.3...v0.9.4) (2024-06-12)
 
 
