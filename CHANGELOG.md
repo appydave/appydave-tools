@@ -1,3 +1,10 @@
+## [0.10.3](https://github.com/klueless-io/appydave-tools/compare/v0.10.2...v0.10.3) (2024-06-17)
+
+
+### Bug Fixes
+
+* extending bank reconciliation with platform and banking mapping ([848b044](https://github.com/klueless-io/appydave-tools/commit/848b044bf4bb7c27bae6cf33aba400ab68eb105c))
+
 ## [0.10.2](https://github.com/klueless-io/appydave-tools/compare/v0.10.1...v0.10.2) (2024-06-17)
 
 
