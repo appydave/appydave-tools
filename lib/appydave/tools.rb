@@ -46,6 +46,9 @@ require 'appydave/tools/bank_reconciliation/clean/read_transactions'
 require 'appydave/tools/bank_reconciliation/clean/mapper'
 require 'appydave/tools/bank_reconciliation/models/transaction'
 
+require 'appydave/tools/prompt_tools/models/llm_info'
+require 'appydave/tools/prompt_tools/prompt_completion'
+
 require 'appydave/tools/subtitle_master/clean'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
