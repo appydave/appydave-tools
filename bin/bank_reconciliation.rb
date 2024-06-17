@@ -48,6 +48,10 @@ class BankReconciliationCLI
         options[:output] = v
       end
 
+      opts.on('-d', '--debug', 'Enable debug mode') do
+        options[:debug] = true
+      end
+
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit
@@ -58,17 +62,15 @@ class BankReconciliationCLI
     output_file = options[:output] || 'clean_transactions.csv'
     include_patterns = options[:include].empty? ? ['*'] : options[:include]
 
-    puts "Cleaning transactions with options: #{options}"
+    # puts "Cleaning transactions with options: #{options}"
 
     # Ensure the clean directory exists
     clean_dir = File.dirname(output_file)
     FileUtils.mkdir_p(clean_dir)
 
     # Initialize the CleanTransactions class and process the files
-    cleaner = Appydave::Tools::BankReconciliation::Clean::CleanTransactions.new(transaction_folder: transaction_folder)
+    cleaner = Appydave::Tools::BankReconciliation::Clean::CleanTransactions.new(transaction_folder: transaction_folder, debug: options[:debug])
     cleaner.clean_transactions(include_patterns, output_file)
-
-    puts "Cleaning transactions with options: #{options}"
   end
 
   def process_transactions(args)
@@ -76,6 +78,7 @@ class BankReconciliationCLI
     OptionParser.new do |opts|
       opts.banner = 'Usage: bank_reconciliation.rb process [options]'
       opts.on('-i', '--input FILE', 'Input CSV file with transactions') { |v| options[:input] = v }
+      opts.on('-d', '--debug', 'Enable debug mode') { |v| options[:debug] = v }
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit
@@ -96,8 +99,9 @@ class BankReconciliationCLI
       opts.on('-e', '--end DATE', 'Filter by dates less than or eqaul to DDMMYY') { |v| options[:year] = v }
       opts.on('-c', '--codes CODES', 'Filter by chart of account codes (comma-separated)') { |v| options[:codes] = v }
       opts.on('-w', '--wild TEXT', 'Wildcard text match') { |v| options[:text] = v }
-      opts.on('-d', '--display', 'Display filtered transactions in table format') { |v| options[:display] = v }
+      opts.on('-v', '--view', 'Display filtered transactions in table format') { |v| options[:display] = v }
       opts.on('-o', '--output FILE', 'Output CSV file name') { |v| options[:output] = v }
+      opts.on('-d', '--debug', 'Enable debug mode') { |v| options[:debug] = v }
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit

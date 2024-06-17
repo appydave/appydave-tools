@@ -1,0 +1,4 @@
+platform,account_name,bsb_number,account_number,transaction_date,narration,debit,credit,balance,transaction_type,coa_code,coa_match_type,source_files
+Test Bank,Test Account 1,303-111,1234567,2023-12-12,Capital Transfer,-50.00,,0.50,TFD,Transfer,equality,"[""bank-west.csv""]"
+Test Bank,Test Account 2,303-222,1234567,2023-12-11,Money going out,,70,70.50,DEP,Expense,70%,"[""bank-west.csv""]"
+Another Bank,Test Account 3,303-333,1234567,2023-12-04,Money comming in,,12,999,DEP,Income,80%,"[""bank-west.csv""]"

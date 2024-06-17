@@ -18,6 +18,7 @@ require 'webrick'
 require 'pry'
 
 require 'appydave/tools/version'
+require 'appydave/tools/debuggable'
 require 'appydave/tools/types/indifferent_access_hash'
 require 'appydave/tools/types/hash_type'
 require 'appydave/tools/types/array_type'
