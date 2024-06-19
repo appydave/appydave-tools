@@ -75,7 +75,7 @@ class BankReconciliationCLI
   end
 
   def transform(args)
-    options = {  }
+    options = {}
     OptionParser.new do |opts|
       opts.banner = 'Usage: bank_reconciliation.rb clean [options]'
 
