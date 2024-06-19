@@ -22,7 +22,7 @@ module Appydave
 
           def get_bank_account(account_number, bsb = nil)
             account_data = data['bank_accounts'].find do |account|
-              account['account_number'] == account_number && (account['bsb'].nil? || account['bsb'] == bsb)
+              account['account_number'] == account_number && (bsb.nil? || account['bsb'] == bsb)
             end
 
             BankAccount.new(account_data) if account_data
@@ -42,6 +42,28 @@ module Appydave
             log.subheading 'Bank Reconciliation - Chart of Accounts'
 
             tp chart_of_accounts, :code, :narration
+          end
+
+          def coa_to_csv
+            csv_file_path = File.join(Config.config_path, 'bank_reconciliation.chart_of_accounts.csv')
+
+            CSV.open(csv_file_path, 'w') do |csv|
+              csv << %w[code narration]
+
+              chart_of_accounts.sort_by(&:code).each do |entry|
+                csv << [entry.code, entry.narration]
+              end
+            end
+          end
+
+          def coa_csv_to_json
+            csv_file_path = File.join(Config.config_path, 'bank_reconciliation.chart_of_accounts.csv')
+
+            coa_data = CSV.read(csv_file_path, headers: true).map(&:to_h)
+
+            data['chart_of_accounts'] = coa_data
+
+            save
           end
 
           private

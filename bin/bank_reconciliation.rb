@@ -14,6 +14,7 @@ class BankReconciliationCLI
   def initialize
     @commands = {
       'clean' => method(:clean_transactions),
+      'transform' => method(:transform),
       'process' => method(:process_transactions),
       'filter' => method(:filter_transactions)
     }
@@ -71,6 +72,28 @@ class BankReconciliationCLI
     # Initialize the CleanTransactions class and process the files
     cleaner = Appydave::Tools::BankReconciliation::Clean::CleanTransactions.new(transaction_folder: transaction_folder, debug: options[:debug])
     cleaner.clean_transactions(include_patterns, output_file)
+  end
+
+  def transform(args)
+    options = {  }
+    OptionParser.new do |opts|
+      opts.banner = 'Usage: bank_reconciliation.rb clean [options]'
+
+      opts.on('-c', '--to-csv', 'Write chart of accounts JSON to CSV') { options[:to_csv] = true }
+      opts.on('-j', '--to-json', 'Write chart of accounts CSV to JSON') { options[:to_json] = true }
+
+      opts.on('-d', '--debug', 'Enable debug mode') do
+        options[:debug] = true
+      end
+
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+    end.parse!(args)
+
+    Appydave::Tools::Configuration::Models::BankReconciliationConfig.new.coa_to_csv if options[:to_csv]
+    Appydave::Tools::Configuration::Models::BankReconciliationConfig.new.coa_csv_to_json if options[:to_json]
   end
 
   def process_transactions(args)
