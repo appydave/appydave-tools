@@ -16,7 +16,7 @@ module Appydave
         attr_reader :clipboard
 
         def initialize(options = {})
-          configure(options)
+          setup_options(options)
 
           validate_options
         end
@@ -44,7 +44,7 @@ module Appydave
 
         private
 
-        def configure(options)
+        def setup_options(options)
           @prompt = options.delete(:prompt)
           @prompt_file = options.delete(:prompt_file)
           @llm = Appydave::Tools::PromptTools::Models::LlmInfo.new(

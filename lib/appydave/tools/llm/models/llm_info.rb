@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module PromptTools
+    module Llm
       module Models
         # What LLM are we using?
         class LlmInfo < Appydave::Tools::Types::BaseModel

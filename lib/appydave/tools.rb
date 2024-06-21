@@ -24,6 +24,9 @@ require 'appydave/tools/types/hash_type'
 require 'appydave/tools/types/array_type'
 require 'appydave/tools/types/base_model'
 
+require 'appydave/tools/llm/models/llm_info'
+require 'appydave/tools/llm/openai_completion'
+
 require 'appydave/tools/cli_actions/base_action'
 
 # May want to move this into the tools location
@@ -47,7 +50,6 @@ require 'appydave/tools/bank_reconciliation/clean/read_transactions'
 require 'appydave/tools/bank_reconciliation/clean/mapper'
 require 'appydave/tools/bank_reconciliation/models/transaction'
 
-require 'appydave/tools/prompt_tools/models/llm_info'
 require 'appydave/tools/prompt_tools/prompt_completion'
 
 require 'appydave/tools/subtitle_master/clean'
