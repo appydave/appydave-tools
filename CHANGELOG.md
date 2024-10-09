@@ -1,3 +1,16 @@
+## [0.10.4](https://github.com/klueless-io/appydave-tools/compare/v0.10.3...v0.10.4) (2024-10-09)
+
+
+### Bug Fixes
+
+* cleanup code base before building documenation ([e473c44](https://github.com/klueless-io/appydave-tools/commit/e473c44546d8f0f5a35461fae263c348e7e2c58f))
+* cleanup code base before building documenation ([38d8fb4](https://github.com/klueless-io/appydave-tools/commit/38d8fb46929e7c055308aa0b918c18a56fcd5842))
+* cleanup code base before building documenation ([8dad12a](https://github.com/klueless-io/appydave-tools/commit/8dad12aadb9952f0174df45caed91c9e96070294))
+* cleanup code base before building documenation ([eddfcc7](https://github.com/klueless-io/appydave-tools/commit/eddfcc78e39c93bfd4de6482690cc66cf90cc54a))
+* extend prompt tools ([a628d08](https://github.com/klueless-io/appydave-tools/commit/a628d08fcdda521b7d148f0bab3261b879fca07d))
+* extending bank reconciliation ([b435a20](https://github.com/klueless-io/appydave-tools/commit/b435a20237ef40a8a7d0a4f365ccd3eafdfcce1a))
+* extending bank reconciliation ([b7878df](https://github.com/klueless-io/appydave-tools/commit/b7878dff0bca4ff1a3af7db19c280a8c245b6c3b))
+
 ## [0.10.3](https://github.com/klueless-io/appydave-tools/compare/v0.10.2...v0.10.3) (2024-06-17)
 
 
