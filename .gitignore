@@ -47,3 +47,5 @@ Gemfile.lock
 
 # ByeBug history
 .byebug_history
+
+**/deprecated/*
