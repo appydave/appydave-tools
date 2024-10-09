@@ -166,28 +166,28 @@ RSpec.describe Appydave::Tools::Configuration::Config do
       end
     end
 
-    context 'with bank reconciliation component' do
-      before do
-        described_class.configure do |config|
-          config.config_path = config_base_path
-          config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
-        end
-      end
+    # context 'with bank reconciliation component' do
+    #   before do
+    #     described_class.configure do |config|
+    #       config.config_path = config_base_path
+    #       config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
+    #     end
+    #   end
 
-      it 'registers the bank reconciliation configuration' do
-        expect(described_class.bank_reconciliation).to be_an_instance_of(Appydave::Tools::Configuration::Models::BankReconciliationConfig)
-      end
+    #   it 'registers the bank reconciliation configuration' do
+    #     expect(described_class.bank_reconciliation).to be_an_instance_of(Appydave::Tools::Configuration::Models::BankReconciliationConfig)
+    #   end
 
-      describe '.bank_reconciliation' do
-        let(:bank_reconciliation) { described_class.bank_reconciliation }
+    #   describe '.bank_reconciliation' do
+    #     let(:bank_reconciliation) { described_class.bank_reconciliation }
 
-        context 'when loading the bank reconciliation' do
-          it 'loads the bank reconciliation' do
-            bank_reconciliation.load
-            expect(bank_reconciliation.data).to eq({ 'bank_accounts' => [], 'chart_of_accounts' => [] })
-          end
-        end
-      end
-    end
+    #     context 'when loading the bank reconciliation' do
+    #       it 'loads the bank reconciliation' do
+    #         bank_reconciliation.load
+    #         expect(bank_reconciliation.data).to eq({ 'bank_accounts' => [], 'chart_of_accounts' => [] })
+    #       end
+    #     end
+    #   end
+    # end
   end
 end

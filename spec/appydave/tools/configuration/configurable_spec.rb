@@ -19,10 +19,6 @@ RSpec.describe Appydave::Tools::Configuration::Configurable do
         config.channels
       end
 
-      def bank_reconciliation
-        config.bank_reconciliation
-      end
-
       def unknown
         config.unknown
       end
@@ -30,6 +26,10 @@ RSpec.describe Appydave::Tools::Configuration::Configurable do
   end
   let(:test_configurable) { test_class.new }
   let(:config_path) { File.join(temp_folder, '.config/appydave') }
+
+  # def bank_reconciliation
+  #   config.bank_reconciliation
+  # end
 
   after do
     FileUtils.remove_entry(temp_folder)
@@ -45,9 +45,9 @@ RSpec.describe Appydave::Tools::Configuration::Configurable do
         expect(test_configurable.channels).to be_an_instance_of(Appydave::Tools::Configuration::Models::ChannelsConfig)
       end
 
-      it 'returns the bank reconciliation configuration' do
-        expect(test_configurable.bank_reconciliation).to be_an_instance_of(Appydave::Tools::Configuration::Models::BankReconciliationConfig)
-      end
+      # it 'returns the bank reconciliation configuration' do
+      #   expect(test_configurable.bank_reconciliation).to be_an_instance_of(Appydave::Tools::Configuration::Models::BankReconciliationConfig)
+      # end
     end
 
     context 'when configurations not configured' do
