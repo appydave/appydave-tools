@@ -1,3 +1,10 @@
+## [0.11.1](https://github.com/klueless-io/appydave-tools/compare/v0.11.0...v0.11.1) (2024-10-16)
+
+
+### Bug Fixes
+
+* gpt context documentation ([808fccd](https://github.com/klueless-io/appydave-tools/commit/808fccdea10c472522da02c8af7f9a2c9eaf361a))
+
 # [0.11.0](https://github.com/klueless-io/appydave-tools/compare/v0.10.4...v0.11.0) (2024-10-16)
 
 
