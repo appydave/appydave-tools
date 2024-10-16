@@ -1,3 +1,10 @@
+## [0.11.5](https://github.com/klueless-io/appydave-tools/compare/v0.11.4...v0.11.5) (2024-10-16)
+
+
+### Bug Fixes
+
+* support expanded path ([42e6c77](https://github.com/klueless-io/appydave-tools/commit/42e6c7794529adc9e1be8324f8f981e782347669))
+
 ## [0.11.4](https://github.com/klueless-io/appydave-tools/compare/v0.11.3...v0.11.4) (2024-10-16)
 
 
