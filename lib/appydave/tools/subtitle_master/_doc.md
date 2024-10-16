@@ -1,6 +1,11 @@
 # Subtitle Master
 
-[ChatGPT](https://chatgpt.com/c/f80dfca5-8168-4561-b5c6-8efed8672a88)
+Older Chat
+- https://chatgpt.com/c/f80dfca5-8168-4561-b5c6-8efed8672a88
+
+New Features
+- https://chatgpt.com/c/670470b8-a0c4-8002-9678-d4d69c680481
+
 
 ## SubtitleMaster - Clean Component
 
