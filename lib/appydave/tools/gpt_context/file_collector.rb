@@ -11,7 +11,7 @@ module Appydave
           @include_patterns = options.include_patterns
           @exclude_patterns = options.exclude_patterns
           @format = options.format
-          @working_directory = options.working_directory
+          @working_directory = File.expand_path(options.working_directory)
           @line_limit = options.line_limit
         end
 
