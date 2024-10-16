@@ -26,6 +26,8 @@ module Appydave
               build_tree
             when 'content'
               build_content
+            when 'json'
+              build_json
             else
               ''
             end
@@ -91,6 +93,37 @@ module Appydave
             build_tree_pretty(child, prefix: "#{prefix}#{next_prefix}", is_last: child.empty? || index == node.size - 1, output: output)
           end
           output
+        end
+
+        def build_json
+          json_output = {
+            'tree' => {},
+            'content' => []
+          }
+
+          # Building tree structure in JSON
+          include_patterns.each do |pattern|
+            Dir.glob(pattern).each do |file_path|
+              next if excluded?(file_path)
+
+              path_parts = file_path.split('/')
+              insert_into_tree(json_output['tree'], path_parts)
+            end
+          end
+
+          # Building content structure in JSON
+          include_patterns.each do |pattern|
+            Dir.glob(pattern).each do |file_path|
+              next if excluded?(file_path) || File.directory?(file_path)
+
+              json_output['content'] << {
+                'file' => file_path,
+                'content' => read_file_content(file_path)
+              }
+            end
+          end
+
+          JSON.pretty_generate(json_output)
         end
 
         def excluded?(file_path)
