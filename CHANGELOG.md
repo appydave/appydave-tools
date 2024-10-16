@@ -1,3 +1,10 @@
+## [0.11.2](https://github.com/klueless-io/appydave-tools/compare/v0.11.1...v0.11.2) (2024-10-16)
+
+
+### Bug Fixes
+
+* gpt context documentation updated for using from another gem ([a71072c](https://github.com/klueless-io/appydave-tools/commit/a71072ce24e61dd164f44d7425bad3013f0bdf1f))
+
 ## [0.11.1](https://github.com/klueless-io/appydave-tools/compare/v0.11.0...v0.11.1) (2024-10-16)
 
 
