@@ -1,3 +1,15 @@
+# [0.11.0](https://github.com/klueless-io/appydave-tools/compare/v0.10.4...v0.11.0) (2024-10-16)
+
+
+### Bug Fixes
+
+* gpt context improvements ([1a1db97](https://github.com/klueless-io/appydave-tools/commit/1a1db976317d1b6056d14e226a5635c3b7dea83d))
+
+
+### Features
+
+* gpt_context has improved options, this may break some previous calls ([21c984a](https://github.com/klueless-io/appydave-tools/commit/21c984a61d215da93783a3df55f10301cae55e1c))
+
 ## [0.10.4](https://github.com/klueless-io/appydave-tools/compare/v0.10.3...v0.10.4) (2024-10-09)
 
 
