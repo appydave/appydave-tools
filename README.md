@@ -33,8 +33,7 @@ See all [stories](./STORIES.md)
 
 ## Usage
 
-See all [usage examples](./USAGE.md)
-
+- [GPT Context Gatherer](./docs/usage/gpt-context.md)
 
 
 ## Development
