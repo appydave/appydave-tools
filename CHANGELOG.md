@@ -1,3 +1,10 @@
+## [0.11.4](https://github.com/klueless-io/appydave-tools/compare/v0.11.3...v0.11.4) (2024-10-16)
+
+
+### Bug Fixes
+
+* testing gem naming conventions [#2](https://github.com/klueless-io/appydave-tools/issues/2) ([102e9b7](https://github.com/klueless-io/appydave-tools/commit/102e9b7ed1deaeff094e21376675eabc6bdd022b))
+
 ## [0.11.3](https://github.com/klueless-io/appydave-tools/compare/v0.11.2...v0.11.3) (2024-10-16)
 
 
