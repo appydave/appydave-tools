@@ -7,6 +7,7 @@ require 'json'
 require 'open3'
 require 'openai'
 require 'optparse'
+require 'pathname'
 require 'k_log'
 require 'active_model'
 
@@ -34,7 +35,9 @@ require 'appydave/tools/cli_actions/prompt_completion_action'
 require 'appydave/tools/cli_actions/get_video_action'
 require 'appydave/tools/cli_actions/update_video_action'
 
+require 'appydave/tools/gpt_context/options'
 require 'appydave/tools/gpt_context/file_collector'
+require 'appydave/tools/gpt_context/output_handler'
 
 require 'appydave/tools/configuration/openai'
 require 'appydave/tools/configuration/configurable'

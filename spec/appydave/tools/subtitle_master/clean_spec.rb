@@ -2,8 +2,11 @@
 
 require 'appydave/tools/subtitle_master/clean'
 
+# /Users/davidcruwys/dev/kgems/appydave-tools/spec/fixtures/subtitle_master/test.srt
+# /Users/davidcruwys/dev/kgems/appydave-tools/spec/appydave/fixtures/subtitle_master/test.srt
+
 RSpec.describe Appydave::Tools::SubtitleMaster::Clean do
-  let(:file_path) { 'spec/fixtures/subtitle_master/test.srt' }
+  let(:file_path) { File.expand_path('../../../fixtures/subtitle_master/test.srt', __dir__) }
   let(:cleaner) { described_class.new(file_path) }
 
   describe '#clean' do

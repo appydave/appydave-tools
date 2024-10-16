@@ -1,0 +1,6 @@
+When working with ruby files:
+- All ruby files should start with # frozen_string_literal: true
+
+When working with unit tests
+- Do not include requires
+ 

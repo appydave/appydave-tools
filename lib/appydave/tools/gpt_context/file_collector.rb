@@ -6,20 +6,19 @@ module Appydave
     module GptContext
       # Gathers file names and content based on include and exclude patterns
       class FileCollector
-        attr_reader :include_patterns, :exclude_patterns, :format, :working_directory, :line_limit
-
-        def initialize(include_patterns: [], exclude_patterns: [], format: 'tree,content', working_directory: nil, line_limit: nil)
-          @include_patterns = include_patterns
-          @exclude_patterns = exclude_patterns
-          @format = format
-          @working_directory = working_directory
-          @line_limit = line_limit
+        def initialize(options)
+          @options = options
+          @include_patterns = options.include_patterns
+          @exclude_patterns = options.exclude_patterns
+          @format = options.format
+          @working_directory = options.working_directory
+          @line_limit = options.line_limit
         end
 
         def build
-          FileUtils.cd(working_directory) if working_directory && Dir.exist?(working_directory)
+          FileUtils.cd(@working_directory) if @working_directory && Dir.exist?(@working_directory)
 
-          formats = format.split(',')
+          formats = @format.split(',')
           result = formats.map do |fmt|
             case fmt
             when 'tree'
@@ -33,7 +32,7 @@ module Appydave
             end
           end.join("\n\n")
 
-          FileUtils.cd(Dir.home) if working_directory
+          FileUtils.cd(Dir.home) if @working_directory
 
           result
         end
@@ -43,7 +42,7 @@ module Appydave
         def build_content
           concatenated_content = []
 
-          include_patterns.each do |pattern|
+          @include_patterns.each do |pattern|
             Dir.glob(pattern).each do |file_path|
               next if excluded?(file_path) || File.directory?(file_path)
 
@@ -57,7 +56,7 @@ module Appydave
 
         def read_file_content(file_path)
           lines = File.readlines(file_path)
-          return lines.first(line_limit).join if line_limit
+          return lines.first(@line_limit).join if @line_limit
 
           lines.join
         end
@@ -65,7 +64,7 @@ module Appydave
         def build_tree
           tree_view = {}
 
-          include_patterns.each do |pattern|
+          @include_patterns.each do |pattern|
             Dir.glob(pattern).each do |file_path|
               next if excluded?(file_path)
 
@@ -102,18 +101,14 @@ module Appydave
           }
 
           # Building tree structure in JSON
-          include_patterns.each do |pattern|
+          @include_patterns.each do |pattern|
             Dir.glob(pattern).each do |file_path|
               next if excluded?(file_path)
 
               path_parts = file_path.split('/')
               insert_into_tree(json_output['tree'], path_parts)
-            end
-          end
 
-          # Building content structure in JSON
-          include_patterns.each do |pattern|
-            Dir.glob(pattern).each do |file_path|
+              # Building content structure in JSON
               next if excluded?(file_path) || File.directory?(file_path)
 
               json_output['content'] << {
@@ -127,7 +122,7 @@ module Appydave
         end
 
         def excluded?(file_path)
-          exclude_patterns.any? { |pattern| File.fnmatch(pattern, file_path, File::FNM_PATHNAME | File::FNM_DOTMATCH) }
+          @exclude_patterns.any? { |pattern| File.fnmatch(pattern, file_path, File::FNM_PATHNAME | File::FNM_DOTMATCH) }
         end
       end
     end
