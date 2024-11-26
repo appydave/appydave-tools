@@ -1,3 +1,10 @@
+## [0.11.11](https://github.com/appydave/appydave-tools/compare/v0.11.10...v0.11.11) (2024-11-26)
+
+
+### Bug Fixes
+
+* update clean srt specs ([e0da656](https://github.com/appydave/appydave-tools/commit/e0da656a3bf04f094bc3726a588a59d99d3d24a8))
+
 ## [0.11.10](https://github.com/appydave/appydave-tools/compare/v0.11.9...v0.11.10) (2024-11-26)
 
 
