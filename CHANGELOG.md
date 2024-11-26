@@ -1,3 +1,10 @@
+## [0.11.9](https://github.com/appydave/appydave-tools/compare/v0.11.8...v0.11.9) (2024-11-26)
+
+
+### Bug Fixes
+
+* SRT cleaner can work with string or file ([ddd3bdc](https://github.com/appydave/appydave-tools/commit/ddd3bdc7d70606bba91d81a7cdd5a9d3e8e7b409))
+
 ## [0.11.8](https://github.com/appydave/appydave-tools/compare/v0.11.7...v0.11.8) (2024-11-26)
 
 
