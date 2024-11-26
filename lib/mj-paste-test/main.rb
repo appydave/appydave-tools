@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'io/console'
 
-input_prompts_filename = "prompts.txt"
+input_prompts_filename = 'prompts.txt'
 input_prompts_filename = '/Users/davidcruwys/dev/ai-prompts/midjourney/documentation/clean-prompts/input.txt'
 output_prompts_filename = '/Users/davidcruwys/dev/ai-prompts/midjourney/documentation/clean-prompts/processed.txt'
 
@@ -21,15 +23,13 @@ File.readlines(input_prompts_filename).each do |line|
 
   lines = File.readlines(input_prompts_filename)
   lines.delete_at(0)
-  File.open(input_prompts_filename, 'w') { |f| f.write(lines.join) }
+  File.write(input_prompts_filename, lines.join)
 
-
-  if count % 8 == 0
-    puts "Press any key to continue..."
-    STDIN.getch
+  if (count % 8).zero?
+    puts 'Press any key to continue...'
+    $stdin.getch
     puts "\n"
   else
     sleep(5)
   end
 end
-  
