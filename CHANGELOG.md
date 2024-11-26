@@ -1,3 +1,10 @@
+## [0.11.8](https://github.com/appydave/appydave-tools/compare/v0.11.7...v0.11.8) (2024-11-26)
+
+
+### Bug Fixes
+
+* alter gemspec ([046b267](https://github.com/appydave/appydave-tools/commit/046b26727e2934ae0cecac38f48c18abaa61c91b))
+
 ## [0.11.7](https://github.com/appydave/appydave-tools/compare/v0.11.6...v0.11.7) (2024-11-26)
 
 
