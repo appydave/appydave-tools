@@ -2,23 +2,24 @@
 
 require 'appydave/tools/subtitle_master/clean'
 
-# /Users/davidcruwys/dev/ad/appydave/appydave-tools/spec/fixtures/subtitle_master/test.srt
-# /Users/davidcruwys/dev/kgems/appydave-tools/spec/appydave/fixtures/subtitle_master/test.srt
-
 RSpec.describe Appydave::Tools::SubtitleMaster::Clean do
   let(:file_path) { File.expand_path('../../../fixtures/subtitle_master/test.srt', __dir__) }
-  let(:srt_content) do
+  let(:simple_content) do
     <<~SRT
       1
-      00:00:00,060 --> 00:00:02,760
-      I had a wonderful relationship with Mid Journey.
+      00:00:00,060 --> 00:00:01,760
+      <u>The</u> quick
 
       2
-      00:00:03,060 --> 00:00:05,040
-      We've shared many experiences and created a lot of memories over the last 12 months.
+      00:00:01,760 --> 00:00:03,060
+      The <u>quick</u>
+
+      3
+      00:00:03,060 --> 00:00:10,040
+      <u>brown</u> fox, jumps over the lazy dog.
     SRT
   end
-  let(:expected_content) { srt_content }
+  let(:srt_content) { simple_content }
 
   describe '#initialize' do
     it 'initializes with file_path' do
@@ -43,6 +44,17 @@ RSpec.describe Appydave::Tools::SubtitleMaster::Clean do
   describe '#clean' do
     context 'when initialized with file_path' do
       let(:cleaner) { described_class.new(file_path: file_path) }
+      let(:expected_content) do
+        <<~SRT
+          1
+          00:00:00,060 --> 00:00:02,760
+          I had a wonderful relationship with Mid Journey.
+
+          2
+          00:00:03,060 --> 00:00:05,040
+          We have shared many experiences and created a lot of memories over the last 12 months.
+        SRT
+      end
 
       it 'normalizes the subtitles correctly' do
         cleaned_content = cleaner.clean
@@ -52,6 +64,17 @@ RSpec.describe Appydave::Tools::SubtitleMaster::Clean do
 
     context 'when initialized with srt_content' do
       let(:cleaner) { described_class.new(srt_content: srt_content) }
+      let(:expected_content) do
+        <<~SRT
+          1
+          00:00:00,060 --> 00:00:03,060
+          The quick
+
+          2
+          00:00:03,060 --> 00:00:10,040
+          brown fox, jumps over the lazy dog.
+        SRT
+      end
 
       it 'normalizes the subtitles correctly' do
         cleaned_content = cleaner.clean
