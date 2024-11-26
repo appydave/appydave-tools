@@ -31,7 +31,7 @@ class SubtitleMasterCLI
 
   def clean_subtitles(args)
     options = parse_options(args, 'clean')
-    cleaner = Appydave::Tools::SubtitleMaster::Clean.new(options[:file])
+    cleaner = Appydave::Tools::SubtitleMaster::Clean.new(file_path: options[:file])
     result = cleaner.clean
     write_output(result, options[:output])
   end

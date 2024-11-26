@@ -5,13 +5,22 @@ module Appydave
     module SubtitleMaster
       # Clean and normalize subtitles
       class Clean
-        def initialize(file_path)
-          @file_path = file_path
+        def initialize(file_path: nil, srt_content: nil)
+          if file_path && srt_content
+            raise ArgumentError, 'You cannot provide both a file path and an SRT content stream.'
+          elsif file_path.nil? && srt_content.nil?
+            raise ArgumentError, 'You must provide either a file path or an SRT content stream.'
+          end
+
+          @content = if file_path
+                       File.read(file_path, encoding: 'UTF-8')
+                     else
+                       srt_content
+                     end
         end
 
         def clean
-          content = File.read(@file_path, encoding: 'UTF-8')
-          content = remove_underscores(content)
+          content = remove_underscores(@content)
           normalize_lines(content)
         end
 
