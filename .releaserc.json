@@ -36,5 +36,5 @@
     ],
     "@semantic-release/github"
   ],
-  "repositoryUrl": "git@github.com:klueless-io/appydave-tools.git"
+  "repositoryUrl": "git@github.com:appydave/appydave-tools.git"
 }
