@@ -1,3 +1,12 @@
+## [0.11.7](https://github.com/appydave/appydave-tools/compare/v0.11.6...v0.11.7) (2024-11-26)
+
+
+### Bug Fixes
+
+* move appydave-tools from klueless-io to appydave ([2a6f359](https://github.com/appydave/appydave-tools/commit/2a6f359901922ecd098c0362be0feceb05f7429e))
+* move appydave-tools from klueless-io to appydave ([b8cf441](https://github.com/appydave/appydave-tools/commit/b8cf441fbca008753ba9e81e100d3156e7242f11))
+* move appydave-tools from klueless-io to appydave ([1347969](https://github.com/appydave/appydave-tools/commit/13479698b73c7aa140c6b10afde10650a1ccc58c))
+
 ## [0.11.6](https://github.com/appydave/appydave-tools/compare/v0.11.5...v0.11.6) (2024-10-16)
 
 
