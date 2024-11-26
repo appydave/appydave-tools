@@ -1,5 +1,7 @@
 # GPT Context Usage Guide
 
+> References: [ChatGPT Documentation](https://chatgpt.com/c/670f2150-08b4-8002-b2d7-04aff6fe304f)
+
 This guide provides a comprehensive reference for using the `gpt_context` tool. Below you'll find examples of different use cases and command line invocations to help you effectively use `gpt_context` for gathering and organizing your project files. These examples will help you remember how to leverage various options available in `gpt_context`.
 
 ## Overview
@@ -190,6 +192,3 @@ output_handler.execute
 ```
 **Explanation**: This complete example demonstrates how to use `Options` to configure the gathering process, `FileCollector` to collect the files, and `OutputHandler` to manage the output. This approach can be useful for programmatically automating context collection tasks in more complex workflows.
 
-## References
-
-- [ChatGPT Documentation](https://chatgpt.com/c/670f2150-08b4-8002-b2d7-04aff6fe304f)
