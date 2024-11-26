@@ -2,7 +2,7 @@
 
 require 'io/console'
 
-input_prompts_filename = 'prompts.txt'
+# input_prompts_filename = 'prompts.txt'
 input_prompts_filename = '/Users/davidcruwys/dev/ai-prompts/midjourney/documentation/clean-prompts/input.txt'
 output_prompts_filename = '/Users/davidcruwys/dev/ai-prompts/midjourney/documentation/clean-prompts/processed.txt'
 
