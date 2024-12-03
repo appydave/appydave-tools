@@ -1,3 +1,10 @@
+# [0.13.0](https://github.com/appydave/appydave-tools/compare/v0.12.0...v0.13.0) (2024-12-03)
+
+
+### Features
+
+* move subtitle_master to subtitle_manager ([1c2d968](https://github.com/appydave/appydave-tools/commit/1c2d9680dce943bdfa65ec6ee079b40abdbd3890))
+
 # [0.12.0](https://github.com/appydave/appydave-tools/compare/v0.11.11...v0.12.0) (2024-12-03)
 
 
