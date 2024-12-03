@@ -1,0 +1,215 @@
+1
+00:00:00,00 --> 00:00:04,490
+the next step is to generate the new authentication system that comes with rails 
+
+2
+00:00:04,510 --> 00:00:09,770
+eight. Now we could run step number seven which would do the rails generate authentication 
+
+3
+00:00:09,770 --> 00:00:14,960
+and update the database. But let's have a look at this manually. So firstly I'm just 
+
+4
+00:00:14,960 --> 00:00:17,870
+going to run rails generate authentication. 
+
+5
+00:00:17,900 --> 00:00:23,300
+we can see the new files come in. Now notice there's also an update database. If 
+
+6
+00:00:23,300 --> 00:00:28,220
+we go and have a look at what that's really doing. It's just a rails DB migrate and 
+
+7
+00:00:28,220 --> 00:00:33,590
+a rails DB test prepare. So let's run them manually as well. So just running the 
+
+8
+00:00:33,590 --> 00:00:38,270
+rails db migrate to update the database. The test prepare will make sure that the 
+
+9
+00:00:38,270 --> 00:00:40,280
+test database is in sync as well.
+
+10
+00:00:40,300 --> 00:00:43,980
+heading over to the application, let's have a look at what's changed. So if we go 
+
+11
+00:00:43,980 --> 00:00:49,830
+into the database migrations we can see there's a new table being added called users. 
+
+12
+00:00:49,830 --> 00:00:55,890
+It's got an email address and a password digest. After that we've got the sessions 
+
+13
+00:00:55,890 --> 00:01:01,290
+for each time a user signs in with just their IP address and user agent.
+
+14
+00:01:01,300 --> 00:01:05,330
+heading over to the app folder. There's a lot of changes going on here. 
+
+15
+00:01:05,330 --> 00:01:10,150
+we'll look at the views. We've got the passwords, email and new. There's also a mailer. 
+
+16
+00:01:10,150 --> 00:01:13,930
+So when we send out an email for resets that'll be there. 
+
+17
+00:01:13,930 --> 00:01:16,850
+we've also got the new sessions view going on here. 
+
+18
+00:01:16,860 --> 00:01:20,320
+everything's been done using tailwind CSS.
+
+19
+00:01:20,330 --> 00:01:26,160
+A simple little mailer has been created for resetting the password, and then we start 
+
+20
+00:01:26,160 --> 00:01:30,750
+looking at the data going on with the models. So the first one would be the user 
+
+21
+00:01:30,750 --> 00:01:37,650
+it's got has secure password and has many sessions. It's also down casing the email 
+
+22
+00:01:37,650 --> 00:01:42,600
+address. Then after that we've got the session which is belonging to a user. And 
+
+23
+00:01:42,600 --> 00:01:47,490
+if you want to access the current user in session, we've got this current attribute 
+
+24
+00:01:47,490 --> 00:01:52,830
+set up with the session and a delegation through to the user. Let's now go have a 
+
+25
+00:01:52,830 --> 00:01:57,540
+look at the controller, where a lot of extra work is happening in the passwords controller 
+
+26
+00:01:57,540 --> 00:01:59,220
+and the session controller.
+
+27
+00:01:59,230 --> 00:02:04,600
+Now you can see on the passwords controller. This allowed unauthenticated access 
+
+28
+00:02:04,600 --> 00:02:09,100
+and if we go to sessions, it's also got the same thing set up for the new and the 
+
+29
+00:02:09,100 --> 00:02:14,980
+create action here. And to find that we can go to the application controller where 
+
+30
+00:02:14,980 --> 00:02:20,230
+it's including a concept called authentication. And this is a new concern being built 
+
+31
+00:02:20,230 --> 00:02:20,590
+here. 
+
+32
+00:02:20,590 --> 00:02:25,310
+so the bulk of the code going on for the authentication system can be found in this 
+
+33
+00:02:25,310 --> 00:02:25,880
+concern.
+
+34
+00:02:25,890 --> 00:02:29,970
+Now let's go and see how this is affecting the web application. So we've got the 
+
+35
+00:02:29,970 --> 00:02:35,430
+authentication concern. It's now included automatically on the application controller. 
+
+36
+00:02:35,430 --> 00:02:40,590
+And both the home controller and the pages controller have been left the way they 
+
+37
+00:02:40,590 --> 00:02:45,810
+are now if we head over to the website and this is what we saw before, if I do a 
+
+38
+00:02:45,810 --> 00:02:49,410
+refresh, we now get taken to a sign in page. 
+
+39
+00:02:49,430 --> 00:02:51,430
+should be happening for everything.
+
+40
+00:02:51,430 --> 00:02:56,460
+So let's start by just putting in a username and password. We haven't registered 
+
+41
+00:02:56,460 --> 00:02:58,110
+it yet and we'll see what happens. 
+
+42
+00:02:57,860 --> 00:03:01,780
+Now we get to see a valid error message coming up here. But the other good thing 
+
+43
+00:03:01,780 --> 00:03:08,710
+is the alert message that we styled with tailwind CSS earlier is now coming through.
+
+44
+00:03:08,730 --> 00:03:13,890
+I want to relax some of the security, the home and the about page don't need to be 
+
+45
+00:03:13,890 --> 00:03:19,230
+locked down. The account page does, and the authentication page should show information 
+
+46
+00:03:19,230 --> 00:03:22,230
+about whether the user is signed in or not.
+
+47
+00:03:22,230 --> 00:03:24,610
+So I'm pressing number eight for relax. 
+
+48
+00:03:24,530 --> 00:03:29,420
+we can see there's a change to the home controller and the pages controller. If we 
+
+49
+00:03:29,420 --> 00:03:35,240
+do a refresh and the home page now allows us through, let's go have a look at what's 
+
+50
+00:03:35,240 --> 00:03:40,550
+going on in the pages controller. So the home controller has allow unauthenticated 
+
+51
+00:03:40,550 --> 00:03:45,320
+access, which is why we were able to get to that page with the pages controller. 
+
+52
+00:03:45,320 --> 00:03:51,500
+We've got this concept of allow unauthenticated access only for two of the particular 
+
+53
+00:03:51,500 --> 00:03:57,560
+pages. So let's just save that and we'll see what happens if we click on the about 
+
+54
+00:03:57,560 --> 00:04:01,760
+and the authentication there. Good. And we're still locked down for the account.

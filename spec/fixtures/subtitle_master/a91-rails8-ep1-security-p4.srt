@@ -1,0 +1,255 @@
+1
+00:00:00,00 --> 00:00:05,270
+Now the next step is to create a bunch of authentication enhancements, especially 
+
+2
+00:00:05,270 --> 00:00:10,630
+registration, the view and links. So what we'll do is we'll find number nine 
+
+3
+00:00:10,460 --> 00:00:14,120
+So let's come and have a look at the changes. If we go into configuration, we can 
+
+4
+00:00:14,120 --> 00:00:17,480
+see there's a change to the routes, and we didn't look at some of the routes from 
+
+5
+00:00:17,480 --> 00:00:23,420
+earlier as well. So we've got the resource registration session and passwords in 
+
+6
+00:00:23,420 --> 00:00:24,740
+place. We've also got 
+
+7
+00:00:24,700 --> 00:00:30,490
+three pages that we added earlier. If we come up to application and look within models, 
+
+8
+00:00:30,610 --> 00:00:37,540
+there's a modification to the user. So we've now got validation going on on the email 
+
+9
+00:00:37,540 --> 00:00:38,110
+address. 
+
+10
+00:00:38,130 --> 00:00:41,800
+A new registrations page has been created, 
+
+11
+00:00:41,700 --> 00:00:45,810
+and a new registration link has been added to the session. 
+
+12
+00:00:45,630 --> 00:00:49,00
+So now we'll be able to register a new user. 
+
+13
+00:00:48,830 --> 00:00:53,510
+we have the registrations controller. There's a new and a create method here. And 
+
+14
+00:00:53,510 --> 00:00:58,820
+if we have a brief look on the application controller, we can see now there's a current 
+
+15
+00:00:58,880 --> 00:01:00,770
+user that we can access 
+
+16
+00:01:00,500 --> 00:01:05,200
+let's test the register. We'll click on here and we'll put in appydave@appydave.com. 
+
+17
+00:01:05,960 --> 00:01:06,850
+click Register. 
+
+18
+00:01:06,860 --> 00:01:11,700
+it has registered successfully. I don't know that we'll be able to sign in yet. Let's 
+
+19
+00:01:11,700 --> 00:01:16,890
+just try that. So we appear to be signed in, but we got no information about the 
+
+20
+00:01:16,890 --> 00:01:17,370
+user. 
+
+21
+00:01:17,400 --> 00:01:19,550
+I would like to put that on the authentication page. 
+
+22
+00:01:19,400 --> 00:01:25,170
+Now to visualize the user we'll press number ten which is authentication information. 
+
+23
+00:01:25,170 --> 00:01:31,140
+We've got a new page. If we do a refresh we now have the idea of what the user is. 
+
+24
+00:01:31,140 --> 00:01:35,430
+But there's something missing here because you would have noticed that we did register.
+
+25
+00:01:35,660 --> 00:01:39,610
+So to give a little bit of clarity around this authentication model, what we have 
+
+26
+00:01:39,610 --> 00:01:46,450
+done is allow unauthenticated access. So it's basically skipping the require action. 
+
+27
+00:01:46,450 --> 00:01:52,930
+And we can see that going on here. It said for authentication page we don't need 
+
+28
+00:01:52,930 --> 00:01:56,230
+to be authenticated. But that doesn't mean you've got access to the authentication 
+
+29
+00:01:56,230 --> 00:02:01,330
+information. And the authentication information we're interested in is here in the 
+
+30
+00:02:01,330 --> 00:02:07,630
+current session which is looking in the session store. So we need to call this resume 
+
+31
+00:02:07,630 --> 00:02:13,420
+session. So what we can do is come back here and just say before action resume session 
+
+32
+00:02:13,420 --> 00:02:18,730
+for that particular page. Now we'll hit save on that. Come back to the authentication 
+
+33
+00:02:18,730 --> 00:02:20,530
+details and we'll refresh. 
+
+34
+00:02:20,530 --> 00:02:25,830
+now that user that we registered appydave@appydave.com is visible.
+
+35
+00:02:25,830 --> 00:02:30,680
+a recompile of the assets is giving us the sign out button. Let's see if that's working. 
+
+36
+00:02:30,680 --> 00:02:31,460
+We'll click on it. 
+
+37
+00:02:31,460 --> 00:02:37,250
+Let's try and sign back in appydave@appydave.com we'll click sign in. We'll click 
+
+38
+00:02:37,250 --> 00:02:40,160
+on the authentication page. And there we have it.
+
+39
+00:02:40,160 --> 00:02:45,480
+Let's now see if we can add email validation to the sign up process. So we'll go 
+
+40
+00:02:45,480 --> 00:02:46,860
+to the register user. 
+
+41
+00:02:46,860 --> 00:02:51,290
+to try with appydave2. Now before we run that we're going to 
+
+42
+00:02:51,400 --> 00:02:53,500
+authentication email. 
+
+43
+00:02:53,660 --> 00:02:57,160
+what we've done is add a new table to the database.
+
+44
+00:02:57,160 --> 00:03:01,390
+So the main changes are that the confirmation token and confirmed that have been 
+
+45
+00:03:01,420 --> 00:03:06,970
+added to the users. And then after that we've got some extra methods, plus the ability 
+
+46
+00:03:06,970 --> 00:03:10,930
+to send an email and regenerate a token.
+
+47
+00:03:10,100 --> 00:03:15,220
+Additionally, we've got the registrations. Controller now has a confirm button on 
+
+48
+00:03:15,220 --> 00:03:21,220
+it. We've got a user mailer with the ability to take the email. If we go into routes, 
+
+49
+00:03:21,220 --> 00:03:25,750
+we've got letter opener because that's been added via the gem. 
+
+50
+00:03:25,600 --> 00:03:30,820
+an important thing to think about is with the configuration, the default URL options 
+
+51
+00:03:30,820 --> 00:03:36,220
+change it to the same port as whatever your web server is running on. So let's go 
+
+52
+00:03:36,220 --> 00:03:36,820
+test it out.
+
+53
+00:03:36,830 --> 00:03:41,580
+Now we're back at the registration where we've got AP Dave two. We'll click Register 
+
+54
+00:03:41,580 --> 00:03:46,950
+and it looks like it's come up with an email system. Let's click on this. Confirm 
+
+55
+00:03:46,950 --> 00:03:47,610
+the account. 
+
+56
+00:03:47,630 --> 00:03:52,530
+we are now confirmed. So we should be able to sign in with that. There's now also 
+
+57
+00:03:52,530 --> 00:03:56,550
+a check email. If we click on that that'll take us over to letter opener. Now we 
+
+58
+00:03:56,550 --> 00:04:01,860
+don't need to do that because we've already done it using the default viewer. But 
+
+59
+00:04:01,860 --> 00:04:05,760
+if we go and click on the authentication page, it won't say that we're signed in 
+
+60
+00:04:05,760 --> 00:04:10,710
+just yet. So let's just click on the sign in and we'll put in appydave2 And we'll 
+
+61
+00:04:10,710 --> 00:04:12,00
+do that one more time. 
+
+62
+00:04:12,00 --> 00:04:17,470
+now we can get to the account page which wasn't available before. If we look at the 
+
+63
+00:04:17,470 --> 00:04:21,430
+authentication page we can see that we're signed in correctly.
+
+64
+00:04:21,460 --> 00:04:25,100
+I'm AppyDave Please like and subscribe and I'll see you in the next video.

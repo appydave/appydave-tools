@@ -1,0 +1,303 @@
+1
+00:00:00,000 --> 00:00:05,660
+In this video, we're setting up rails eight with the new basic authentication system
+
+2
+00:00:05,660 --> 00:00:13,430
+also include tailwind CSS, Postgres guard for automated test watching, R-spec and
+
+3
+00:00:13,430 --> 00:00:14,450
+Rubocop.
+
+4
+00:00:14,460 --> 00:00:20,180
+Now let's get started by being on the latest version of Ruby and Rails. So with Ruby, 
+
+5
+00:00:20,180 --> 00:00:28,370
+I'm currently on 3.3.6. Now to install rails, I'll just run gem install rails 
+
+6
+00:00:28,390 --> 00:00:32,950
+That's finished. And we've installed rails 8.00.0.
+
+7
+00:00:32,960 --> 00:00:37,220
+Now there's a setup guide that you can follow through, but what we've done so far 
+
+8
+00:00:37,220 --> 00:00:42,230
+is check the version of Ruby and install the latest version of rails. What we'll 
+
+9
+00:00:42,230 --> 00:00:46,490
+do now is just set up a repository that you can find this code in.
+
+10
+00:00:46,500 --> 00:00:51,350
+Now I'm just over at GitHub on AppyDave. We'll create a new repository inside of 
+
+11
+00:00:51,350 --> 00:00:56,130
+this. We'll call it rails8-basicauth. Now we're going to make it public. 
+
+12
+00:00:56,130 --> 00:01:00,480
+we'll set the license to the Mozilla Public License two. 
+
+13
+00:01:00,500 --> 00:01:04,460
+And a basic description. Let's just create this repository.
+
+14
+00:01:04,460 --> 00:01:09,290
+So the command we're going to start off with is rails new rails eight basic auth. 
+
+15
+00:01:09,290 --> 00:01:14,150
+We're not going to include any test frameworks because we're going to use RSpec. 
+
+16
+00:01:14,150 --> 00:01:18,200
+We will include tailwind CSS and Postgres as the database.
+
+17
+00:01:18,560 --> 00:01:23,240
+Heading over to the terminal, we'll paste in that command and let it do the standard 
+
+18
+00:01:23,240 --> 00:01:24,920
+rails creation process.
+
+19
+00:01:24,930 --> 00:01:30,790
+Now the new application is finishing creating. What we're going to need to do is 
+
+20
+00:01:30,790 --> 00:01:34,750
+change into the directory. And because we're using Postgres we'll need to create 
+
+21
+00:01:34,750 --> 00:01:39,940
+the database. So let's just CD into the correct folder. We'll clear the screen here 
+
+22
+00:01:39,940 --> 00:01:46,720
+and we'll do a rails DB create. And that should just create the databases rails eight 
+
+23
+00:01:46,750 --> 00:01:49,720
+basic auth development and test.
+
+24
+00:01:49,730 --> 00:01:55,730
+Now let's just test whether the server is running. We've got Chrome open, we're starting 
+
+25
+00:01:55,730 --> 00:02:03,320
+up the web server and we'll run it. And we're running rails eight with rack 3.1.8 
+
+26
+00:02:03,320 --> 00:02:05,810
+and Ruby 3.3.6.
+
+27
+00:02:05,830 --> 00:02:12,610
+Now let's connect this repo up to the repo we've already created on GitHub. So we'll 
+
+28
+00:02:12,610 --> 00:02:17,950
+just put this information in right now. And then let's just run the add dot, commit 
+
+29
+00:02:17,980 --> 00:02:23,950
+the initial request and push it all up. So we'll let that go. And that's all moving. 
+
+30
+00:02:24,460 --> 00:02:29,950
+And we'll come over to the repo and just refresh. And we've got the initial commit. 
+
+31
+00:02:29,950 --> 00:02:35,530
+So as we go along I'll be doing commit along the way. And you can go to any section 
+
+32
+00:02:35,530 --> 00:02:36,760
+that you like.
+
+33
+00:02:36,990 --> 00:02:40,450
+Now for a little bit of basic setup. We're just going to make sure that everything 
+
+34
+00:02:40,450 --> 00:02:45,460
+that we do is done in a template, that you can just run from the command line. So 
+
+35
+00:02:45,460 --> 00:02:51,280
+we'll just go and create this file. We've created it, we've touched it. And lastly 
+
+36
+00:02:51,280 --> 00:02:55,600
+we'll also put in the setup documentation that we're reading through at the moment. 
+
+37
+00:02:55,600 --> 00:02:58,150
+So this will all be in the repository.
+
+38
+00:02:58,160 --> 00:03:03,760
+Now we have a standard rails application created with tailwind, CSS and Postgres. 
+
+39
+00:03:03,790 --> 00:03:10,240
+Now what I've added is a rails generator that you can use, and it's just a standard 
+
+40
+00:03:10,240 --> 00:03:14,500
+rails generator with a bunch of steps that we're running through. And as we go through 
+
+41
+00:03:14,500 --> 00:03:19,300
+them, they'll just be called by different numbers so that you can cherry pick what 
+
+42
+00:03:19,300 --> 00:03:21,700
+you want to do with the generation of this application.
+
+43
+00:03:21,730 --> 00:03:26,270
+I'll just take you through a couple of aliases I've set up, the main one being the 
+
+44
+00:03:26,270 --> 00:03:31,430
+R8. Next is how we'll go through each capability of the rails eight application. 
+
+45
+00:03:31,460 --> 00:03:35,690
+there's also a run command, which will run the rails server with a precompile in 
+
+46
+00:03:35,690 --> 00:03:40,460
+front of it. So what we'll do is just paste all of this and it's now available. Now 
+
+47
+00:03:40,460 --> 00:03:45,950
+we can test that out by typing run. And it should just do a standard rails server 
+
+48
+00:03:45,950 --> 00:03:47,660
+with Precompile.
+
+49
+00:03:47,660 --> 00:03:51,260
+Now let's just quickly look at this template command that we've set up. There's a 
+
+50
+00:03:51,260 --> 00:03:56,300
+file. We'll look at it in a moment. Some of the information came from prior documentation 
+
+51
+00:03:56,300 --> 00:04:02,360
+that I read a month ago on the pre-releases of rails eight. But if we go to the top, 
+
+52
+00:04:02,360 --> 00:04:07,160
+we're using rails generators as a base class, and then a bunch of classes for each 
+
+53
+00:04:07,130 --> 00:04:11,940
+So what we're going to work through is creating common gems. A home page will do 
+
+54
+00:04:11,940 --> 00:04:14,490
+the layout. We'll get some alert messages 
+
+55
+00:04:14,760 --> 00:04:19,120
+and also adding an email authentication mailer to the system.
+
+56
+00:04:19,130 --> 00:04:23,760
+run our little command line tool. Right? Next we'll get a menu and we're going to 
+
+57
+00:04:23,790 --> 00:04:29,970
+work with number one. What that'll do is add the various gems and start doing a bundle 
+
+58
+00:04:29,970 --> 00:04:35,430
+install. There's also a bundle outdated going on and it actually finishes off with 
+
+59
+00:04:35,730 --> 00:04:40,530
+a Rubocop dash A. So any issues in the code base will be cleaned up.
+
+60
+00:04:40,530 --> 00:04:45,260
+Now let's have a quick look at what's changed. Firstly, if we go to the Gemfile, 
+
+61
+00:04:45,260 --> 00:04:49,280
+we can have a look at the original files that have been added. We've got rails eight, 
+
+62
+00:04:49,310 --> 00:04:54,320
+we've got a Postgres gem. These are the new concepts that I'm going to talk about 
+
+63
+00:04:54,320 --> 00:04:58,670
+in a future video around solid cache, queue and cable. 
+
+64
+00:04:58,690 --> 00:05:03,870
+additionally it's also added in the information I want for the custom gems. If we 
+
+65
+00:05:03,870 --> 00:05:08,760
+look at the spec file, it's set up with a require spec helper, and I like to use 
+
+66
+00:05:08,760 --> 00:05:14,370
+the documentation format. If we go into spec, there's a rails helper and a spec helper 
+
+67
+00:05:14,370 --> 00:05:18,120
+already preset up and a guard file. And what the guard 
+
+68
+00:05:18,130 --> 00:05:22,990
+is watching our rails application. If we run it, nothing's happening at the moment.
+
+69
+00:05:22,990 --> 00:05:28,760
+Now just label this commit. And what that means is that when you come up to the repo, 
+
+70
+00:05:28,790 --> 00:05:33,620
+you should be able to just look through and find the areas that have been changed 
+
+71
+00:05:33,620 --> 00:05:35,390
+labeled in the repo.
+
+72
+00:05:35,660 --> 00:05:40,220
+Now that I've got the basic gems set up, I'd like to get a home page going. Now you 
+
+73
+00:05:40,220 --> 00:05:47,330
+can see that I'm running a rails server. It's on port 3001 and if we run rate next, 
+
+74
+00:05:47,330 --> 00:05:52,640
+it will be looking for the template file in the public directory called rails template. 
+
+75
+00:05:52,640 --> 00:05:54,590
+So we'll just run number two. 
+
+76
+00:05:54,590 --> 00:05:59,320
+what that's going to do is create the controller and the home page to get started. 

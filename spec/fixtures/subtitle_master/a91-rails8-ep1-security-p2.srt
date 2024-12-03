@@ -1,0 +1,215 @@
+1
+00:00:00,00 --> 00:00:05,750
+So we'll just restart the server with the run command and refresh. And we have rails 
+
+2
+00:00:05,750 --> 00:00:10,380
+eight basic auth. And we can see that there's some tailwind CSS 
+
+3
+00:00:10,400 --> 00:00:12,300
+Giving it a little bit of styling.
+
+4
+00:00:12,330 --> 00:00:17,820
+Now, a quick look at what we've generated is a standard controller called home with 
+
+5
+00:00:17,850 --> 00:00:22,320
+index. We're skipping routes because we want to use the route for this, and we can 
+
+6
+00:00:22,320 --> 00:00:27,390
+see just a slight modification to the routes. And here's the HTML that's going on. 
+
+7
+00:00:27,390 --> 00:00:32,880
+So we've got this in place here a standard view has been created and we've got a 
+
+8
+00:00:32,880 --> 00:00:38,760
+couple of specs. So we've got this home helper. We've got a request spec and we've 
+
+9
+00:00:38,760 --> 00:00:41,250
+got this view spec. Now I'm going to get rid of the view specs. 
+
+10
+00:00:41,260 --> 00:00:46,140
+but request specs we will look at, especially when we're doing the authentication.
+
+11
+00:00:46,160 --> 00:00:50,290
+Now I'll just bring the terminal into focus. I'm running guard and we'll run the 
+
+12
+00:00:50,290 --> 00:00:55,870
+tests. And we've got one that's just been skipped, and we've got one that's in error. 
+
+13
+00:00:55,890 --> 00:01:00,390
+the one that's being skipped, which is a helper I'm also going to remove. And let's 
+
+14
+00:01:00,390 --> 00:01:01,450
+have a look at the request spec. 
+
+15
+00:01:01,460 --> 00:01:07,180
+you can see here that it's home slash index. Now I've gone and changed the route 
+
+16
+00:01:07,340 --> 00:01:12,670
+so that the home index will point to the route. So let's just make sure we change 
+
+17
+00:01:12,670 --> 00:01:14,900
+it here and we'll hit save. 
+
+18
+00:01:14,890 --> 00:01:17,760
+And now we have a working request spec for the root.
+
+19
+00:01:18,00 --> 00:01:22,990
+Let's now play around with the layout. We'll get a menu in place for the authentication 
+
+20
+00:01:22,990 --> 00:01:27,880
+system. We'll also look at alert messages. So we have all this code going on for 
+
+21
+00:01:27,880 --> 00:01:31,780
+the different menus that we want to do. We've got a little bit of changes to the 
+
+22
+00:01:31,780 --> 00:01:34,270
+layout, especially adding in the menu. 
+
+23
+00:01:34,290 --> 00:01:38,760
+in the next step we'll work with the flash messages where they'll just use tailwind 
+
+24
+00:01:38,790 --> 00:01:40,810
+CSS to style them.
+
+25
+00:01:40,830 --> 00:01:42,310
+We'll head over to the web, 
+
+26
+00:01:42,160 --> 00:01:46,290
+firstly run the layout and we'll just see how things change with that. 
+
+27
+00:01:46,290 --> 00:01:49,910
+this time for the flash messages, which is number four. 
+
+28
+00:01:49,930 --> 00:01:55,180
+if we come and do a refresh, we can see the layout in place. The flash messages will 
+
+29
+00:01:55,180 --> 00:01:56,260
+show up a bit later.
+
+30
+00:01:56,260 --> 00:02:01,130
+one of the things I was encountering is that the asset precompilation doesn't happen 
+
+31
+00:02:01,130 --> 00:02:04,460
+automatically, and there should be a little bit of styling here. 
+
+32
+00:02:04,360 --> 00:02:09,440
+rerun the web server. It's also going to do the asset precompile. 
+
+33
+00:02:09,460 --> 00:02:12,380
+if we do a refresh we get a new look and feel.
+
+34
+00:02:12,390 --> 00:02:17,630
+Next I want to generate a few controller pages, but before I do that, I'm going to 
+
+35
+00:02:17,660 --> 00:02:23,180
+modify a few of the settings going on here, and then we'll add in the pages and the 
+
+36
+00:02:23,180 --> 00:02:24,770
+controllers here.
+
+37
+00:02:24,790 --> 00:02:30,430
+I want to generate three top level pages for the authentication system. But before 
+
+38
+00:02:30,430 --> 00:02:35,530
+we do that, I would like to play around with the configuration of the generator. 
+
+39
+00:02:35,740 --> 00:02:40,630
+So we'll make these changes followed by the generation of the pages. 
+
+40
+00:02:39,990 --> 00:02:42,410
+we can firstly do the application settings, 
+
+41
+00:02:42,430 --> 00:02:47,550
+we'll restart the generator and we'll do the top level pages. Number six. 
+
+42
+00:02:47,560 --> 00:02:52,560
+now we've got our pages controller. There's three actions ready to go. If we look 
+
+43
+00:02:52,560 --> 00:02:56,160
+in the views, we've got some pages being pre-created for us. 
+
+44
+00:02:56,160 --> 00:03:00,110
+We've also got the shared information from the flash messages and the menus that 
+
+45
+00:03:00,110 --> 00:03:04,400
+we just created earlier. If we look down at the unit tests, 
+
+46
+00:03:04,430 --> 00:03:08,240
+You'll see that it's now only generating the request spec. So if we click on that, 
+
+47
+00:03:08,480 --> 00:03:10,730
+there should be three in place ready to go.
+
+48
+00:03:10,760 --> 00:03:15,430
+Let's just head over to the terminal and put in a guard, and we'll see if these three 
+
+49
+00:03:15,430 --> 00:03:17,860
+request specs are running okay. They are, 
+
+50
+00:03:17,760 --> 00:03:23,740
+come over to the web view and we refresh and we can see there's now three pages available. 
+
+51
+00:03:23,760 --> 00:03:28,230
+you see any styling issues, just restart the server. I know that this should be a 
+
+52
+00:03:28,230 --> 00:03:29,460
+darker color. 
+
+53
+00:03:29,660 --> 00:03:32,920
+if we click on them, we should be able to go to the three different pages that we 
+
+54
+00:03:32,920 --> 00:03:35,200
+want to test with the security system.

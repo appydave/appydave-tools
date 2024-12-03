@@ -5,6 +5,8 @@ module Appydave
     module SubtitleMaster
       # Clean and normalize subtitles
       class Clean
+        attr_reader :content
+
         def initialize(file_path: nil, srt_content: nil)
           if file_path && srt_content
             raise ArgumentError, 'You cannot provide both a file path and an SRT content stream.'
@@ -22,6 +24,15 @@ module Appydave
         def clean
           content = remove_underscores(@content)
           normalize_lines(content)
+        end
+
+        def write(output_file)
+          File.write(output_file, content)
+          puts "Processed file written to #{output_file}"
+        rescue Errno::EACCES
+          puts "Permission denied: Unable to write to #{output_file}"
+        rescue StandardError => e
+          puts "An error occurred while writing to the file: #{e.message}"
         end
 
         private
