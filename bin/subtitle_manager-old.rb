@@ -67,7 +67,7 @@ class SubtitleMasterCLI
   def parse_options(args, command, extra_options = [])
     options = { file: nil, output: nil }
     OptionParser.new do |opts|
-      opts.banner = "Usage: subtitle_master.rb #{command} [options]"
+      opts.banner = "Usage: subtitle_manager.rb #{command} [options]"
 
       opts.on('-f', '--file FILE', 'SRT file to process') { |v| options[:file] = v }
       opts.on('-o', '--output FILE', 'Output file') { |v| options[:output] = v }
@@ -99,14 +99,14 @@ class SubtitleMasterCLI
   end
 
   def print_help
-    puts 'Usage: subtitle_master.rb [command] [options]'
+    puts 'Usage: subtitle_manager.rb [command] [options]'
     puts 'Commands:'
     puts '  clean          Clean and normalize SRT files'
     puts '  correct        Correct common typos and mistranslations in SRT files'
     puts '  split          Split subtitle groups based on word count'
     puts '  highlight      Highlight power words in subtitles'
     puts '  image_prompts  Generate image prompts from subtitle text'
-    puts "Run 'subtitle_master.rb [command] --help' for more information on a command."
+    puts "Run 'subtitle_manager.rb [command] --help' for more information on a command."
   end
 end
 

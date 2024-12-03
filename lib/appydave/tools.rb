@@ -50,8 +50,8 @@ require 'appydave/tools/name_manager/project_name'
 
 require 'appydave/tools/prompt_tools/prompt_completion'
 
-require 'appydave/tools/subtitle_master/clean'
-require 'appydave/tools/subtitle_master/join'
+require 'appydave/tools/subtitle_manager/clean'
+require 'appydave/tools/subtitle_manager/join'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
 

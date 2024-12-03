@@ -91,7 +91,7 @@ Metrics/ParameterLists:
   Exclude:
     - "**/spec/**/*"
     - "**/models/**/*"
-    - "lib/appydave/tools/subtitle_master/join.rb"
+    - "lib/appydave/tools/subtitle_manager/join.rb"
 Layout/EmptyLineBetweenDefs:
   Exclude:
     - "**/spec/**/*"

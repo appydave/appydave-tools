@@ -39,7 +39,7 @@ class SubtitleMasterCLI
 
     # Command-specific option parser
     clean_parser = OptionParser.new do |opts|
-      opts.banner = 'Usage: subtitle_master.rb clean [options]'
+      opts.banner = 'Usage: subtitle_manager.rb clean [options]'
 
       opts.on('-f', '--file FILE', 'SRT file to process') do |v|
         options[:file] = v
@@ -87,7 +87,7 @@ class SubtitleMasterCLI
     }
 
     join_parser = OptionParser.new do |opts|
-      opts.banner = 'Usage: subtitle_master.rb join [options]'
+      opts.banner = 'Usage: subtitle_manager.rb join [options]'
 
       opts.on('-d', '--directory DIR', 'Directory containing SRT files (default: current directory)') do |v|
         options[:folder] = v
@@ -141,11 +141,11 @@ class SubtitleMasterCLI
   end
 
   def print_help
-    puts 'Usage: subtitle_master.rb [command] [options]'
+    puts 'Usage: subtitle_manager.rb [command] [options]'
     puts 'Commands:'
     puts '  clean          Clean and normalize SRT files'
     puts '  join           Join multiple SRT files'
-    puts "Run 'subtitle_master.rb [command] --help' for more information on a command."
+    puts "Run 'subtitle_manager.rb [command] --help' for more information on a command."
   end
 end
 

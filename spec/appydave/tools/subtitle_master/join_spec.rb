@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Appydave::Tools::SubtitleMaster::Join do
-  let(:fixtures_path) { File.expand_path('../../../fixtures/subtitle_master', __dir__) }
+  let(:fixtures_path) { File.expand_path('../../../fixtures/subtitle_manager', __dir__) }
   let(:temp_folder) { Dir.mktmpdir }
 
   describe '#initialize' do
@@ -38,16 +38,15 @@ RSpec.describe Appydave::Tools::SubtitleMaster::Join do
         )
         expect { join.join }.not_to raise_error
 
-        open_in_vscode(temp_folder, output_filename)
+        # open_vscode(temp_folder, output_filename)
       end
     end
   end
+  # def open_vscode(temp_folder, file)
+  #   # Open the output file in VS Code
+  #   system("code '#{File.join(temp_folder, file)}'")
 
-  def open_in_vscode(temp_folder, file)
-    # Open the output file in VS Code
-    system("code '#{File.join(temp_folder, file)}'")
-
-    # Optional: add a small delay to ensure VS Code has time to open
-    sleep 1
-  end
+  #   # Optional: add a small delay to ensure VS Code has time to open
+  #   sleep 1
+  # end
 end

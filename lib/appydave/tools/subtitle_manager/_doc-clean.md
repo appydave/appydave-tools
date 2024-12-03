@@ -31,10 +31,10 @@ cleaner = SubtitleMaster::Clean.new(srt_content: srt_content_string)
 ### Command Line Usage
 
 ```bash
-./bin/subtitle_master.rb clean -f path/to/example.srt -o path/to/example_cleaned.srt
+./bin/subtitle_manager.rb clean -f path/to/example.srt -o path/to/example_cleaned.srt
 
 # Example using alias
-ad_subtitle_master clean -f transcript/a45-banned-from-midjourney-16-alternatives.srt -o a45-transcript.srt
+ad_subtitle_manager clean -f transcript/a45-banned-from-midjourney-16-alternatives.srt -o a45-transcript.srt
 ```
 
 This component reads the SRT file, processes the content to remove tags and normalize lines, and outputs a cleaned and formatted subtitle file that is easier to read and upload to platforms.
