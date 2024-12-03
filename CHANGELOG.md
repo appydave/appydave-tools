@@ -1,3 +1,15 @@
+# [0.12.0](https://github.com/appydave/appydave-tools/compare/v0.11.11...v0.12.0) (2024-12-03)
+
+
+### Bug Fixes
+
+* update cops ([0efed07](https://github.com/appydave/appydave-tools/commit/0efed07376a7fa8d460a3ab03264a82764245ebe))
+
+
+### Features
+
+* add srt-join tool ([0576ed4](https://github.com/appydave/appydave-tools/commit/0576ed44f330869760832875126dd1f4c2bfcbd1))
+
 ## [0.11.11](https://github.com/appydave/appydave-tools/compare/v0.11.10...v0.11.11) (2024-11-26)
 
 
