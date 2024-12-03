@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # CHAT: https://chatgpt.com/c/67038d52-9928-8002-8063-5616f7fe7aef
 
-#!/usr/bin/env ruby
+# !/usr/bin/env ruby
 
 require 'fileutils'
 require 'optparse'
@@ -16,16 +17,16 @@ base_dir = '/Volumes/Expansion/Sync/tube-channels/video-projects'
 # Parse command-line options
 options = {}
 OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} -f <folder> <section> <prefix>"
+  opts.banner = "Usage: #{$PROGRAM_NAME} -f <folder> <section> <prefix>"
 
-  opts.on("-f FOLDER", "--folder FOLDER", "Specify the subfolder under video-projects") do |folder|
+  opts.on('-f FOLDER', '--folder FOLDER', 'Specify the subfolder under video-projects') do |folder|
     options[:folder] = folder
   end
 end.parse!
 
 # Ensure the folder option is provided
 unless options[:folder]
-  puts "You must specify a folder using the -f option"
+  puts 'You must specify a folder using the -f option'
   exit 1
 end
 
@@ -38,7 +39,7 @@ section = ARGV[0]
 prefix = ARGV[1]
 
 unless prefix && section
-  puts "Usage: #{$0} -f <folder> <section> <prefix>"
+  puts "Usage: #{$PROGRAM_NAME} -f <folder> <section> <prefix>"
   exit 1
 end
 

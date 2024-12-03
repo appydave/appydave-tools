@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Appydave::Tools::SubtitleMaster::Join do
   let(:fixtures_path) { File.expand_path('../../../fixtures/subtitle_master', __dir__) }
   let(:temp_folder) { Dir.mktmpdir }
@@ -25,7 +27,7 @@ RSpec.describe Appydave::Tools::SubtitleMaster::Join do
       let(:files) { 'a91-*.srt' }
       let(:output_filename) { 'output-a91.srt' }
 
-      fit 'processes SRT files using the parser' do
+      it 'processes SRT files using the parser' do
         join = described_class.new(
           folder: temp_folder,
           files: files,
