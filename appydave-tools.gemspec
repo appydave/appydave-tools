@@ -47,7 +47,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'i18n', '~> 1.14'
   spec.add_dependency 'k_log', '~> 0'
   spec.add_dependency 'ruby-openai', '~> 8'
-  # spec.add_dependency 'signet'
   spec.add_dependency 'googleauth'
   spec.add_dependency 'webrick'
 
