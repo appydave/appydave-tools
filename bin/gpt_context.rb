@@ -52,6 +52,10 @@ OptionParser.new do |opts|
     options.output_target << target
   end
 
+  opts.on('-p', '--prompt MESSAGE', 'Message/prompt to include in aider format output') do |message|
+    options.prompt = message
+  end
+
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
     puts "\nExamples:"

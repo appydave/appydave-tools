@@ -28,6 +28,8 @@ module Appydave
               build_content
             when 'json'
               build_json
+            when 'aider'
+              build_aider
             else
               ''
             end
@@ -120,6 +122,21 @@ module Appydave
           end
 
           JSON.pretty_generate(json_output)
+        end
+
+        def build_aider
+          return '' unless @options.prompt
+
+          files = []
+          @include_patterns.each do |pattern|
+            Dir.glob(pattern).each do |file_path|
+              next if excluded?(file_path) || File.directory?(file_path)
+
+              files << file_path
+            end
+          end
+
+          "aider --message \"#{@options.prompt}\" #{files.join(' ')}"
         end
 
         def excluded?(file_path)

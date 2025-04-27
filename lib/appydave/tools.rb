@@ -67,7 +67,7 @@ require 'appydave/tools/youtube_manager/reports/video_content_report'
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = File.expand_path('~/.config/appydave')
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
-  config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
+  # config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
   config.register(:youtube_automation, Appydave::Tools::Configuration::Models::YoutubeAutomationConfig)
 end

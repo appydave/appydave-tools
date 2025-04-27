@@ -39,13 +39,14 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   # spec.extensions    = ['ext/appydave_tools/extconf.rb']
 
-  spec.add_dependency 'activemodel', '~> 7'
-  spec.add_dependency 'clipboard', '~> 1'
+  spec.add_dependency 'activemodel', '~> 8'
+  spec.add_dependency 'clipboard', '~> 2'
   spec.add_dependency 'csv', '~> 3'
   spec.add_dependency 'dotenv', '~> 3'
   spec.add_dependency 'google-api-client', '~> 0.53' # open code: gemo google-api-client
+  spec.add_dependency 'i18n', '~> 1.14'
   spec.add_dependency 'k_log', '~> 0'
-  spec.add_dependency 'ruby-openai', '~> 7'
+  spec.add_dependency 'ruby-openai', '~> 8'
   # spec.add_dependency 'signet'
   spec.add_dependency 'googleauth'
   spec.add_dependency 'webrick'

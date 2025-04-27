@@ -12,6 +12,7 @@ module Appydave
         :debug,
         :output_target,
         :working_directory,
+        :prompt,
         keyword_init: true
       ) do
         def initialize(**args)
@@ -21,6 +22,7 @@ module Appydave
           self.format ||= 'tree,content'
           self.debug ||= 'none'
           self.output_target ||= []
+          self.prompt ||= nil
         end
       end
     end
