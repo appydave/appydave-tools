@@ -39,31 +39,54 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '18'
+      - uses: actions/checkout@v4
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        env:
-          cache-name: cache-node-modules
+      - uses: pnpm/action-setup@v3
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          version: latest
+          run_install: true  # <-- Automatically runs pnpm install
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-pnpm-
+
+      # - uses: actions/setup-node@v2
+      #   with:
+      #     node-version: '18'
+
+      # - name: Cache node modules
+      #   uses: actions/cache@v4
+      #   id: cache-node-modules
+      #   env:
+      #     cache-name: cache-node-modules
+      #   with:
+      #     path: ~/.npm
+      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-build-${{ env.cache-name }}-
+      #       ${{ runner.os }}-build-
+      #       ${{ runner.os }}-
 
       - name: Install semantic-release dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install
 
-        # SEE MORE: https://github.com/semantic-release/semantic-release/issues/753
       - name: Run SemVer
-        run: npm run release
+        run: pnpm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+
+      # - name: Install semantic-release dependencies
+      #   if: steps.cache.outputs.cache-hit != 'true'
+      #   run: pnpm ci
+
+      #   # SEE MORE: https://github.com/semantic-release/semantic-release/issues/753
+      # - name: Run SemVer
+      #   run: pnpm run release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
