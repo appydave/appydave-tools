@@ -2,7 +2,7 @@ inherit_mode:
   merge:
     - Exclude # see: https://stackoverflow.com/a/70818366/473923
     - AllowedNames
-require:
+plugins:
   - rubocop-rspec
   - rubocop-rake
 
