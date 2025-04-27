@@ -1,3 +1,18 @@
+# [0.14.0](https://github.com/appydave/appydave-tools/compare/v0.13.0...v0.14.0) (2025-04-27)
+
+
+### Bug Fixes
+
+* 'cops' ([51bc6f2](https://github.com/appydave/appydave-tools/commit/51bc6f2e7bd08a3aff165e6d488f3f99c4ab7f45))
+* ci ([11e934b](https://github.com/appydave/appydave-tools/commit/11e934b2f4f6be2457dea65c46b37ae350480b91))
+* cops ([94817c6](https://github.com/appydave/appydave-tools/commit/94817c6ecc930dcb79a59fa7d6d977ba2aa197b9))
+* update gem file ([9b0d21d](https://github.com/appydave/appydave-tools/commit/9b0d21d278a3c2bd6669122f33e55f084c76997b))
+
+
+### Features
+
+* update gem file ([b15dbcb](https://github.com/appydave/appydave-tools/commit/b15dbcbb13e0025f82ab54d8a87104d0d0fa4e14))
+
 # [0.13.0](https://github.com/appydave/appydave-tools/compare/v0.12.0...v0.13.0) (2024-12-03)
 
 
