@@ -1,3 +1,10 @@
+## [0.14.1](https://github.com/appydave/appydave-tools/compare/v0.14.0...v0.14.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* updagte claude and readmegs ([308af2f](https://github.com/appydave/appydave-tools/commit/308af2f3085f6bfd054c9d12154da7055d47bb3b))
+
 # [0.14.0](https://github.com/appydave/appydave-tools/compare/v0.13.0...v0.14.0) (2025-04-27)
 
 
