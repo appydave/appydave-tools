@@ -33,7 +33,52 @@ See all [stories](./STORIES.md)
 
 ## Usage
 
-- [GPT Context Gatherer](./docs/usage/gpt-context.md)
+### CLI Tools
+
+This gem provides several command-line tools for content creation and YouTube automation:
+
+#### GPT Context Gatherer
+Collect and organize project files for AI context analysis:
+
+```bash
+# Basic usage - gather all Ruby files, exclude specs
+gpt_context -i '**/*.rb' -e 'spec/**/*' -d -o context.txt
+
+# Multiple patterns with tree and content output
+gpt_context -i 'lib/**/*.rb' -i 'bin/**/*.rb' -f tree,content -d
+
+# Advanced filtering for web projects  
+gpt_context -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -e '**/_generated/**/*' -d -f tree -o typescript-files.txt
+
+# Documentation and config files
+gpt_context -i 'docs/**/*' -i '**/*.json' -i '**/*.config.*' -e '**/node_modules/**/*' -d -f tree
+```
+
+See detailed usage guide: [GPT Context Gatherer](./docs/usage/gpt-context.md)
+
+#### YouTube Manager
+```bash
+# Get video details
+bin/youtube_manager.rb get [options]
+
+# Update video metadata  
+bin/youtube_manager.rb update [options]
+```
+
+#### Subtitle Manager
+```bash
+# Clean subtitle files
+bin/subtitle_manager.rb clean [options]
+
+# Join multiple subtitle parts
+bin/subtitle_manager.rb join [options]
+```
+
+#### Prompt Tools
+```bash
+# Run AI prompt completion
+bin/prompt_tools.rb completion [options]
+```
 
 
 ## Development
@@ -51,8 +96,12 @@ You can also run `bin/console` for an interactive prompt that will allow you to 
 ```bash
 bin/console
 
-Aaa::Bbb::Program.execute()
-# => ""
+Appydave::Tools::VERSION
+# => "0.14.0"
+
+# Access configuration
+config = Appydave::Tools::Configuration::Config.new
+# => #<Appydave::Tools::Configuration::Config:...>
 ```
 
 `appydave-tools` is setup with Guard, run `guard`, this will watch development file changes and run tests automatically, if successful, it will then run rubocop for style quality.
