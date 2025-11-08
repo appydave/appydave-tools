@@ -1,3 +1,10 @@
+# [0.15.0](https://github.com/appydave/appydave-tools/compare/v0.14.1...v0.15.0) (2025-11-08)
+
+
+### Features
+
+* update claude and git leaks ([0b8212f](https://github.com/appydave/appydave-tools/commit/0b8212fa65a920c608876c4f4f37c166dc552039))
+
 ## [0.14.1](https://github.com/appydave/appydave-tools/compare/v0.14.0...v0.14.1) (2025-08-06)
 
 
