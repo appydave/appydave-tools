@@ -1,0 +1,100 @@
+title = "Gitleaks Configuration for AppyDave Tools"
+
+[extend]
+# Use default gitleaks rules
+useDefault = true
+
+# Custom rules for project-specific secrets
+[[rules]]
+description = "AWS Access Key"
+id = "aws-access-key"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["key", "AWS"]
+
+[[rules]]
+description = "OpenAI API Key"
+id = "openai-api-key"
+regex = '''sk-[a-zA-Z0-9]{48}'''
+tags = ["key", "OpenAI"]
+
+[[rules]]
+description = "Google OAuth Client ID"
+id = "google-oauth-client-id"
+regex = '''[0-9]+-[0-9A-Za-z_]{32}\.apps\.googleusercontent\.com'''
+tags = ["key", "Google"]
+
+[[rules]]
+description = "Google API Key"
+id = "google-api-key"
+regex = '''AIza[0-9A-Za-z-_]{35}'''
+tags = ["key", "Google"]
+
+[[rules]]
+description = "Credit Card Numbers (AMEX, Visa, MasterCard, Discover)"
+id = "credit-card"
+regex = '''\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\d{3})\d{11})\b'''
+tags = ["secret", "financial"]
+
+[[rules]]
+description = "RubyGems API Key"
+id = "rubygems-api-key"
+regex = '''rubygems_[a-f0-9]{48}'''
+tags = ["key", "RubyGems"]
+
+[[rules]]
+description = "GitHub Personal Access Token"
+id = "github-pat"
+regex = '''ghp_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+description = "GitHub OAuth Access Token"
+id = "github-oauth"
+regex = '''gho_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+description = "Generic API Key"
+id = "generic-api-key"
+regex = '''(?i)(api[_-]?key|apikey|api[_-]?secret)[\s]*[=:>][\s]*['"]?[0-9a-zA-Z\-_]{20,}['"]?'''
+tags = ["key", "generic"]
+
+# Allowlist - files/paths to exclude from scanning
+[allowlist]
+description = "Allowlisted files"
+
+# Markdown files (may contain example keys in documentation)
+paths = [
+  '''\.md$''',
+  '''^\.releaserc\.json$''',
+  '''CHANGELOG\.md''',
+  '''README\.md''',
+  '''^docs/'''
+]
+
+# Allowlist specific commits (if needed)
+# commits = [
+#   "commit-hash-here"
+# ]
+
+# Allowlist specific regex patterns (for known false positives)
+regexes = [
+  '''example\.com''',
+  '''your[_-]api[_-]key[_-]here''',
+  '''YOUR_API_KEY''',
+  '''<your-api-key>''',
+  '''sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx''',
+  '''AKIA[X]{16}'''  # Example AWS keys
+]
+
+# Stop words - if these appear near a secret, it's likely a false positive
+stopwords = [
+  '''example''',
+  '''sample''',
+  '''demo''',
+  '''test''',
+  '''placeholder''',
+  '''your''',
+  '''TODO''',
+  '''FIXME'''
+]

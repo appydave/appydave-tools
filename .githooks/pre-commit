@@ -26,8 +26,11 @@ files_changed -= ['Gemfile.lock']
 files_changed -= ['.gitignore']
 files_changed -= ['README.md']
 
+# Exclude documentation and configuration files that may contain example keywords
 files_changed = files_changed.reject { |f| f.downcase.end_with?('.json') }
 files_changed = files_changed.reject { |f| f.downcase.end_with?('.yml') }
+files_changed = files_changed.reject { |f| f.downcase.end_with?('.md') }
+files_changed = files_changed.reject { |f| f.downcase.end_with?('.toml') }
 
 # ignore files from specific folders
 
@@ -86,4 +89,33 @@ unless files_changed.length.zero?
     puts '# Force commit with --no-verify'
     exit 1
   end
+end
+
+# Gitleaks secret scanning
+puts "\n\033[36m==> Running gitleaks secret scan...\033[0m"
+
+# Check if gitleaks is installed
+gitleaks_installed = system('command -v gitleaks > /dev/null 2>&1')
+
+if gitleaks_installed
+  # Run gitleaks on staged files
+  gitleaks_result = system('gitleaks protect --staged --verbose --redact 2>&1')
+
+  unless gitleaks_result
+    puts "\n\033[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    puts "\033[31m✗ ERROR: Gitleaks detected secrets in your staged files!\033[0m"
+    puts "\033[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    puts "\n\033[33mPlease remove the secrets before committing.\033[0m"
+    puts "\033[33mIf this is a false positive, update .gitleaks.toml allowlist.\033[0m"
+    puts "\n\033[90mTo bypass this check (NOT RECOMMENDED):\033[0m"
+    puts "\033[90m  git commit --no-verify\033[0m"
+    puts "\033[31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m\n"
+    exit 1
+  end
+
+  puts "\033[32m✓ Gitleaks scan passed - no secrets detected\033[0m\n"
+else
+  puts "\033[33m⚠ WARNING: gitleaks is not installed\033[0m"
+  puts "\033[90mInstall with: brew install gitleaks\033[0m"
+  puts "\033[90mSkipping secret scan...\033[0m\n"
 end
