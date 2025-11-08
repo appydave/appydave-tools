@@ -9,9 +9,11 @@ Gem::Specification.new do |spec|
   spec.authors                = ['David Cruwys']
   spec.email                  = ['david@ideasmen.com.au']
 
-  spec.summary                = 'AppyDave YouTube Automation Tools'
+  spec.summary                = 'AppyDave productivity toolkit - CLI utilities for YouTube workflow automation'
   spec.description            = <<-TEXT
-    AppyDave YouTube Automation Tools
+    AppyDave Tools is a consolidated productivity toolkit for YouTube content creation workflow.
+    Includes single-purpose utilities for AI context gathering, subtitle processing, YouTube management, and more.
+    All tools in one codebase for easier maintenance, each operates independently.
   TEXT
   spec.homepage               = 'http://appydave.com/gems/appydave-tools'
   spec.license                = 'MIT'

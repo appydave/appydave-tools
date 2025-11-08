@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::SubtitleMaster::Join::SRTMerger do
-  let(:parser) { Appydave::Tools::SubtitleMaster::Join::SRTParser.new }
+RSpec.describe Appydave::Tools::SubtitleProcessor::Join::SRTMerger do
+  let(:parser) { Appydave::Tools::SubtitleProcessor::Join::SRTParser.new }
   let(:merger) { described_class.new(buffer_ms: 100) }
 
   let(:first_content) do

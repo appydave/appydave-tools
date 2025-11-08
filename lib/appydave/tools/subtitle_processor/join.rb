@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module SubtitleMaster
+    module SubtitleProcessor
       # Join multiple SRT files into one
       # - Supports folder, wildcards, sorting via FileResolver
       class Join

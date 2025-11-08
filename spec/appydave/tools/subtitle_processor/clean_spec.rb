@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'appydave/tools/subtitle_manager/clean'
+require 'appydave/tools/subtitle_processor/clean'
 
-RSpec.describe Appydave::Tools::SubtitleMaster::Clean do
-  let(:file_path) { File.expand_path('../../../fixtures/subtitle_manager/test.srt', __dir__) }
+RSpec.describe Appydave::Tools::SubtitleProcessor::Clean do
+  let(:file_path) { File.expand_path('../../../fixtures/subtitle_processor/test.srt', __dir__) }
   let(:simple_content) do
     <<~SRT
       1

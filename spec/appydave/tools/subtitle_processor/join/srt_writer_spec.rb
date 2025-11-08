@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Appydave::Tools::SubtitleMaster::Join::SRTWriter do
+RSpec.describe Appydave::Tools::SubtitleProcessor::Join::SRTWriter do
   let(:temp_dir) { Dir.mktmpdir }
   let(:output_file) { File.join(temp_dir, 'output.srt') }
   let(:writer) { described_class.new(output_file) }
-  let(:parser) { Appydave::Tools::SubtitleMaster::Join::SRTParser.new }
+  let(:parser) { Appydave::Tools::SubtitleProcessor::Join::SRTParser.new }
 
   after do
     FileUtils.remove_entry temp_dir
@@ -133,7 +133,7 @@ RSpec.describe Appydave::Tools::SubtitleMaster::Join::SRTWriter do
   private
 
   def create_subtitle(index, start_time, end_time, text)
-    Appydave::Tools::SubtitleMaster::Join::SRTParser::Subtitle.new(
+    Appydave::Tools::SubtitleProcessor::Join::SRTParser::Subtitle.new(
       index: index,
       start_time: start_time,
       end_time: end_time,

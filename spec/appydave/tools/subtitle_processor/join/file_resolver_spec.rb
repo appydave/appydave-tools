@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::SubtitleMaster::Join::FileResolver do
+RSpec.describe Appydave::Tools::SubtitleProcessor::Join::FileResolver do
   let(:temp_folder) { Dir.mktmpdir }
 
   before do

@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module SubtitleMaster
+    module SubtitleProcessor
       # Clean and normalize subtitles
       class Clean
         attr_reader :content

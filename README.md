@@ -1,157 +1,333 @@
-# Appydave Tools
+# AppyDave Tools
 
-> AppyDave YouTube Automation Tools
+> **AppyDave's YouTube productivity toolkit** - Command-line utilities that automate the boring stuff so you can focus on creating content.
+
+## Why This Exists
+
+As a YouTuber, I got tired of repetitive tasks eating into my creative time. So I built tools to handle them.
+
+Instead of managing dozens of separate repositories, everything lives here - one codebase, easier maintenance, and each tool can be featured in its own video tutorial.
+
+**Quick wins:**
+- 🤖 Feed entire codebases to AI assistants in seconds
+- 📹 Batch update YouTube video metadata without clicking through the UI (update 50 videos in 5 minutes)
+- 📝 Process subtitle files - clean formatting, merge multi-part recordings, synchronize timelines
+- 🖼️ Organize downloaded images into project folders automatically (video asset workflow)
+- ⚙️ Manage multi-channel configurations from the command line (team-shareable JSON configs)
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'appydave-tools'
-```
-
-And then execute:
-
-```bash
-bundle install
-```
-
-Or install it yourself as:
 
 ```bash
 gem install appydave-tools
 ```
 
-## Stories
+Or add to your Gemfile:
 
-### Main Story
-
-As a Content Creator, I want accellerate my video creation, so that I can improve speed and quality of my content
-
-See all [stories](./STORIES.md)
-
-
-## Usage
-
-### CLI Tools
-
-This gem provides several command-line tools for content creation and YouTube automation:
-
-#### GPT Context Gatherer
-Collect and organize project files for AI context analysis:
-
-```bash
-# Basic usage - gather all Ruby files, exclude specs
-gpt_context -i '**/*.rb' -e 'spec/**/*' -d -o context.txt
-
-# Multiple patterns with tree and content output
-gpt_context -i 'lib/**/*.rb' -i 'bin/**/*.rb' -f tree,content -d
-
-# Advanced filtering for web projects  
-gpt_context -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -e '**/_generated/**/*' -d -f tree -o typescript-files.txt
-
-# Documentation and config files
-gpt_context -i 'docs/**/*' -i '**/*.json' -i '**/*.config.*' -e '**/node_modules/**/*' -d -f tree
+```ruby
+gem 'appydave-tools'
 ```
 
-See detailed usage guide: [GPT Context Gatherer](./docs/usage/gpt-context.md)
+## The Tools
 
-#### YouTube Manager
+### 🤖 GPT Context Gatherer
+
+**The problem:** AI assistants need context about your code, but copying files is tedious.
+
+**The solution:** Automatically collect and format project files for AI context.
+
 ```bash
-# Get video details
-bin/youtube_manager.rb get [options]
+# Gather all Ruby files, skip tests, save to clipboard
+gpt_context -i '**/*.rb' -e 'spec/**/*' -d
 
-# Update video metadata  
-bin/youtube_manager.rb update [options]
+# Get project structure as a tree
+gpt_context -i '**/*' -f tree -d
+
+# Multiple file types with custom output
+gpt_context -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -o context.txt
 ```
 
-#### Subtitle Manager
-```bash
-# Clean subtitle files
-bin/subtitle_manager.rb clean [options]
+**Use cases:** Working with ChatGPT, Claude, or any AI assistant on your codebase.
 
-# Join multiple subtitle parts
-bin/subtitle_manager.rb join [options]
+[Full documentation →](./docs/usage/gpt-context.md)
+
+---
+
+### 📹 YouTube Manager
+
+**The problem:** Updating video metadata through YouTube Studio is slow and repetitive, especially for bulk operations.
+
+**The solution:** Manage YouTube video metadata via API from your terminal - CRUD operations on videos.
+
+```bash
+# Get video details (title, description, tags, category, captions)
+youtube_manager get --video-id YOUR_VIDEO_ID
+
+# Update title and description
+youtube_manager update --video-id YOUR_VIDEO_ID \
+  --title "New Title" \
+  --description "Updated description"
+
+# Update tags (replaces existing tags)
+youtube_manager update --video-id YOUR_VIDEO_ID --tags "tutorial,productivity,automation"
+
+# Update category
+youtube_manager update --video-id YOUR_VIDEO_ID --category-id 28
 ```
 
-#### Prompt Tools
+**Specific use cases:**
+- **Post-rebrand updates**: Changed channel name? Update 50 video descriptions in minutes
+- **Tag standardization**: Ensure consistent tagging across your entire catalog
+- **Metadata retrieval**: Export video details for analysis or backup
+- **Batch corrections**: Fix typos in titles across multiple videos
+- **Category changes**: Recategorize videos when YouTube updates categories
+- **Series updates**: Add series links to descriptions across episode batches
+
+**What it does:**
+- **Get**: Retrieves complete video metadata including captions
+- **Update**: Modifies title, description, tags, or category via YouTube Data API v3
+- **Authorization**: Handles OAuth2 flow with local callback server
+- **Reporting**: Generates detailed reports of video metadata
+
+**Why use this vs YouTube Studio:**
+- **Speed**: Update 20 videos in 5 minutes vs 30+ minutes clicking through UI
+- **Scriptable**: Integrate into automation workflows
+- **Bulk operations**: Loop through video IDs from a CSV
+- **Version control**: Track metadata changes in Git
+- **Backup**: Export all video metadata as JSON
+
+---
+
+### 📝 Subtitle Processor
+
+**The problem:** Raw subtitle files need cleanup, and multi-part recordings need merged subtitles.
+
+**The solution:** Process and transform SRT files - clean formatting, merge duplicates, synchronize timelines.
+
 ```bash
-# Run AI prompt completion
-bin/prompt_tools.rb completion [options]
+# Clean auto-generated subtitles (removes HTML tags, merges duplicates, normalizes spacing)
+subtitle_processor clean -f input.srt -o cleaned.srt
+
+# Merge multiple subtitle files with timeline synchronization
+subtitle_processor join -d ./parts -f "*.srt" -o final.srt
+
+# Custom time buffer between merged sections (in milliseconds)
+subtitle_processor join -f "part1.srt,part2.srt" -b 200 -o merged.srt
 ```
 
+**What it does:**
+- **Clean**: Removes `<u>` tags, merges duplicate entries, normalizes line breaks and spacing
+- **Join**: Parses multiple SRT files, adjusts timestamps with buffers, merges into single timeline
+
+**Use cases:** Cleaning messy YouTube auto-captions, merging FliVideo multi-part recording subtitles.
+
+**Note:** CLI command is `subtitle_processor` (renamed from `subtitle_manager` for accuracy - this tool *processes* files, not manages state).
+
+---
+
+### 🎯 Prompt Tools *(Experimental - Not actively used)*
+
+**The problem:** Running OpenAI prompts with placeholder substitution and output management.
+
+**The solution:** Execute OpenAI completion API calls with template support.
+
+```bash
+# Run prompt from text
+prompt_tools completion -p "Your prompt here" -o output.txt
+
+# Run prompt from file with placeholders
+prompt_tools completion -f prompt_template.md -k topic=Ruby,style=tutorial -c
+
+# Options:
+# -p, --prompt     Inline prompt text
+# -f, --file       Prompt template file
+# -k, --placeholders  Key-value pairs for {placeholder} substitution
+# -o, --output     Save to file
+# -c, --clipboard  Copy to clipboard
+# -m, --model      OpenAI model to use
+```
+
+**What it does:**
+- Sends prompts to OpenAI Completion API (older GPT-3 models)
+- Supports template files with `{placeholder}` substitution
+- Outputs to file, clipboard, or stdout
+
+**Current status:** ⚠️ **Not in active use** - Uses deprecated OpenAI Completion API (`davinci-codex`). Modern alternative: Use ChatGPT or Claude directly, or migrate to Chat API.
+
+**Potential use cases:** Template-based content generation, automated prompt workflows (if migrated to Chat API).
+
+---
+
+### ⚡ YouTube Automation *(Internal/Experimental)*
+
+**The problem:** Video content creation workflows involve multiple steps: research → scripting → production.
+
+**The solution:** Run predefined prompt sequences against OpenAI API to automate research and content generation steps.
+
+```bash
+# Run automation sequence (requires configuration)
+youtube_automation -s 01-1
+
+# With debug output
+youtube_automation -s 01-1 -d
+```
+
+**What it does:**
+- Loads sequence configuration from `~/.config/appydave/youtube_automation.json`
+- Reads prompt templates from Dropbox (`_common/raw_prompts/`)
+- Executes OpenAI API calls for each sequence step
+- Saves responses to output files
+
+**Configuration required:**
+- Sequence definitions in `youtube_automation.json`
+- Prompt template files in configured Dropbox path
+- `OPENAI_ACCESS_TOKEN` environment variable
+
+**Current status:** ⚠️ **Internal tool** - Hardcoded Dropbox paths, uses deprecated Completion API, not documented for external use.
+
+**Relationship to other tools:** This is separate from **Move Images** tool (which organizes downloaded images into video project asset folders).
+
+**Use cases:** Automated content research, script outline generation, multi-step prompt workflows.
+
+---
+
+### ⚙️ Configuration Manager
+
+**The problem:** Managing settings for multiple YouTube channels, project paths, and automation sequences gets messy.
+
+**The solution:** Centralized JSON-based configuration stored in `~/.config/appydave/`.
+
+```bash
+# List all configurations
+ad_config -l
+
+# Create missing config files with templates
+ad_config -c
+
+# Edit configurations in VS Code
+ad_config -e
+
+# View specific configuration values
+ad_config -p settings,channels
+
+# View all configurations
+ad_config -p
+```
+
+**What it manages:**
+- **settings.json**: Project folder paths (content, video, published, abandoned)
+- **channels.json**: YouTube channel definitions (code, name, youtube_handle)
+- **youtube_automation.json**: Automation sequence configurations
+
+**Use cases:**
+- **Multi-channel management**: Switch between different YouTube channels
+- **Team collaboration**: Share configuration files via Git/Dropbox (excluding secrets)
+- **Workflow standardization**: Consistent paths across team members
+- **Automation setup**: Define reusable prompt sequences
+
+**Team collaboration notes:**
+- Configuration files can be version-controlled (they contain no secrets)
+- Each team member can maintain their own `~/.config/appydave/` directory
+- Paths can be customized per developer machine
+- Secrets (API keys) stored separately in `.env` files (gitignored)
+
+---
+
+### 🖼️ Move Images *(Development tool)*
+
+**The problem:** Downloaded images need organizing with proper naming.
+
+**The solution:** Batch move and rename to project folders.
+
+```bash
+# Organize intro images for video project
+bin/move_images.rb -f b40 intro b40
+# Result: b40-intro-1.jpg, b40-intro-2.jpg in assets/intro/
+```
+
+**Use cases:** B-roll organization, thumbnail preparation.
+
+---
+
+## Philosophy
+
+**One codebase, multiple tools.** Easier to maintain than dozens of repos.
+
+**Single-purpose utilities.** Each tool does one thing well.
+
+**YouTube workflow focus.** Built for content creators who code.
+
+**Language-agnostic.** Currently Ruby, but could be rewritten if needed.
+
+[Read the full philosophy →](./docs/purpose-and-philosophy.md)
+
+---
 
 ## Development
 
-Checkout the repo
-
 ```bash
+# Clone the repo
 git clone https://github.com/appydave/appydave-tools
-```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. 
+# Setup
+bin/setup
 
-You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+# Run tests
+rake spec
 
-```bash
+# Auto-run tests on file changes
+guard
+
+# Interactive console
 bin/console
-
-Appydave::Tools::VERSION
-# => "0.14.0"
-
-# Access configuration
-config = Appydave::Tools::Configuration::Config.new
-# => #<Appydave::Tools::Configuration::Config:...>
 ```
 
-`appydave-tools` is setup with Guard, run `guard`, this will watch development file changes and run tests automatically, if successful, it will then run rubocop for style quality.
+### Semantic Versioning
 
-To release a new version, update the version number in `version.rb`, build the gem and push the `.gem` file to [rubygems.org](https://rubygems.org).
+This project uses **automated versioning** via semantic-release. Don't manually edit version files.
 
+**Commit message format:**
 ```bash
-rake publish
-rake clean
+feat: add new feature    # Minor version bump
+fix: bug fix            # Patch version bump
+chore: maintenance      # No version bump
+
+# Breaking changes
+feat!: breaking change
 ```
 
-## Git helpers used by this project
+CI/CD automatically handles versioning, changelog, and RubyGems publishing.
 
-Add the follow helpers to your `alias` file
-
-```bash
-function kcommit()
-{
-  echo 'git add .'
-  git add .
-  echo "git commit -m "$1""
-  git commit -m "$1"
-  echo 'git pull'
-  git pull
-  echo 'git push'
-  git push
-  sleep 3
-  run_id="$(gh run list --limit 1 | grep -Eo "[0-9]{9,11}")"
-  gh run watch $run_id --exit-status && echo "run completed and successful" && git pull && git tag | sort -V | tail -1
-}
-function kchore     () { kcommit "chore: $1" }
-function kdocs      () { kcommit "docs: $1" }
-function kfix       () { kcommit "fix: $1" }
-function kfeat      () { kcommit "feat: $1" }
-function ktest      () { kcommit "test: $1" }
-function krefactor  () { kcommit "refactor: $1" }
-```
+---
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/appydave/appydave-tools. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+**Welcome:**
+- 🐛 Bug fixes
+- 📝 Documentation improvements
+- ⚡ Performance enhancements
+- 🎯 New single-purpose tools that fit the workflow
+
+**Not looking for:**
+- ❌ Framework-style architectures
+- ❌ Tools that create dependencies between utilities
+- ❌ Enterprise complexity
+
+[Code of Conduct →](./CODE_OF_CONDUCT.md)
+
+---
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+MIT License - Copyright (c) David Cruwys
 
-## Code of Conduct
+See [LICENSE.txt](LICENSE.txt) for details.
 
-Everyone interacting in the Appydave Tools project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/appydave/appydave-tools/blob/master/CODE_OF_CONDUCT.md).
+---
 
-## Copyright
+## Connect
 
-Copyright (c) David Cruwys. See [MIT License](LICENSE.txt) for further details.
+- 🌐 Website: [appydave.com](http://appydave.com)
+- 📺 YouTube: [@AppyDave](https://youtube.com/@appydave)
+- 🐙 GitHub: [appydave](https://github.com/appydave)
+
+Built with ☕ by [David Cruwys](https://davidcruwys.com)

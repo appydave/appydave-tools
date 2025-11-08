@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::SubtitleMaster::Join::SRTParser do
+RSpec.describe Appydave::Tools::SubtitleProcessor::Join::SRTParser do
   let(:valid_srt_content) do
     <<~SRT
       1

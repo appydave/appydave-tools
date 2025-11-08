@@ -2,9 +2,48 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Purpose
+
+**AppyDave Tools** is a consolidated productivity toolkit built for AppyDave's YouTube content creation workflow. All utilities live in one repository for easier maintenance than managing separate codebases.
+
+**📖 See [docs/purpose-and-philosophy.md](./docs/purpose-and-philosophy.md) for complete philosophy and design principles.**
+
+**Key Points:**
+- **Consolidated toolkit** - One codebase for easier maintenance
+- **YouTube workflow** - Built specifically for content creator productivity
+- **Single-purpose tools** - Each tool solves one problem independently
+- **Shareable individually** - Tools can be featured in standalone videos
+- **Language flexible** - Currently Ruby, could be rewritten if needed
+
 ## Common Commands
 
 ### Development Setup
+
+**⚠️ IMPORTANT: Bundler Setup for Claude Code**
+
+This project requires Bundler 2.6.2. If you encounter `Could not find 'bundler' (2.6.2)` errors during Claude Code execution:
+
+**Automatic fix (recommended):**
+```bash
+eval "$(rbenv init -)" && gem install bundler:2.6.2
+```
+
+**Make permanent** - Add to your `.zshrc` or `.bashrc`:
+```bash
+# Add rbenv to PATH and initialize
+eval "$(rbenv init - zsh)"
+```
+
+**For Claude Code:** The `eval "$(rbenv init -)"` command is automatically prepended to bash commands when needed.
+
+**Manual verification:**
+```bash
+which ruby          # Should show: /Users/[user]/.rbenv/shims/ruby
+ruby --version      # Should show: ruby 3.4.2
+bundler --version   # Should show: Bundler version 2.6.2
+```
+
+**Standard setup:**
 ```bash
 bin/setup           # Install dependencies and setup development environment
 bin/console         # Interactive Ruby console for experimentation
@@ -16,15 +55,15 @@ bin/console         # Interactive Ruby console for experimentation
 
 #### Quick Reference Index
 
-| Command | Gem Command | Description |
-|---------|-------------|-------------|
-| **GPT Context** | `gpt_context` | Collect project files for AI context ⭐ |
-| **YouTube Manager** | `youtube_manager` | Manage YouTube video metadata via API |
-| **Subtitle Manager** | `subtitle_manager` | Process and join SRT subtitle files |
-| **Prompt Tools** | `prompt_tools` | AI prompt completion workflows |
-| **YouTube Automation** | `youtube_automation` | Automated YouTube workflows with GPT agents |
-| **Configuration** | `ad_config` | Manage appydave-tools configuration files |
-| **Move Images** | N/A (dev only) | Organize video project images (development tool) |
+| Command | Gem Command | Description | Status |
+|---------|-------------|-------------|--------|
+| **GPT Context** | `gpt_context` | Collect project files for AI context | ⭐ PRIMARY |
+| **YouTube Manager** | `youtube_manager` | CRUD operations on YouTube video metadata | ✅ ACTIVE |
+| **Subtitle Processor** | `subtitle_processor` | Transform SRT files (clean/merge) | ✅ ACTIVE |
+| **Configuration** | `ad_config` | Manage JSON configs (channels, paths, sequences) | ✅ ACTIVE |
+| **Move Images** | N/A (dev only) | Organize video asset images | ✅ ACTIVE |
+| **Prompt Tools** | `prompt_tools` | OpenAI Completion API wrapper | ⚠️ DEPRECATED API |
+| **YouTube Automation** | `youtube_automation` | Prompt sequence runner | ⚠️ INTERNAL USE |
 
 ---
 
@@ -73,20 +112,24 @@ bin/youtube_manager.rb update --video-id ID --category-id 28
 - Update video title, description, tags, and category
 - Generate detailed reports
 
-#### 3. Subtitle Manager (`bin/subtitle_manager.rb`)
+#### 3. Subtitle Processor (`bin/subtitle_processor.rb`)
 Process and manage SRT subtitle files:
 
 ```bash
 # Clean and normalize SRT files
-bin/subtitle_manager.rb clean -f input.srt -o cleaned.srt
+bin/subtitle_processor.rb clean -f input.srt -o cleaned.srt
 
 # Join multiple SRT files
-bin/subtitle_manager.rb join -d ./subtitles -f "*.srt" -o merged.srt
-bin/subtitle_manager.rb join -f "part1.srt,part2.srt" -s asc -b 100 -o final.srt
+bin/subtitle_processor.rb join -d ./subtitles -f "*.srt" -o merged.srt
+bin/subtitle_processor.rb join -f "part1.srt,part2.srt" -s asc -b 100 -o final.srt
 
 # Join with options
-bin/subtitle_manager.rb join -d ./subs -f "*.srt" -s inferred -b 200 -o output.srt -L detail
+bin/subtitle_processor.rb join -d ./subs -f "*.srt" -s inferred -b 200 -o output.srt -L detail
 ```
+
+**Operations:**
+- **clean**: Removes HTML tags (`<u>`), merges duplicate entries, normalizes spacing
+- **join**: Parses multiple SRT files, adjusts timestamps with buffer, merges timeline
 
 **Options:**
 - `-d, --directory` - Directory containing SRT files
@@ -95,28 +138,55 @@ bin/subtitle_manager.rb join -d ./subs -f "*.srt" -s inferred -b 200 -o output.s
 - `-b, --buffer` - Buffer between files in milliseconds (default: 100)
 - `-L, --log-level` - Log level: none, info, detail
 
-**Note:** Internal module is called `SubtitleMaster` but CLI tool is `subtitle_manager`
+**Use cases:** Cleaning YouTube auto-captions, merging FliVideo multi-part recording subtitles
 
-#### 4. Prompt Tools (`bin/prompt_tools.rb`)
-AI prompt completion workflows:
+**Note:** Renamed from `subtitle_manager` to `subtitle_processor` (accurate - processes files, doesn't manage state)
+
+#### 4. Prompt Tools (`bin/prompt_tools.rb`) ⚠️ DEPRECATED API
+OpenAI Completion API wrapper with template support:
 
 ```bash
-# Run AI prompt completion
-bin/prompt_tools.rb completion [options]
+# Run prompt from text
+bin/prompt_tools.rb completion -p "Your prompt" -o output.txt
+
+# Run prompt from file with placeholders
+bin/prompt_tools.rb completion -f template.md -k key1=value1,key2=value2 -c
 ```
 
-**Features:**
-- OpenAI GPT integration
-- Prompt execution and management
+**What it does:**
+- Sends prompts to OpenAI **Completion API** (older GPT-3 models like `davinci-codex`)
+- Supports template files with `{placeholder}` substitution
+- Outputs to file, clipboard, or stdout
 
-#### 5. YouTube Automation (`bin/youtube_automation.rb`)
-Automated YouTube workflows using GPT agents:
+**Status:** ⚠️ **Not in active use** - Uses **deprecated OpenAI Completion API**
+
+**Modern alternative:** Use ChatGPT/Claude directly or migrate to OpenAI Chat API
+
+**Potential use cases:** Template-based content generation (if migrated to Chat API)
+
+#### 5. YouTube Automation (`bin/youtube_automation.rb`) ⚠️ INTERNAL USE
+Prompt sequence runner for content workflows:
 
 ```bash
 # Run automation sequence
 bin/youtube_automation.rb -s 01-1
 bin/youtube_automation.rb -s 01-1 -d  # with debug output
 ```
+
+**What it does:**
+- Loads sequence config from `~/.config/appydave/youtube_automation.json`
+- Reads prompt templates from Dropbox path (`_common/raw_prompts/`)
+- Executes OpenAI Completion API calls
+- Saves responses to output files
+
+**Requirements:**
+- Sequence definitions in JSON config
+- Prompt template files in configured Dropbox location
+- `OPENAI_ACCESS_TOKEN` environment variable
+
+**Status:** ⚠️ **Internal tool** - Hardcoded paths, deprecated API, not documented for external use
+
+**Relationship to Move Images:** These are separate tools - Move Images organizes downloaded images into video asset folders
 
 **Options:**
 - `-s, --sequence` - Sequence number (required, e.g., 01-1)
@@ -140,9 +210,15 @@ bin/configuration.rb -e
 ```
 
 **Configuration Types:**
-- **settings** - General settings and paths
+- **settings** - General settings and paths (project folders: content, video, published, abandoned)
 - **channels** - YouTube channel definitions (code, name, youtube_handle)
-- **youtube_automation** - Automation workflow configurations
+- **youtube_automation** - Automation workflow configurations (prompt sequences)
+
+**Team Collaboration Features:**
+- **Shareable configs**: JSON files can be version-controlled (no secrets included)
+- **Per-developer paths**: Each team member customizes paths in their `~/.config/appydave/`
+- **Consistent structure**: Same channel codes/names across team
+- **Secrets separation**: API keys stored in `.env` files (gitignored), not in configs
 
 #### 7. Move Images (`bin/move_images.rb`)
 Organize and rename downloaded images into video project asset folders.
@@ -210,12 +286,20 @@ gem build           # Build gemspec into .gem file
 
 ## Architecture Overview
 
-This is a Ruby gem called `appydave-tools` that provides YouTube automation and content creation tools.
+`appydave-tools` is AppyDave's consolidated productivity toolkit for YouTube content creation. Single-purpose utilities in one repository for easier maintenance than separate codebases.
+
+**Philosophy:** See [docs/purpose-and-philosophy.md](./docs/purpose-and-philosophy.md) for project philosophy and design principles.
+
+**Tool Categories:**
+- AI & Context Management (GPT Context, Prompt Tools)
+- Content & Media (Subtitles, YouTube Manager, YouTube Automation, Move Images)
+- Configuration (Multi-channel config management)
 
 ### Core Structure
 - **CLI Tools**: Multiple executable scripts in `bin/` for different functionalities
 - **Modular Design**: Organized into focused modules under `lib/appydave/tools/`
-- **Configuration System**: Flexible config management with channel and project settings
+- **Independent Operation**: Each tool solves a specific problem standalone
+- **Configuration System**: Flexible config management for multi-project workflows
 - **Type System**: Custom type classes for data validation and transformation
 
 ### Key Components
@@ -242,7 +326,7 @@ This is a Ruby gem called `appydave-tools` that provides YouTube automation and 
 - Caption/subtitle management
 - Detailed reporting capabilities
 
-#### Subtitle Management (`lib/appydave/tools/subtitle_manager/`)
+#### Subtitle Management (`lib/appydave/tools/subtitle_processor/`)
 - SRT file cleaning and normalization
 - Multi-part subtitle joining
 - Timeline synchronization

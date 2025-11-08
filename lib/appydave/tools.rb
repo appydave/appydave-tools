@@ -16,8 +16,6 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'webrick'
 
-require 'pry'
-
 require 'appydave/tools/version'
 require 'appydave/tools/debuggable'
 require 'appydave/tools/types/indifferent_access_hash'
@@ -50,8 +48,8 @@ require 'appydave/tools/name_manager/project_name'
 
 require 'appydave/tools/prompt_tools/prompt_completion'
 
-require 'appydave/tools/subtitle_manager/clean'
-require 'appydave/tools/subtitle_manager/join'
+require 'appydave/tools/subtitle_processor/clean'
+require 'appydave/tools/subtitle_processor/join'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
 

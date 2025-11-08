@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::SubtitleMaster::Join do
-  let(:fixtures_path) { File.expand_path('../../../fixtures/subtitle_manager', __dir__) }
+RSpec.describe Appydave::Tools::SubtitleProcessor::Join do
+  let(:fixtures_path) { File.expand_path('../../../fixtures/subtitle_processor', __dir__) }
   let(:temp_folder) { Dir.mktmpdir }
 
   describe '#initialize' do
