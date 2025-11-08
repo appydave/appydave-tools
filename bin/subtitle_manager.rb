@@ -135,8 +135,14 @@ class SubtitleProcessorCLI
     end
 
     # Assuming `Appydave::Tools::SubtitleProcessor::Join` exists
-    joiner = Appydave::Tools::SubtitleProcessor::Join.new(folder: options[:folder], files: options[:files], sort: options[:sort], buffer: options[:buffer], output: options[:output],
-                                                        log_level: options[:log_level])
+    joiner = Appydave::Tools::SubtitleProcessor::Join.new(
+      folder: options[:folder],
+      files: options[:files],
+      sort: options[:sort],
+      buffer: options[:buffer],
+      output: options[:output],
+      log_level: options[:log_level]
+    )
     joiner.join
   end
 

@@ -265,7 +265,10 @@ module Appydave
           end
         end
 
-        def initialize(folder: './', files: '*.srt', sort: 'inferred', buffer: 100, output: 'merged.srt', log_level: :info)
+        # rubocop:disable Metrics/ParameterLists
+        def initialize(folder: './', files: '*.srt', sort: 'inferred', buffer: 100, output: 'merged.srt',
+                       log_level: :info)
+          # rubocop:enable Metrics/ParameterLists
           @folder = folder
           @files = files
           @sort = sort
