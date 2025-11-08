@@ -1,3 +1,15 @@
+# [0.16.0](https://github.com/appydave/appydave-tools/compare/v0.15.0...v0.16.0) (2025-11-08)
+
+
+### Bug Fixes
+
+* fix cops ([6c1d59b](https://github.com/appydave/appydave-tools/commit/6c1d59bd870af519825556f7304d6ca1677d8649))
+
+
+### Features
+
+* update documentation and general purpose rename and fixes via claude ([027c3df](https://github.com/appydave/appydave-tools/commit/027c3dff11e572359e6f2d1ebc17010dc3b8d7ee))
+
 # [0.15.0](https://github.com/appydave/appydave-tools/compare/v0.14.1...v0.15.0) (2025-11-08)
 
 
