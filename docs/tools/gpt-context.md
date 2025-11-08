@@ -1,12 +1,16 @@
-# GPT Context Usage Guide
+# GPT Context Gatherer
 
-> References: [ChatGPT Documentation](https://chatgpt.com/c/670f2150-08b4-8002-b2d7-04aff6fe304f)
+Collect and organize project files for AI assistant context with flexible filtering and multiple output formats.
 
-This guide provides a comprehensive reference for using the `gpt_context` tool. Below you'll find examples of different use cases and command line invocations to help you effectively use `gpt_context` for gathering and organizing your project files. These examples will help you remember how to leverage various options available in `gpt_context`.
+## What It Does
 
-## Overview
+**GPT Context** gathers project files into structured text that you can feed to AI assistants like Claude, ChatGPT, or Copilot. Instead of copying files manually, this tool:
 
-`gpt_context` is a command line utility designed to collect, filter, and organize context from different files within a project. It allows for gathering files based on include and exclude patterns, visualizing the project structure, and exporting collected information in multiple formats, such as content, tree, or JSON.
+- Collects files matching include/exclude patterns
+- Outputs in multiple formats (tree view, content, JSON)
+- Supports line limiting for large files
+- Copies directly to clipboard or saves to files
+- Integrates with aider for AI-assisted coding
 
 ### Common Options
 - **`-i` or `--include`**: Specify patterns or files to include (multiple entries allowed).
@@ -17,9 +21,36 @@ This guide provides a comprehensive reference for using the `gpt_context` tool. 
 - **`-l` or `--line-limit`**: Limit the number of lines included from each file.
 - **`-b` or `--base-dir`**: Set the base directory to gather files from. Current working directory is used if not supplied.
 
-## Usage Examples
+## How to Use
 
-### 1. Gathering File Contents
+### Quick Start
+
+```bash
+# Include specific file types
+gpt_context -i '**/*.rb' -e 'spec/**/*'
+
+# Include and see what you're collecting
+gpt_context -i '**/*.rb' -e 'spec/**/*' -d -o context.txt
+
+# Multiple patterns for inclusion
+gpt_context -i 'lib/**/*.rb' -i 'bin/**/*.rb' -e '**/node_modules/**/*'
+```
+
+### Common Options
+
+- **`-i` or `--include`**: Specify patterns or files to include (multiple entries allowed).
+- **`-e` or `--exclude`**: Specify patterns or files to exclude (multiple entries allowed).
+- **`-f` or `--format`**: Output format (`content`, `tree`, or `json`). If not provided, then `tree` followed by `content` is used by default.
+- **`-d` or `--debug`**: Enable debug mode (`info`, `params`, `debug`). Default is `info`.
+- **`-o` or `--output`**: Set output target (`clipboard` or file path). Default is `clipboard`.
+- **`-l` or `--line-limit`**: Limit lines included from each file.
+- **`-b` or `--base-dir`**: Set base directory. Default is current working directory.
+- **`-p` or `--prompt`**: Include prompt for aider format output.
+- **`-h` or `--help`**: Show help message.
+
+### Usage Examples
+
+#### 1. Gathering File Contents
 To gather the content of specific files and print it to the console, you can use the `-f content` format option:
 
 ```sh
@@ -192,3 +223,83 @@ output_handler.execute
 ```
 **Explanation**: This complete example demonstrates how to use `Options` to configure the gathering process, `FileCollector` to collect the files, and `OutputHandler` to manage the output. This approach can be useful for programmatically automating context collection tasks in more complex workflows.
 
+## Use Cases for AI Agents
+
+AI agents can leverage GPT Context to understand and work with codebases more effectively:
+
+### 1. Code Review & Quality Analysis
+```bash
+# Feed component for AI review
+gpt_context -i 'lib/auth/**/*' -e '**/*.test.rb' -o review-context.txt
+```
+**AI discovers**: Component structure, dependencies, testing patterns. Can identify architectural issues, suggest refactoring, spot security gaps.
+
+### 2. Bug Investigation & Diagnosis
+```bash
+# Gather related error handling code
+gpt_context -i 'lib/errors/**/*' -i 'lib/handlers/**/*' -f tree -d
+```
+**AI discovers**: Error handling patterns, exception hierarchy, recovery mechanisms. Can diagnose root causes, suggest fixes.
+
+### 3. Feature Implementation Assistance
+```bash
+# Get codebase patterns before building new features
+gpt_context -i 'lib/**/*.rb' -l 30 -f tree -o implementation-context.txt
+```
+**AI discovers**: Coding patterns, naming conventions, architectural decisions. Can write code that matches existing style and patterns.
+
+### 4. Documentation Generation
+```bash
+# Gather public API
+gpt_context -i 'lib/api/**/*.rb' -e 'lib/api/internal/**/*' -d
+```
+**AI discovers**: Public interfaces, parameters, return types. Can generate API documentation, usage examples, schema definitions.
+
+### 5. Test Coverage Analysis
+```bash
+# Compare implementation vs test coverage
+gpt_context -i 'lib/**/*.rb' -i 'spec/**/*.rb' -f tree -d
+```
+**AI discovers**: Which files have tests, which are untested, testing patterns. Can suggest test structure, identify coverage gaps.
+
+### 6. Performance & Optimization Review
+```bash
+# Gather performance-critical sections
+gpt_context -i 'lib/cache/**/*' -i 'lib/queries/**/*' -o perf-analysis.txt
+```
+**AI discovers**: Caching strategy, query patterns, bottlenecks. Can identify optimization opportunities, suggest refactoring.
+
+### 7. Architecture Understanding
+```bash
+# Map entire module structure
+gpt_context -i 'lib/appydave/tools/**/*' -e '**/spec/**/*' -f tree -d
+```
+**AI discovers**: Module organization, relationships, responsibilities. Can explain design, suggest improvements, plan migrations.
+
+### 8. Onboarding & Learning
+```bash
+# Starter context for new team members
+gpt_context -i 'lib/**/*.rb' -e 'spec/**/*' -e 'deprecated/**/*' -l 50 -f tree
+```
+**AI discovers**: Codebase structure, entry points, key patterns. Can answer questions about how to do things, where code lives.
+
+### 9. Refactoring Preparation
+```bash
+# Analyze legacy code before refactoring
+gpt_context -i 'legacy/**/*.js' -l 30 -f tree -d
+```
+**AI discovers**: Current structure, dependencies, risk areas. Can propose refactoring strategy, identify breaking changes.
+
+### 10. Multi-Language Code Integration
+```bash
+# Understand how languages interact
+gpt_context -i 'lib/**/*.rb' -i 'src/**/*.ts' -e '**/node_modules/**/*' -f tree
+```
+**AI discovers**: Language boundaries, integration points, protocol definitions. Can suggest improvements, identify compatibility issues.
+
+---
+
+**Related Tools**:
+- Use with `aider` for AI-assisted coding workflows
+- Combine with `youtube-manager` for video metadata context
+- Works with any AI assistant (Claude, ChatGPT, Copilot, etc.)
