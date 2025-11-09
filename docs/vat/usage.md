@@ -222,38 +222,101 @@ Status:
   ⚠️  Out of sync (file changed): 0
 ```
 
-#### `vat s3-cleanup [brand] [project] [--dry-run] [--force]`
+#### `vat s3-cleanup-remote [brand] [project] [--dry-run] [--force]`
 Delete S3 staging files for a project.
 
 ```bash
 # Preview what would be deleted
-vat s3-cleanup appydave b65 --dry-run
+vat s3-cleanup-remote appydave b65 --dry-run
 
 # Delete with confirmation prompt
-vat s3-cleanup appydave b65
+vat s3-cleanup-remote appydave b65
 
 # Delete without confirmation
-vat s3-cleanup appydave b65 --force
+vat s3-cleanup-remote appydave b65 --force
 ```
 
 **Warning:** This deletes files from S3. Use `--dry-run` first!
 
+**Note:** The old `vat s3-cleanup` command still works but shows a deprecation warning.
+
+#### `vat s3-cleanup-local [brand] [project] [--dry-run] [--force]`
+Delete local s3-staging files for a project.
+
+```bash
+# Preview what would be deleted
+vat s3-cleanup-local appydave b65 --dry-run
+
+# Delete with confirmation prompt
+vat s3-cleanup-local appydave b65
+
+# Delete without confirmation
+vat s3-cleanup-local appydave b65 --force
+```
+
+**Warning:** This deletes local files in the s3-staging directory. Use `--dry-run` first!
+
 ### Project Management
 
-#### `vat manifest [brand]`
-Generate project manifest for a brand.
+#### `vat manifest [brand] [--all]`
+Generate project manifest for a brand (tracks projects across local + SSD storage).
 
 ```bash
+# Generate manifest for specific brand
 vat manifest appydave
+
+# Generate manifests for all configured brands
+vat manifest --all
 ```
 
-#### `vat archive [brand] [project] [--dry-run]`
-Archive project to SSD backup.
+**What it does:**
+- Scans local and SSD storage locations
+- Tracks project distribution (local only, SSD only, or both)
+- Calculates disk usage statistics
+- Validates project ID formats
+- Outputs `projects.json` in brand directory
+
+**Example output:**
+```
+📊 Generating manifest for appydave...
+
+✅ Generated /path/to/v-appydave/projects.json
+   Found 27 unique projects
+
+Distribution:
+  Local only: 15
+  SSD only: 8
+  Both locations: 4
+
+Disk Usage:
+  Local: 45.3 GB
+  SSD: 120.7 GB
+
+🔍 Running validations...
+✅ All validations passed!
+```
+
+#### `vat archive [brand] [project] [--dry-run] [--force]`
+Archive completed project to SSD backup location.
 
 ```bash
-vat archive appydave b63
+# Preview archive operation
 vat archive appydave b63 --dry-run
+
+# Copy to SSD (leaves local copy intact)
+vat archive appydave b63
+
+# Copy to SSD and delete local copy
+vat archive appydave b63 --force
 ```
+
+**What it does:**
+- Copies entire project directory to SSD backup location
+- Verifies SSD is mounted before archiving
+- Shows project size before copying
+- Optional: Delete local copy after successful archive (--force)
+
+**Configuration:** Uses `ssd_backup` location from `brands.json` config.
 
 #### `vat sync-ssd [brand]`
 Sync light files from SSD for brand.
@@ -261,6 +324,8 @@ Sync light files from SSD for brand.
 ```bash
 vat sync-ssd appydave
 ```
+
+**Status:** ⏳ Coming soon - restore projects from SSD backup
 
 ---
 
@@ -316,8 +381,8 @@ vat archive appydave b63
 vat s3-status appydave b63
 
 # Clean up S3 (saves storage costs)
-vat s3-cleanup appydave b63 --dry-run  # Preview
-vat s3-cleanup appydave b63 --force     # Execute
+vat s3-cleanup-remote appydave b63 --dry-run  # Preview
+vat s3-cleanup-remote appydave b63 --force     # Execute
 ```
 
 ---
@@ -478,7 +543,8 @@ Preview actions without making changes:
 ```bash
 vat s3-up appydave b65 --dry-run
 vat s3-down voz boy-baker --dry-run
-vat s3-cleanup aitldr movie-posters --dry-run
+vat s3-cleanup-remote aitldr movie-posters --dry-run
+vat s3-cleanup-local appydave b65 --dry-run
 ```
 
 ### Interactive Selection

@@ -200,11 +200,20 @@ vat s3-up appydave b65
 # Download collaborator's edits from S3
 vat s3-down appydave b65
 
-# Check sync status
+# Check sync status (shows all 4 states: synced, modified, S3 only, local only)
 vat s3-status appydave b65
 
+# Archive completed project to SSD
+vat archive appydave b63
+
+# Generate project manifest (tracks all projects across local + SSD)
+vat manifest appydave
+
 # Clean up S3 after project completion
-vat s3-cleanup appydave b65 --force
+vat s3-cleanup-remote appydave b65 --force
+
+# Clean up local s3-staging directory
+vat s3-cleanup-local appydave b65 --force
 ```
 
 **Configuration required:** Add `video-projects-root` to `settings.json` (see [Quick Start](#quick-start-configuration) above).
