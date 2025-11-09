@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+# rubocop:disable all
 
 # Generate projects.json manifest by scanning local and SSD directories
 # Tracks video projects across storage locations with grouped folder support

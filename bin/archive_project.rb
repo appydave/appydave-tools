@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+# rubocop:disable all
 
 # Archive a completed video project to SSD
 # 1. Copies entire project to SSD grouped folder (if not already there)

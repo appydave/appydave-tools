@@ -154,7 +154,3 @@ Metrics/MethodLength:
     - "**/spec/**/*"
     - "bin/*.rb"
     - "lib/appydave/**/*.rb"
-
-Naming/PredicateName:
-  Exclude:
-    - "bin/**/*"

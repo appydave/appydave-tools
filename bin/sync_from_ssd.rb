@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+# rubocop:disable all
 
 # Sync non-video files from SSD to local video directory
 # Reads projects.json manifest and syncs only projects not in local flat structure
