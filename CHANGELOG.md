@@ -1,3 +1,18 @@
+# [0.17.0](https://github.com/appydave/appydave-tools/compare/v0.16.0...v0.17.0) (2025-11-09)
+
+
+### Bug Fixes
+
+* disable RuboCop for standalone bin scripts ([80e0e6a](https://github.com/appydave/appydave-tools/commit/80e0e6ac4a7289707549bc3708d990c6805c17d5))
+* documentation update ([5beb2b6](https://github.com/appydave/appydave-tools/commit/5beb2b65af3c3a256409c7a9067526df2c269851))
+* exclude bin scripts from Naming/PredicateName cop ([1b5d363](https://github.com/appydave/appydave-tools/commit/1b5d3638f8d19a86752792f67e5b7a9ddce91c37))
+
+
+### Features
+
+* add manifest generator ([bc6a4f1](https://github.com/appydave/appydave-tools/commit/bc6a4f14fe90471cd96a1dbc7c5e2900db4f08bb))
+* video asset tools - implement VAT (Digital Asset Management) for multi-brand video projects ([16f29fc](https://github.com/appydave/appydave-tools/commit/16f29fcf48d492747fbf82a203e0d81057385eb0))
+
 # [0.16.0](https://github.com/appydave/appydave-tools/compare/v0.15.0...v0.16.0) (2025-11-08)
 
 
