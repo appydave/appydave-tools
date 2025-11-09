@@ -57,6 +57,7 @@ require 'appydave/tools/vat/project_resolver'
 require 'appydave/tools/vat/config_loader'
 require 'appydave/tools/vat/s3_operations'
 require 'appydave/tools/vat/project_listing'
+require 'appydave/tools/vat/manifest_generator'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
 
