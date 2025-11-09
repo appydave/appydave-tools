@@ -39,6 +39,50 @@ RSpec.describe Appydave::Tools::Configuration::Models::ConfigBase do
 
       expect(File.read(config_file)).to eq(JSON.pretty_generate(config_data))
     end
+
+    context 'when config file already exists' do
+      it 'creates a timestamped backup before saving' do
+        # Create initial file
+        File.write(config_file, { 'old' => 'data' }.to_json)
+
+        # Update and save
+        config.instance_variable_set(:@data, config_data)
+
+        # Freeze time to predictable timestamp
+        frozen_time = Time.new(2025, 11, 9, 20, 30, 15)
+        allow(Time).to receive(:now).and_return(frozen_time)
+
+        config.save
+
+        # Check backup was created with timestamp
+        expected_backup = "#{config_file}.backup.20251109-203015"
+        expect(File.exist?(expected_backup)).to be true
+        expect(File.read(expected_backup)).to eq({ 'old' => 'data' }.to_json)
+      end
+
+      it 'overwrites the original file with new data' do
+        # Create initial file
+        File.write(config_file, { 'old' => 'data' }.to_json)
+
+        # Update and save
+        config.instance_variable_set(:@data, config_data)
+        config.save
+
+        # Check original file has new data
+        expect(File.read(config_file)).to eq(JSON.pretty_generate(config_data))
+      end
+    end
+
+    context 'when config file does not exist' do
+      it 'does not create a backup' do
+        config.instance_variable_set(:@data, config_data)
+        config.save
+
+        # No backup files should exist
+        backup_files = Dir.glob("#{config_file}.backup.*")
+        expect(backup_files).to be_empty
+      end
+    end
   end
 
   describe '#load' do

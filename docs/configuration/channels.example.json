@@ -1,0 +1,26 @@
+{
+  "channels": {
+    "your-channel-key": {
+      "code": "yc",
+      "name": "Your Channel Name",
+      "youtube_handle": "@yourhandle",
+      "locations": {
+        "content_projects": "/path/to/content/projects",
+        "video_projects": "/path/to/video/projects",
+        "published_projects": "/path/to/published/projects",
+        "abandoned_projects": "/path/to/abandoned/projects"
+      }
+    },
+    "second-channel": {
+      "code": "sc",
+      "name": "Second Channel",
+      "youtube_handle": "@secondchannel",
+      "locations": {
+        "content_projects": "NOT-SET",
+        "video_projects": "/path/to/video-projects/v-second-channel",
+        "published_projects": "NOT-SET",
+        "abandoned_projects": "NOT-SET"
+      }
+    }
+  }
+}

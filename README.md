@@ -12,6 +12,7 @@ Instead of managing dozens of separate repositories, everything lives here - one
 - 🤖 Feed entire codebases to AI assistants in seconds
 - 📹 Batch update YouTube video metadata without clicking through the UI (update 50 videos in 5 minutes)
 - 📝 Process subtitle files - clean formatting, merge multi-part recordings, synchronize timelines
+- 🎬 Manage video projects across local/S3/SSD storage with smart sync (collaborate on 50GB+ projects)
 - 🖼️ Organize downloaded images into project folders automatically (video asset workflow)
 - ⚙️ Manage multi-channel configurations from the command line (team-shareable JSON configs)
 
@@ -26,6 +27,62 @@ Or add to your Gemfile:
 ```ruby
 gem 'appydave-tools'
 ```
+
+## Quick Start: Configuration
+
+Most tools work out of the box, but some features (VAT, YouTube Manager, OpenAI tools) require configuration.
+
+### First-Time Setup
+
+**1. Create configuration files:**
+
+```bash
+ad_config -c
+```
+
+This creates empty configuration files at `~/.config/appydave/`:
+- `settings.json` - Paths and preferences
+- `channels.json` - YouTube channel definitions
+- `youtube-automation.json` - Automation workflows
+
+**2. Option A: Copy example files**
+
+```bash
+# Copy examples to your config directory
+cp docs/configuration/settings.example.json ~/.config/appydave/settings.json
+cp docs/configuration/channels.example.json ~/.config/appydave/channels.json
+
+# Copy .env to project root (for API keys)
+cp docs/configuration/.env.example .env
+```
+
+Then edit each file and replace placeholders with your actual values.
+
+**2. Option B: Edit directly in VS Code**
+
+```bash
+ad_config -e
+```
+
+Opens `~/.config/appydave/` for editing.
+
+**3. Add your values**
+
+Update the configuration files with your specific paths and settings.
+
+**Required for VAT (Video Asset Tools):**
+```json
+{
+  "video-projects-root": "/path/to/your/video-projects"
+}
+```
+
+**Required for OpenAI tools:**
+```bash
+OPENAI_ACCESS_TOKEN=sk-your-actual-api-key
+```
+
+**Full configuration guide:** [docs/configuration/README.md](./docs/configuration/README.md)
 
 ## The Tools
 
@@ -124,6 +181,56 @@ subtitle_processor join -f "part1.srt,part2.srt" -b 200 -o merged.srt
 
 ---
 
+### 🎬 VAT (Video Asset Tools)
+
+**The problem:** Managing large video files across local storage, cloud collaboration (S3), and archival storage (SSD) is complex and error-prone.
+
+**The solution:** Unified CLI for multi-tenant video project management with smart sync, pattern matching, and workflow automation.
+
+```bash
+# List all brands
+vat list
+
+# List projects for AppyDave brand
+vat list appydave
+
+# Upload files to S3 for collaboration
+vat s3-up appydave b65
+
+# Download collaborator's edits from S3
+vat s3-down appydave b65
+
+# Check sync status
+vat s3-status appydave b65
+
+# Clean up S3 after project completion
+vat s3-cleanup appydave b65 --force
+```
+
+**Configuration required:** Add `video-projects-root` to `settings.json` (see [Quick Start](#quick-start-configuration) above).
+
+**Key Features:**
+- **Multi-tenant**: Manages 6 brands (appydave, voz, aitldr, kiros, joy, ss)
+- **Smart sync**: MD5-based file comparison (skip unchanged files)
+- **Pattern matching**: `vat list appydave 'b6*'` (lists b60-b69)
+- **Short names**: `b65` → `b65-guy-monroe-marketing-plan` (FliVideo workflow)
+- **Auto-detection**: Run commands from project directory without args
+- **Hybrid storage**: Local → S3 (collaboration) → SSD (archive)
+
+**Workflows:**
+- **FliVideo** (AppyDave): Sequential chapter-based recording with short name support
+- **Storyline** (VOZ, AITLDR): Script-first narrative content with full project names
+
+**Use cases:**
+- Collaborate on video edits with team members via S3
+- Archive completed projects to external SSD
+- Manage video assets across multiple brands/clients
+- Quick project discovery with pattern matching
+
+[Full documentation →](./docs/usage/vat.md)
+
+---
+
 ### 🎯 Prompt Tools *(Experimental - Not actively used)*
 
 **The problem:** Running OpenAI prompts with placeholder substitution and output management.
@@ -200,7 +307,7 @@ youtube_automation -s 01-1 -d
 # List all configurations
 ad_config -l
 
-# Create missing config files with templates
+# Create missing config files (safe - won't overwrite existing files)
 ad_config -c
 
 # Edit configurations in VS Code
@@ -214,21 +321,47 @@ ad_config -p
 ```
 
 **What it manages:**
-- **settings.json**: Project folder paths (content, video, published, abandoned)
-- **channels.json**: YouTube channel definitions (code, name, youtube_handle)
-- **youtube_automation.json**: Automation sequence configurations
+
+| File | Purpose | Safe to Version Control? |
+|------|---------|-------------------------|
+| `settings.json` | Paths and preferences (video-projects-root, download folders, etc.) | ✅ Yes (after removing personal paths) |
+| `channels.json` | YouTube channel definitions (code, name, youtube_handle, locations) | ✅ Yes (share structure, customize paths locally) |
+| `youtube_automation.json` | Automation workflow configurations | ✅ Yes (if no sensitive data) |
+| `.env` | **Secrets and API keys** | ❌ **NEVER** (gitignored) |
+
+**Key Settings:**
+
+- **video-projects-root** - Root directory for all video projects (required for VAT)
+- **ecamm-recording-folder** - Where Ecamm Live saves recordings
+- **download-folder** - General downloads directory
+- **download-image-folder** - Image downloads (defaults to download-folder)
+
+**Channel Configuration:**
+
+Each channel defines:
+- **code** - Short code for project naming (e.g., "ad" for AppyDave)
+- **name** - Display name
+- **youtube_handle** - YouTube @ handle
+- **locations** - Four project location types:
+  - `content_projects` - Content planning/scripts
+  - `video_projects` - Active video projects (**required**)
+  - `published_projects` - Published video archives
+  - `abandoned_projects` - Abandoned projects
+
+Use `"NOT-SET"` as a placeholder for unconfigured locations.
 
 **Use cases:**
 - **Multi-channel management**: Switch between different YouTube channels
-- **Team collaboration**: Share configuration files via Git/Dropbox (excluding secrets)
-- **Workflow standardization**: Consistent paths across team members
+- **Team collaboration**: Share configuration structure via Git (each developer customizes paths)
+- **Workflow standardization**: Consistent channel codes/names across team
 - **Automation setup**: Define reusable prompt sequences
 
-**Team collaboration notes:**
-- Configuration files can be version-controlled (they contain no secrets)
-- Each team member can maintain their own `~/.config/appydave/` directory
-- Paths can be customized per developer machine
-- Secrets (API keys) stored separately in `.env` files (gitignored)
+**Safety Features:**
+- **Automatic backups**: Every config save creates timestamped backup (`.backup.YYYYMMDD-HHMMSS`)
+- **Safe creation**: `ad_config -c` only creates missing files, never overwrites existing ones
+- **Secrets separation**: API keys stored in `.env` files (gitignored), not in configs
+
+**Full configuration guide:** [docs/configuration/README.md](./docs/configuration/README.md)
 
 ---
 

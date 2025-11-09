@@ -42,6 +42,7 @@ Gem::Specification.new do |spec|
   # spec.extensions    = ['ext/appydave_tools/extconf.rb']
 
   spec.add_dependency 'activemodel', '~> 8'
+  spec.add_dependency 'aws-sdk-s3', '~> 1'
   spec.add_dependency 'clipboard', '~> 2'
   spec.add_dependency 'csv', '~> 3'
   spec.add_dependency 'dotenv', '~> 3'
@@ -49,6 +50,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'googleauth'
   spec.add_dependency 'i18n', '~> 1.14'
   spec.add_dependency 'k_log', '~> 0'
+  spec.add_dependency 'pstore' # Ruby 3.5+ compatibility (removed from default gems)
   spec.add_dependency 'ruby-openai', '~> 8'
   spec.add_dependency 'webrick'
 

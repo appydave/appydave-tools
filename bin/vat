@@ -1,0 +1,623 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'appydave/tools'
+
+# VAT (Video Asset Tools) - CLI for video project management
+class VatCLI
+  def initialize
+    @commands = {
+      'help' => method(:help_command),
+      'list' => method(:list_command),
+      's3-up' => method(:s3_up_command),
+      's3-down' => method(:s3_down_command),
+      's3-status' => method(:s3_status_command),
+      's3-cleanup-remote' => method(:s3_cleanup_remote_command),
+      's3-cleanup-local' => method(:s3_cleanup_local_command),
+      'archive' => method(:archive_command),
+      'manifest' => method(:manifest_command),
+      # Deprecated aliases (for backward compatibility)
+      's3-cleanup' => method(:s3_cleanup_remote_command),
+      'cleanup-local' => method(:s3_cleanup_local_command)
+    }
+  end
+
+  def run
+    command, *args = ARGV
+
+    if command.nil?
+      puts 'VAT - Video Asset Tools'
+      puts 'Usage: vat [command] [options]'
+      puts "Run 'vat help' for more information."
+      exit
+    end
+
+    if @commands.key?(command)
+      @commands[command].call(args)
+    else
+      puts "Unknown command: #{command}"
+      puts "Run 'vat help' for available commands."
+      exit 1
+    end
+  end
+
+  private
+
+  # Show help information
+  # rubocop:disable Metrics/CyclomaticComplexity
+  def help_command(args)
+    topic = args[0]
+
+    case topic
+    when 'brands'
+      show_brands_help
+    when 'workflows'
+      show_workflows_help
+    when 'config'
+      show_config_help
+    when 'list'
+      show_list_help
+    when 's3-up', 's3-down', 's3-status', 's3-cleanup-remote', 's3-cleanup-local', 'archive', 'manifest'
+      show_s3_help(topic)
+    when 's3-cleanup', 'cleanup-local'
+      # Deprecated command names - show deprecation notice and new help
+      puts "⚠️  '#{topic}' is deprecated. Use the new command name instead:\n\n"
+      new_name = topic == 's3-cleanup' ? 's3-cleanup-remote' : 's3-cleanup-local'
+      show_s3_help(new_name)
+    else
+      show_main_help
+    end
+  end
+  # rubocop:enable Metrics/CyclomaticComplexity
+
+  # List brands and projects
+  def list_command(args)
+    args = args.reject { |arg| arg.start_with?('--') || arg.start_with?('-') }
+
+    brand_arg = args[0]
+    pattern_arg = args[1]
+
+    if brand_arg.nil?
+      # List all brands with summary
+      Appydave::Tools::Vat::ProjectListing.list_brands_with_counts
+    elsif pattern_arg
+      # Pattern matching
+      Appydave::Tools::Vat::ProjectListing.list_with_pattern(brand_arg, pattern_arg)
+    else
+      # Specific brand
+      Appydave::Tools::Vat::ProjectListing.list_brand_projects(brand_arg)
+    end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # S3 Upload
+  def s3_up_command(args)
+    options = parse_s3_args(args, 's3-up')
+    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops.upload(dry_run: options[:dry_run])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # S3 Download
+  def s3_down_command(args)
+    options = parse_s3_args(args, 's3-down')
+    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops.download(dry_run: options[:dry_run])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # S3 Status
+  def s3_status_command(args)
+    options = parse_s3_args(args, 's3-status')
+    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops.status
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # S3 Cleanup Remote
+  def s3_cleanup_remote_command(args)
+    options = parse_s3_args(args, 's3-cleanup-remote')
+    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops.cleanup(force: options[:force], dry_run: options[:dry_run])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # S3 Cleanup Local
+  def s3_cleanup_local_command(args)
+    options = parse_s3_args(args, 's3-cleanup-local')
+    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops.cleanup_local(force: options[:force], dry_run: options[:dry_run])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Archive project to SSD
+  def archive_command(args)
+    options = parse_s3_args(args, 'archive')
+    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops.archive(force: options[:force], dry_run: options[:dry_run])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Generate manifest
+  # rubocop:disable Metrics/MethodLength
+  def manifest_command(args)
+    all_brands = args.include?('--all')
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+
+    if all_brands
+      # Generate manifest for all brands
+      Appydave::Tools::Configuration::Config.configure
+      brands_config = Appydave::Tools::Configuration::Config.brands
+
+      brands_config.brands.each do |brand_info|
+        brand_key = brand_info.key
+        puts ''
+        puts '=' * 60
+
+        generator = Appydave::Tools::Vat::ManifestGenerator.new(brand_key)
+        generator.generate
+      end
+
+      puts ''
+      puts '=' * 60
+      puts '✅ All brand manifests generated!'
+    elsif brand_arg
+      # Generate manifest for specific brand
+      brand = Appydave::Tools::Vat::Config.expand_brand(brand_arg)
+      ENV['BRAND_PATH'] = Appydave::Tools::Vat::Config.brand_path(brand)
+
+      generator = Appydave::Tools::Vat::ManifestGenerator.new(brand_arg)
+      generator.generate
+    else
+      puts 'Usage: vat manifest <brand> [--all]'
+      puts ''
+      puts 'Examples:'
+      puts '  vat manifest appydave        # Generate manifest for AppyDave brand'
+      puts '  vat manifest --all           # Generate manifests for all brands'
+      exit 1
+    end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+  # rubocop:enable Metrics/MethodLength
+
+  # Parse S3 command arguments
+  def parse_s3_args(args, command)
+    dry_run = args.include?('--dry-run')
+    force = args.include?('--force')
+    args = args.reject { |arg| arg.start_with?('--') }
+
+    brand_arg = args[0]
+    project_arg = args[1]
+
+    if brand_arg.nil?
+      # Auto-detect from PWD
+      brand, project_id = Appydave::Tools::Vat::ProjectResolver.detect_from_pwd
+      if brand.nil? || project_id.nil?
+        puts '❌ Could not auto-detect brand/project from current directory'
+        puts "Usage: vat #{command} <brand> <project> [--dry-run]"
+        exit 1
+      end
+      brand_key = brand # Already detected, use as-is
+    else
+      brand_key = brand_arg # Use the shortcut/key (e.g., 'appydave')
+      brand = Appydave::Tools::Vat::Config.expand_brand(brand_arg) # Expand for path resolution
+      project_id = Appydave::Tools::Vat::ProjectResolver.resolve(brand_arg, project_arg)
+    end
+
+    # Set ENV for compatibility with ConfigLoader
+    ENV['BRAND_PATH'] = Appydave::Tools::Vat::Config.brand_path(brand)
+
+    { brand: brand_key, project: project_id, dry_run: dry_run, force: force }
+  end
+
+  # Help text methods
+  # rubocop:disable Metrics/MethodLength
+  def show_main_help
+    puts <<~HELP
+      VAT (Video Asset Tools) - Unified CLI for video project management
+
+      Usage: vat [command] [options]
+
+      Available Commands:
+        help [command]              Show help information
+        list [brand] [pattern]      List brands/projects
+
+        S3 Sync Commands:
+        s3-up <brand> <project>          Upload to S3 staging
+        s3-down <brand> <project>        Download from S3 staging
+        s3-status <brand> [project]      Check sync status
+        s3-cleanup-remote <brand> <project>  Delete S3 files
+        s3-cleanup-local <brand> <project>   Delete local s3-staging files
+
+        Archive Commands:
+        archive <brand> <project>        Copy project to SSD backup
+        manifest <brand> [--all]         Generate project manifest
+
+      List Modes:
+        vat list                   All brands with counts/sizes
+        vat list appydave          All projects for brand
+        vat list appydave 'b6*'    Pattern matching
+
+      Help Topics:
+        vat help brands            List available brands
+        vat help workflows         Explain FliVideo vs Storyline workflows
+        vat help config            Configuration file details
+
+      Examples:
+        vat list
+        vat s3-up appydave b65
+        vat s3-down voz boy-baker --dry-run
+        vat s3-status appydave b65
+        vat s3-cleanup appydave b65 --force
+
+      For more information: https://github.com/appydave/appydave-tools
+    HELP
+  end
+
+  def show_brands_help
+    puts <<~HELP
+      Available Brands
+
+      VAT supports multi-tenant video project management with brand shortcuts:
+
+      Brand Shortcuts:
+        appydave  → v-appydave         (AppyDave brand videos)
+        voz       → v-voz              (VOZ client videos)
+        aitldr    → v-aitldr           (AITLDR brand videos)
+        kiros     → v-kiros            (Kiros client videos)
+        joy       → v-beauty-and-joy   (Beauty & Joy brand)
+        ss        → v-supportsignal    (SupportSignal client)
+
+      Usage:
+        vat list                       # Show all brands
+        vat list --summary             # Show brands with project counts
+        vat list appydave              # List all AppyDave projects
+        vat s3-up voz boy-baker        # Upload VOZ project
+    HELP
+  end
+
+  def show_workflows_help
+    puts <<~HELP
+      Video Workflows
+
+      VAT supports two primary video content workflows:
+
+      1. FliVideo Workflow (AppyDave)
+         - Sequential chapter-based recording
+         - Projects follow pattern: [letter][number]-[name]
+         - Example: b65-guy-monroe-marketing-plan
+         - Short name support: b65 → b65-guy-monroe-marketing-plan
+         - Pattern matching: b6* → all projects b60-b69
+
+      2. Storyline Workflow (VOZ, AITLDR)
+         - Script-first content creation
+         - Projects use full descriptive names
+         - Example: boy-baker, the-point
+         - No short name expansion (exact match required)
+
+      Project Organization:
+        v-appydave/
+          ├── b40-project-name/        # FliVideo pattern
+          ├── b65-another-project/
+          └── archived/                # Completed projects
+
+        v-voz/
+          ├── boy-baker/               # Storyline pattern
+          └── the-point/
+
+      Storage Strategy:
+        Local → S3 (90-day collaboration) → SSD (long-term archive)
+    HELP
+  end
+
+  def show_config_help
+    puts <<~HELP
+      Configuration
+
+      VAT uses two configuration levels:
+
+      1. System Configuration (settings.json)
+         Location: ~/.config/appydave/settings.json
+         Purpose: Define root directory for all video projects
+         Format:
+           {
+             "video-projects-root": "/Users/yourname/dev/video-projects"
+           }
+
+         Setup:
+           ad_config -c                # Create configuration
+           ad_config -e                # Edit configuration
+
+      2. Brand Configuration (.video-tools.env)
+         Location: <brand-dir>/.video-tools.env
+         Purpose: AWS credentials and S3 settings per brand
+         Required Keys:
+           AWS_ACCESS_KEY_ID=xxx
+           AWS_SECRET_ACCESS_KEY=xxx
+           AWS_REGION=us-east-1
+           S3_BUCKET=your-bucket-name
+           SSD_BASE=/path/to/external/drive
+
+         Example:
+           v-appydave/.video-tools.env
+           v-voz/.video-tools.env
+
+      Directory Structure:
+        ~/.config/appydave/
+        └── settings.json              # System config
+
+        /Users/yourname/dev/video-projects/
+        ├── v-appydave/
+        │   ├── .video-tools.env       # Brand-specific config
+        │   └── b65-project/
+        └── v-voz/
+            ├── .video-tools.env
+            └── boy-baker/
+    HELP
+  end
+
+  def show_list_help
+    puts <<~HELP
+      List Command
+
+      Usage: vat list [brand] [pattern]
+
+      Modes:
+        1. List all brands with summary:
+           vat list
+
+        2. List projects for specific brand:
+           vat list appydave
+
+        3. Pattern matching:
+           vat list appydave 'b6*'       # All projects b60-b69
+           vat list appydave 'b4*'       # All projects b40-b49
+
+      Examples:
+        vat list                         # Tabular: brand, project count, size, modified
+        vat list voz                     # Tabular: all VOZ projects with size/date
+        vat list appydave 'b6*'          # Tabular: b60-b69 projects with size/date
+    HELP
+  end
+
+  # rubocop:disable Metrics/CyclomaticComplexity
+  def show_s3_help(command)
+    case command
+    when 's3-up'
+      puts <<~HELP
+        S3 Upload Command
+
+        Upload files from local s3-staging/ directory to S3 for collaboration.
+
+        Usage: vat s3-up <brand> <project> [--dry-run]
+
+        Features:
+          - Smart sync: Skips unchanged files (MD5 comparison)
+          - Progress tracking: Shows uploaded/skipped/failed counts
+          - Dry-run support: Preview changes without uploading
+
+        Examples:
+          vat s3-up appydave b65              # Upload b65 project
+          vat s3-up voz boy-baker --dry-run   # Preview upload
+          vat s3-up                           # Auto-detect from PWD
+
+        Notes:
+          - Files must be in project's s3-staging/ directory
+          - Requires AWS credentials in .video-tools.env
+          - S3 path: staging/<brand>/<project>/
+      HELP
+    when 's3-down'
+      puts <<~HELP
+        S3 Download Command
+
+        Download files from S3 to local s3-staging/ directory.
+
+        Usage: vat s3-down <brand> <project> [--dry-run]
+
+        Features:
+          - Smart sync: Skips unchanged files (MD5 comparison)
+          - Progress tracking: Shows downloaded/skipped/failed counts
+          - Dry-run support: Preview changes without downloading
+
+        Examples:
+          vat s3-down appydave b65            # Download b65 project
+          vat s3-down voz boy-baker --dry-run # Preview download
+          vat s3-down                         # Auto-detect from PWD
+
+        Notes:
+          - Creates s3-staging/ directory if needed
+          - Requires AWS credentials in .video-tools.env
+      HELP
+    when 's3-status'
+      puts <<~HELP
+        S3 Status Command
+
+        Check sync status between local and S3 files.
+
+        Usage: vat s3-status <brand> [project]
+
+        Features:
+          - Shows all files (S3 and local)
+          - Indicates sync status: [synced], [modified], [S3 only], [local only]
+          - Displays file sizes and totals
+          - Shows file counts for both S3 and local
+
+        Examples:
+          vat s3-status appydave b65          # Check b65 status
+          vat s3-status                       # Auto-detect from PWD
+
+        Status Indicators:
+          ✓  [synced]      - Local and S3 match (MD5)
+          ⚠️  [modified]   - Files differ between local and S3
+          ☁️  [S3 only]    - File only in S3, not present locally
+          📁 [local only]  - File only local, not uploaded to S3
+      HELP
+    when 's3-cleanup-remote'
+      puts <<~HELP
+        S3 Cleanup Remote Command
+
+        Delete all S3 files for a project (use with caution).
+
+        Usage: vat s3-cleanup-remote <brand> <project> --force [--dry-run]
+
+        Features:
+          - Requires --force flag for safety
+          - Dry-run support: Preview deletions
+          - Shows deleted/failed counts
+
+        Examples:
+          vat s3-cleanup-remote appydave b65 --dry-run  # Preview deletion
+          vat s3-cleanup-remote appydave b65 --force    # Actually delete
+          vat s3-cleanup-remote --force                 # Auto-detect from PWD
+
+        ⚠️  WARNING: This permanently deletes files from S3.
+            Ensure you have local backups before running.
+
+        Note: Old command 's3-cleanup' still works but is deprecated.
+      HELP
+    when 's3-cleanup-local'
+      puts <<~HELP
+        S3 Cleanup Local Command
+
+        Delete all local files in the s3-staging/ directory for a project.
+
+        Usage: vat s3-cleanup-local <brand> <project> --force [--dry-run]
+
+        Features:
+          - Requires --force flag for safety
+          - Dry-run support: Preview deletions
+          - Removes empty directories after cleanup
+          - Shows deleted/failed counts
+
+        Examples:
+          vat s3-cleanup-local appydave b65 --dry-run  # Preview deletion
+          vat s3-cleanup-local appydave b65 --force    # Actually delete
+          vat s3-cleanup-local --force                 # Auto-detect from PWD
+
+        Use Cases:
+          - Free up disk space after uploading to S3
+          - Clean up after completing collaboration
+          - Remove local staging files when project is archived
+
+        ⚠️  NOTE: This only deletes LOCAL files in s3-staging/.
+            Files in S3 are NOT affected. Use 's3-cleanup-remote' for that.
+
+        Note: Old command 'cleanup-local' still works but is deprecated.
+      HELP
+    when 'archive'
+      puts <<~HELP
+        Archive Command
+
+        Copy completed video project to SSD for long-term backup.
+
+        Usage: vat archive <brand> <project> [--force] [--dry-run]
+
+        Features:
+          - Copies entire project directory to SSD backup location
+          - Verifies SSD is mounted before archiving
+          - Shows project size before copying
+          - Optional: Delete local copy after successful archive (--force)
+          - Dry-run support: Preview archive operation
+
+        Examples:
+          vat archive appydave b63 --dry-run   # Preview archive
+          vat archive appydave b63             # Copy to SSD only
+          vat archive appydave b63 --force     # Copy and delete local
+          vat archive                          # Auto-detect from PWD
+
+        Storage Strategy:
+          Local → S3 (90-day collaboration) → SSD (long-term archive)
+
+        Use Cases:
+          - Archive completed and published projects
+          - Free up local disk space for new projects
+          - Long-term backup before removing from S3
+
+        ⚠️  NOTE: Without --force, the local project is NOT deleted.
+            Use --force only after verifying SSD copy is successful.
+
+        Configuration:
+          - SSD backup path configured per brand in brands.json
+          - Example: "ssd_backup": "/Volumes/T7/youtube-PUBLISHED/appydave"
+      HELP
+    when 'manifest'
+      puts <<~HELP
+        Manifest Command
+
+        Generate a JSON manifest of all video projects for a brand.
+
+        Usage: vat manifest <brand> [--all]
+
+        Features:
+          - Scans local and SSD storage locations
+          - Tracks project distribution (local, SSD, both)
+          - Identifies heavy files (video) vs light files (subtitles, images)
+          - Calculates disk usage statistics
+          - Validates project ID formats
+          - Outputs projects.json in brand directory
+
+        Examples:
+          vat manifest appydave            # Generate manifest for AppyDave
+          vat manifest voz                 # Generate manifest for VOZ
+          vat manifest --all               # Generate manifests for all brands
+
+        Output Location:
+          - Single brand: <brand-path>/projects.json
+          - All brands: Each brand gets its own manifest file
+
+        Manifest Structure:
+          {
+            "config": {
+              "brand": "appydave",
+              "local_base": "/path/to/v-appydave",
+              "ssd_base": "/Volumes/T7/youtube-PUBLISHED/appydave",
+              "last_updated": "2025-11-09T23:00:00Z",
+              "disk_usage": { ... }
+            },
+            "projects": [
+              {
+                "id": "b65-guy-monroe-marketing-plan",
+                "storage": {
+                  "ssd": { "exists": true, "path": "b65-guy-monroe-marketing-plan" },
+                  "local": { "exists": true, "has_heavy_files": true, "has_light_files": true }
+                }
+              }
+            ]
+          }
+
+        Use Cases:
+          - Track which projects are archived to SSD
+          - Identify projects with only light files (archived locally)
+          - Generate disk usage reports
+          - Validate project naming conventions
+          - Prepare for sync-ssd operations
+      HELP
+    end
+  end
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/MethodLength
+end
+
+# Run CLI
+VatCLI.new.run if $PROGRAM_NAME == __FILE__

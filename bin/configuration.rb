@@ -52,7 +52,27 @@ when :list
   tp configurations, :name, :exists, { path: { width: 150 } }
 when :create
   Appydave::Tools::Configuration::Config.configure
-  Appydave::Tools::Configuration::Config.save
+
+  # Only save configs that don't exist yet
+  created = []
+  skipped = []
+
+  Appydave::Tools::Configuration::Config.configurations.each do |name, config|
+    if File.exist?(config.config_path)
+      skipped << name
+    else
+      config.save
+      created << name
+    end
+  end
+
+  puts "\n✅ Created configurations:"
+  created.each { |name| puts "  - #{name}" }
+
+  if skipped.any?
+    puts "\n⚠️  Skipped (already exist):"
+    skipped.each { |name| puts "  - #{name}" }
+  end
 when :print
   Appydave::Tools::Configuration::Config.configure
   Appydave::Tools::Configuration::Config.print(*options[:keys])

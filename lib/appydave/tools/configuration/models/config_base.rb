@@ -20,6 +20,13 @@ module Appydave
           end
 
           def save
+            # Create backup if file exists
+            if File.exist?(config_path)
+              backup_path = "#{config_path}.backup.#{Time.now.strftime('%Y%m%d-%H%M%S')}"
+              FileUtils.cp(config_path, backup_path)
+              log.info "Backup created: #{backup_path}" if respond_to?(:log)
+            end
+
             File.write(config_path, JSON.pretty_generate(data))
           end
 

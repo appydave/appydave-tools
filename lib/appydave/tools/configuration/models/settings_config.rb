@@ -16,6 +16,10 @@ module Appydave
 
           # Well known settings
 
+          def video_projects_root
+            get('video-projects-root')
+          end
+
           def ecamm_recording_folder
             get('ecamm-recording-folder')
           end

@@ -127,6 +127,12 @@ RSpec/PendingWithoutReason:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false
+
 Metrics/AbcSize:
   Max: 25
   Exclude:

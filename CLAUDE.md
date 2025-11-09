@@ -60,6 +60,7 @@ bin/console         # Interactive Ruby console for experimentation
 | **GPT Context** | `gpt_context` | Collect project files for AI context | ⭐ PRIMARY |
 | **YouTube Manager** | `youtube_manager` | CRUD operations on YouTube video metadata | ✅ ACTIVE |
 | **Subtitle Processor** | `subtitle_processor` | Transform SRT files (clean/merge) | ✅ ACTIVE |
+| **VAT (Video Asset Tools)** | `vat` | Multi-tenant video project storage orchestration | ✅ ACTIVE |
 | **Configuration** | `ad_config` | Manage JSON configs (channels, paths, sequences) | ✅ ACTIVE |
 | **Move Images** | N/A (dev only) | Organize video asset images | ✅ ACTIVE |
 | **Prompt Tools** | `prompt_tools` | OpenAI Completion API wrapper | ⚠️ DEPRECATED API |
@@ -142,7 +143,73 @@ bin/subtitle_processor.rb join -d ./subs -f "*.srt" -s inferred -b 200 -o output
 
 **Note:** Renamed from `subtitle_manager` to `subtitle_processor` (accurate - processes files, doesn't manage state)
 
-#### 4. Prompt Tools (`bin/prompt_tools.rb`) ⚠️ DEPRECATED API
+#### 4. VAT - Video Asset Tools (`bin/vat`)
+Multi-tenant video project storage orchestration:
+
+```bash
+# List all brands
+vat list
+
+# List projects for a brand
+vat list appydave
+vat list appydave 'b6*'  # Pattern matching
+
+# Upload to S3 (collaboration)
+vat s3-up appydave b65
+vat s3-up voz boy-baker --dry-run
+
+# Download from S3
+vat s3-down appydave b65
+vat s3-down --dry-run  # Auto-detect from PWD
+
+# Check sync status
+vat s3-status appydave b65
+
+# Clean up S3
+vat s3-cleanup appydave b65 --force
+
+# Archive to SSD
+vat archive appydave b63
+
+# Sync from SSD
+vat sync-ssd appydave
+```
+
+**Core Features:**
+- **Multi-tenant**: Manages 6 brands (appydave, voz, aitldr, kiros, joy, ss)
+- **Smart sync**: MD5-based file comparison (skips unchanged files)
+- **Pattern matching**: `'b6*'` expands to b60-b69 projects
+- **Short names**: `b65` → `b65-guy-monroe-marketing-plan` (FliVideo pattern)
+- **Auto-detection**: Detects brand/project from current directory
+- **Hybrid storage**: Local → S3 (90-day collaboration) → SSD (archive)
+
+**Brand Shortcuts:**
+- `appydave` → `v-appydave`
+- `voz` → `v-voz`
+- `aitldr` → `v-aitldr`
+- `kiros` → `v-kiros`
+- `joy` → `v-beauty-and-joy`
+- `ss` → `v-supportsignal`
+
+**Workflows:**
+- **FliVideo** (AppyDave): Sequential chapter recording, short name support (`b65`)
+- **Storyline** (VOZ, AITLDR): Script-first content, full project names (`boy-baker`)
+
+**Use cases:**
+- Collaborate on video edits with team (upload → edit → download)
+- Archive completed projects to external SSD
+- Quick project discovery across multiple brands
+- Manage 50GB+ video files with smart sync
+
+**Configuration:**
+- System: `video-projects-root` in `~/.config/appydave/settings.json` (**required**)
+- Per-brand: `.video-tools.env` (AWS credentials, S3 bucket, SSD path)
+
+**Migration note:** The old `~/.vat-config` file is deprecated. VAT now uses `settings.json`. See [Configuration Management](#configuration-management) section below.
+
+See detailed usage guide: [docs/usage/vat.md](./docs/usage/vat.md)
+
+#### 5. Prompt Tools (`bin/prompt_tools.rb`) ⚠️ DEPRECATED API
 OpenAI Completion API wrapper with template support:
 
 ```bash
@@ -266,9 +333,11 @@ Bank transaction reconciliation tool - **DEPRECATED, DO NOT USE**
 ```bash
 rake spec           # Run all RSpec tests
 rake                # Default task: compile, spec (clobber compile spec)
-guard               # Watch files and auto-run tests + rubocop on changes
+RUBYOPT="-W0" guard # Watch files and auto-run tests + rubocop (suppress Ruby 3.4 warnings)
 bundle exec rspec -f doc  # Run tests with detailed documentation format
 ```
+
+**Note:** Ruby 3.4.2 shows platform constant warnings from Bundler. Use `RUBYOPT="-W0"` to suppress them.
 
 ### Linting & Style
 ```bash
@@ -365,94 +434,180 @@ gem build           # Build gemspec into .gem file
 ## Configuration Management
 
 ### Configuration Overview
-The gem uses JSON configuration files for managing YouTube channels, OpenAI settings, and automation workflows.
+The gem uses JSON configuration files for managing YouTube channels, settings, and automation workflows. All configuration files are stored in `~/.config/appydave/`.
 
-**Configuration Tool:** `bin/configuration.rb`
+**Configuration Tool:** `bin/configuration.rb` (installed as `ad_config`)
 
-### Setting Up Configuration
+**Complete configuration guide:** [docs/configuration/README.md](./docs/configuration/README.md)
 
-1. **List available configurations:**
+### Quick Start
+
+**First-time setup:**
 ```bash
-bin/configuration.rb -l
-```
-
-2. **Create missing configuration files:**
-```bash
+# Create empty configuration files (safe - won't overwrite existing files)
 bin/configuration.rb -c
+
+# Copy example files
+cp docs/configuration/settings.example.json ~/.config/appydave/settings.json
+cp docs/configuration/channels.example.json ~/.config/appydave/channels.json
+cp docs/configuration/.env.example .env
+
+# Edit your values
+bin/configuration.rb -e
 ```
 
-3. **View configuration values:**
+### Configuration Commands
+
 ```bash
+# List all configurations
+bin/configuration.rb -l
+
+# Create missing configuration files (safe - won't overwrite)
+bin/configuration.rb -c
+
+# View configuration values
 bin/configuration.rb -p settings,channels,youtube_automation
-```
 
-4. **Edit configurations in VS Code:**
-```bash
+# Edit configurations in VS Code
 bin/configuration.rb -e
 ```
 
 ### Configuration Types
 
-#### 1. Settings Config
-General application settings and paths.
+#### 1. Settings Config (`~/.config/appydave/settings.json`)
+General application settings and paths (non-secret configuration).
 
-**Typical structure:**
+**Structure:**
 ```json
 {
-  "project_paths": {
-    "content": "/path/to/content",
-    "video": "/path/to/video",
-    "published": "/path/to/published",
-    "abandoned": "/path/to/abandoned"
+  "video-projects-root": "/Users/yourname/dev/video-projects",
+  "ecamm-recording-folder": "/Users/yourname/ecamm",
+  "download-folder": "/Users/yourname/Downloads",
+  "download-image-folder": "/Users/yourname/Downloads/images"
+}
+```
+
+**Key Settings:**
+
+| Key | Purpose | Used By | Required |
+|-----|---------|---------|----------|
+| `video-projects-root` | Root directory for all video projects | VAT commands | ✅ For VAT |
+| `ecamm-recording-folder` | Where Ecamm Live saves recordings | Move Images | Optional |
+| `download-folder` | General downloads directory | Move Images | Optional |
+| `download-image-folder` | Image downloads (defaults to `download-folder`) | Move Images | Optional |
+
+**Safe to:**
+- ✅ Version control (after removing personal paths)
+- ✅ Share with team (as template)
+- ✅ Commit to git (as `.example` file)
+
+#### 2. Channels Config (`~/.config/appydave/channels.json`)
+YouTube channel definitions for multi-channel management.
+
+**Structure:**
+```json
+{
+  "channels": {
+    "appydave": {
+      "code": "ad",
+      "name": "AppyDave",
+      "youtube_handle": "@appydave",
+      "locations": {
+        "content_projects": "/path/to/content",
+        "video_projects": "/Users/yourname/dev/video-projects/v-appydave",
+        "published_projects": "/path/to/published",
+        "abandoned_projects": "/path/to/abandoned"
+      }
+    }
   }
 }
 ```
 
-#### 2. Channels Config
-YouTube channel definitions for multi-channel management.
+**Channel Properties:**
 
-**Typical structure:**
-```json
-{
-  "channels": [
-    {
-      "code": "main",
-      "name": "Main Channel",
-      "youtube_handle": "@channelhandle"
-    }
-  ]
-}
-```
+| Property | Description | Example |
+|----------|-------------|---------|
+| `key` | Internal identifier (object key) | `"appydave"` |
+| `code` | Short code for project naming | `"ad"` |
+| `name` | Display name | `"AppyDave"` |
+| `youtube_handle` | YouTube @ handle | `"@appydave"` |
 
-#### 3. YouTube Automation Config
-Automation workflow configurations and sequences.
+**Location Properties:**
 
-#### 4. OpenAI Config (via dotenv)
-OpenAI API integration settings managed through environment variables:
+| Location | Purpose | Can Use "NOT-SET" |
+|----------|---------|-------------------|
+| `content_projects` | Content planning/scripts | ✅ Yes |
+| `video_projects` | Active video projects | ❌ No (required) |
+| `published_projects` | Published video archives | ✅ Yes |
+| `abandoned_projects` | Abandoned projects | ✅ Yes |
 
-```bash
-# .env file
-OPENAI_API_KEY=your_api_key_here
-```
+Use `"NOT-SET"` as a placeholder for unconfigured locations.
 
-### Configuration Locations
-Configuration files are typically stored in:
-- `~/.config/appydave-tools/` (user-level)
-- Or project-specific locations as defined in settings
+**Safe to:**
+- ✅ Version control structure (remove personal paths first)
+- ⚠️ Each developer customizes paths locally
+- ✅ Share channel definitions (codes, names, handles)
 
-### Environment Variables
-The gem uses `dotenv` for environment variable management. Create a `.env` file in your project root:
+#### 3. YouTube Automation Config (`~/.config/appydave/youtube_automation.json`)
+Automation workflow configurations and sequences (internal use).
+
+#### 4. Environment Variables (`.env` file - project root)
+**⚠️ CRITICAL: Secrets and API keys stored here, NEVER commit to version control!**
 
 ```bash
-# Required for YouTube API
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
+# OpenAI API Configuration (required for prompt_tools and youtube_automation)
+# Get your API key from: https://platform.openai.com/api-keys
+OPENAI_ACCESS_TOKEN=sk-your-actual-api-key-here
+OPENAI_ORGANIZATION_ID=org-your-actual-org-id
 
-# Required for OpenAI features
-OPENAI_API_KEY=your_openai_api_key
+# Enable OpenAI tools (set to 'true' to enable)
+TOOLS_ENABLED=false
 ```
 
-**IMPORTANT:** Never commit `.env` files to version control. Ensure `.env` is in your `.gitignore`.
+**Environment Variables:**
+
+| Variable | Purpose | Required For | Secret? |
+|----------|---------|--------------|---------|
+| `OPENAI_ACCESS_TOKEN` | OpenAI API key | prompt_tools, youtube_automation | ✅ SECRET |
+| `OPENAI_ORGANIZATION_ID` | OpenAI org ID | prompt_tools, youtube_automation | ✅ SECRET |
+| `TOOLS_ENABLED` | Enable OpenAI configuration | Optional | ❌ No |
+
+**Safe to:**
+- ❌ **NEVER** version control
+- ❌ **NEVER** share
+- ❌ **NEVER** commit to git
+- ✅ Keep local only
+- ✅ Share `.env.example` template
+
+### Safety Features
+
+**Automatic Backups:**
+- Every config save creates timestamped backup: `filename.backup.YYYYMMDD-HHMMSS`
+- Backups stored alongside config files in `~/.config/appydave/`
+- Restore from backup: `cp settings.json.backup.20251109-203015 settings.json`
+
+**Safe Configuration Creation:**
+- `ad_config -c` only creates missing files, never overwrites existing ones
+- Prevents accidental data loss from running setup commands
+
+**Secrets Separation:**
+- API keys stored in `.env` files (gitignored), not in JSON configs
+- Configuration files can be safely version-controlled (after removing personal paths)
+
+### Migration from Legacy Config
+
+**From `~/.vat-config` (DEPRECATED):**
+
+The old `~/.vat-config` file is no longer used. VAT now uses `settings.json`.
+
+**Migration steps:**
+1. Check your old config: `cat ~/.vat-config`
+2. Add value to settings.json: `ad_config -e`
+3. Add: `"video-projects-root": "/your/path/from/vat/config"`
+4. Test VAT still works: `vat list`
+5. Delete old file: `rm ~/.vat-config`
+
+**Note:** The `vat init` command is deprecated. Use `ad_config -c` instead.
 
 ## Git Hooks & Security
 

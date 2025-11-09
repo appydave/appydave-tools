@@ -42,6 +42,7 @@ require 'appydave/tools/configuration/configurable'
 require 'appydave/tools/configuration/config'
 require 'appydave/tools/configuration/models/config_base'
 require 'appydave/tools/configuration/models/settings_config'
+require 'appydave/tools/configuration/models/brands_config'
 require 'appydave/tools/configuration/models/channels_config'
 require 'appydave/tools/configuration/models/youtube_automation_config'
 require 'appydave/tools/name_manager/project_name'
@@ -50,6 +51,12 @@ require 'appydave/tools/prompt_tools/prompt_completion'
 
 require 'appydave/tools/subtitle_processor/clean'
 require 'appydave/tools/subtitle_processor/join'
+
+require 'appydave/tools/vat/config'
+require 'appydave/tools/vat/project_resolver'
+require 'appydave/tools/vat/config_loader'
+require 'appydave/tools/vat/s3_operations'
+require 'appydave/tools/vat/project_listing'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
 
@@ -65,7 +72,7 @@ require 'appydave/tools/youtube_manager/reports/video_content_report'
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = File.expand_path('~/.config/appydave')
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
-  # config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
+  config.register(:brands, Appydave::Tools::Configuration::Models::BrandsConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
   config.register(:youtube_automation, Appydave::Tools::Configuration::Models::YoutubeAutomationConfig)
 end

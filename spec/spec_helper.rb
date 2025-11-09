@@ -13,7 +13,7 @@ require 'vcr' # ChatGPT: https://chatgpt.com/c/f7dc1eee-a11a-4969-8ce1-f51f56cf7
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = Dir.mktmpdir
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
-  # config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
+  config.register(:brands, Appydave::Tools::Configuration::Models::BrandsConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
   config.register(:youtube_automation, Appydave::Tools::Configuration::Models::YoutubeAutomationConfig)
 end
