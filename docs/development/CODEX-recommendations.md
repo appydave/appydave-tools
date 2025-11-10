@@ -157,6 +157,12 @@ Phase 1 added S3/git metadata, but several inconsistencies remain between the ma
 
 Action: Align the manifest and sync code on the same range conventions and relative paths before we rely on Phase 2 git workflows; otherwise `dam sync-ssd` will never restore the projects that manifests say exist.
 
+### ⚠️ DAM Git Workflow (Phase 2)
+
+- **Project resolver instantiated incorrectly:** Both `Status#resolve_project_path` and `RepoPush#validate_project` call `ProjectResolver.new.resolve` (`lib/appydave/tools/dam/status.rb:36-40`, `lib/appydave/tools/dam/repo_push.rb:45-63`), but `ProjectResolver` only exposes class methods inside `class << self`. These code paths raise `NoMethodError` the moment you ask for project status or run `dam repo-push … <project>`. Switch to `ProjectResolver.resolve(...)` (or add an instance API) before shipping.  
+- **Auto-detected brands pollute configuration:** When you run `dam status` from inside `v-appydave`, the auto-detect logic passes the literal `v-appydave` string (`bin/dam:269-290`) into `Status`, which in turn calls `Config.git_remote`. That method persists the inferred remote under whatever key it was given (`lib/appydave/tools/dam/config.rb:43-71`), so a new `v-appydave` entry gets written to `brands.json`, duplicating the real `appydave` record. Normalize auto-detected names back to the canonical brand key before calling configuration APIs.  
+- **Naming drift in the CLI:** `bin/dam` still defines `class VatCLI` (line 11), so stack traces and help output reference the old VAT class name. Rename the class (and any references) to avoid confusion when both `vat` and `dam` binaries coexist.
+
 ---
 
 ### ⚠️ CLI Standardization (Worth Auditing)

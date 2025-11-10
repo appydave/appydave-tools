@@ -419,6 +419,115 @@ bin/s3_sync_cleanup.rb --dry-run
 
 ---
 
+#### Test 2.15: Status - Brand Overview ⭐ PHASE 4
+```bash
+# Test: Show unified status for entire brand
+bin/dam status appydave
+```
+**Expected**: Shows brand git status, manifest summary (total projects, local, S3, SSD counts)
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.16: Status - Specific Project ⭐ PHASE 4
+```bash
+# Test: Show detailed status for specific project
+bin/dam status appydave b65
+```
+**Expected**: Shows storage locations (local, S3 staging, SSD backup) and git status for project
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.17: Status - Auto-Detect ⭐ PHASE 4
+```bash
+# Test: Auto-detect brand and project from PWD
+cd ~/dev/video-projects/v-appydave/b65-*
+bin/dam status
+```
+**Expected**: Auto-detects and shows project status
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.18: Repo Status - Single Brand ⭐ PHASE 4
+```bash
+# Test: Show git status for single brand
+bin/dam repo-status appydave
+```
+**Expected**: Shows branch, remote, working directory status, sync status
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.19: Repo Status - All Brands ⭐ PHASE 4
+```bash
+# Test: Show git status for all brands
+bin/dam repo-status --all
+```
+**Expected**: Shows git status for all configured brands (appydave, voz, aitldr, etc.)
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.20: Repo Sync - Single Brand ⭐ PHASE 4
+```bash
+# Test: Pull updates for single brand
+bin/dam repo-sync appydave
+```
+**Expected**: Pulls updates if available, skips if uncommitted changes, shows status
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.21: Repo Sync - All Brands ⭐ PHASE 4
+```bash
+# Test: Pull updates for all brands
+bin/dam repo-sync --all
+```
+**Expected**: Syncs all brands, shows summary, skips brands with uncommitted changes
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.22: Repo Push - Basic ⭐ PHASE 4
+```bash
+# Test: Push changes for brand (no project validation)
+bin/dam repo-push appydave
+```
+**Expected**: Pushes commits, shows push summary
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
+#### Test 2.23: Repo Push - With Project Validation ⭐ PHASE 4
+```bash
+# Test: Push with project validation
+bin/dam repo-push appydave b65
+```
+**Expected**: Validates project exists in manifest before pushing, shows validation message
+
+**Status**: [ ] Pass [ ] Fail
+**Notes**: ___________________________________________
+
+---
+
 ### Phase 3: Gem Installation Tests (Manual - Installed Gem)
 
 **Prerequisites**: `gem install pkg/appydave-tools-*.gem`
@@ -695,8 +804,8 @@ All video asset management commands have been successfully migrated and are full
 - **TOTAL**: **64 / 64 ✅**
 
 ### Phase 2: Integration Tests (Manual - Development)
-- Passed: _____ / 13
-- Failed: _____ / 13
+- Passed: _____ / 23
+- Failed: _____ / 23
 
 ### Phase 3: Gem Installation Tests (Manual - Installed)
 - Passed: _____ / 6
@@ -716,8 +825,8 @@ All video asset management commands have been successfully migrated and are full
 
 ### **GRAND TOTAL**
 - **Unit Tests**: 64 / 64 ✅
-- **Manual Tests**: _____ / 29
-- **Overall**: _____ / 93
+- **Manual Tests**: _____ / 39
+- **Overall**: _____ / 103
 
 ---
 
@@ -820,8 +929,8 @@ All video asset management commands have been successfully migrated and are full
 
 **Then manual development tests** (safest first):
 2. Phase 2.1-2.5: Help and list commands
-3. Phase 2.6-2.7: S3 upload with dry-run
-4. Phase 2.8-2.13: Phase 2 commands (download, status, cleanup) with dry-run
+3. Phase 2.6-2.14: S3 commands (upload, download, status, cleanup) with dry-run
+4. Phase 2.15-2.23: Phase 4 commands (status, repo-status, repo-sync, repo-push) ⭐ NEW
 5. Phase 4: Edge cases and error handling
 
 **Then gem installation tests**:
