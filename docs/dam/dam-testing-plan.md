@@ -30,17 +30,32 @@
 **Commands - Phase 2 Complete** (CLI args + auto-detect):
 - ✅ `dam s3-down` - Download from S3
 - ✅ `dam s3-status` - Check sync status
-- ✅ `dam s3-cleanup` - Delete S3 files
+- ✅ `dam s3-cleanup-remote` / `s3-cleanup-local` - Delete S3/local files
 
-**Commands - Not Yet Migrated**:
-- ⏳ `dam manifest` - Generate project manifest
-- ⏳ `dam archive` - Archive to SSD
-- ⏳ `dam sync-ssd` - Sync from SSD
+**Commands - Phase 3 Complete** (Archive & Manifest):
+- ✅ `dam manifest` - Generate project manifest (supports `--all` for all brands)
+- ✅ `dam archive` - Archive to SSD with dry-run and force options
+- ✅ `dam sync-ssd` - Restore light files from SSD (dry-run supported)
 
-**Utilities - Not Migrated** (not DAM commands):
-- ❌ `status-all.sh` - Git status for all repos (workflow script, not needed in gem)
-- ❌ `sync-all.sh` - Git pull for all repos (workflow script, not needed in gem)
-- ❌ `clone-all.sh` - Clone all repos (workflow script, not needed in gem)
+**Git Repository Management Scripts - Intentionally Not Migrated**:
+
+These are **shell scripts** for managing the multi-repo video-projects git structure, NOT video asset management commands:
+
+- ❌ `status-all.sh` - Runs `git status` on all v-* brand repos (git workflow, not asset management)
+- ❌ `sync-all.sh` - Runs `git pull` on all v-* brand repos (git workflow, not asset management)
+- ❌ `clone-all.sh` - Clones all v-* brand repos if missing (git workflow, not asset management)
+
+**Why not migrated:**
+1. These manage **git repositories**, not **video assets**
+2. They loop through brand folders running git commands
+3. They're workflow automation for the video-projects repo structure
+4. They belong in `/video-projects/v-shared/`, not in the appydave-tools gem
+5. Different use case: repo management vs. video file management
+
+**If you want these migrated:** We could add `dam repo-status`, `dam repo-sync`, `dam repo-clone` commands, but they would:
+- Need Ruby implementations of multi-repo git operations
+- Duplicate functionality that shell scripts handle well
+- Mix concerns (video assets vs. git repos)
 
 ---
 
@@ -635,51 +650,51 @@ done
 
 ---
 
-## Not Yet Implemented (Future Work)
+## ✅ All DAM Commands Implemented
 
-### Commands Migrated but Not Updated for CLI Args
+All video asset management commands have been successfully migrated and are fully functional:
 
-These commands were copied from the original DAM but still need Phase 2 updates:
+### Phase 1: Core Commands
+- ✅ `dam help` - Comprehensive help system
+- ✅ `dam list` - Project discovery with 4 modes
 
-#### ⏳ Generate Manifest
-```bash
-# Current: bin/generate_manifest.rb
-# Expected: dam manifest appydave
-```
-**Status**: Copied but needs CLI arg support
-**Priority**: Low (utility command, not core workflow)
+### Phase 2: S3 Collaboration
+- ✅ `dam s3-up` - Upload to S3 with dry-run
+- ✅ `dam s3-down` - Download from S3 with dry-run
+- ✅ `dam s3-status` - Check sync status
+- ✅ `dam s3-cleanup-remote` - Delete S3 files (force + dry-run)
+- ✅ `dam s3-cleanup-local` - Delete local staging (force + dry-run)
 
----
+### Phase 3: Archive & Manifest
+- ✅ `dam manifest` - Generate project manifest (single brand or `--all`)
+- ✅ `dam archive` - Archive to SSD (dry-run + optional force)
+- ✅ `dam sync-ssd` - Restore light files from SSD (dry-run)
 
-#### ⏳ Archive Project
-```bash
-# Current: bin/archive_project.rb
-# Expected: dam archive appydave b63
-```
-**Status**: Copied but needs CLI arg support
-**Priority**: Medium (used for completed projects)
-
----
-
-#### ⏳ Sync from SSD
-```bash
-# Current: bin/sync_from_ssd.rb
-# Expected: dam sync-ssd appydave
-```
-**Status**: Copied but needs CLI arg support
-**Priority**: Medium (used for recovery)
+### All Commands Support:
+- **CLI args**: `dam <command> <brand> <project>`
+- **Auto-detect**: Works from project directory (where applicable)
+- **Dry-run**: All destructive operations support `--dry-run`
+- **Force flags**: Extra safety for deletions
 
 ---
 
-### Workflow Scripts (Not Migrating to Gem)
+## Git Repository Scripts - Separate Concern
 
-These are repository management scripts, not DAM commands:
+The following shell scripts are **intentionally not migrated** as they manage git repositories, not video assets:
 
-- ❌ `status-all.sh` - Git status for all v-* repos
-- ❌ `sync-all.sh` - Git pull for all repos
-- ❌ `clone-all.sh` - Clone all brand repos
+### `/video-projects/v-shared/*.sh`
 
-**Rationale**: These are development workflow tools for managing the video-projects repository structure, not video asset operations. They belong in the video-projects folder, not the appydave-tools gem.
+- `status-all.sh` - Runs `git status` on all v-* brand repos
+- `sync-all.sh` - Runs `git pull` on all v-* brand repos
+- `clone-all.sh` - Clones missing v-* brand repos
+
+**Why separate:**
+1. Different domain: Git repository management vs. video asset management
+2. Different tools: Shell + git commands vs. Ruby + AWS/file operations
+3. Different location: Belongs in video-projects workspace, not in distributed gem
+4. Shell scripts work perfectly for this use case
+
+**If migration is desired:** Could add `dam repo-status/sync/clone` but would duplicate working shell functionality and mix concerns.
 
 ---
 
@@ -739,14 +754,15 @@ These are repository management scripts, not DAM commands:
 - [x] `dam s3-up` - Upload to S3
 - [x] `dam s3-down` - Download from S3 ⭐ Phase 2 complete
 - [x] `dam s3-status` - Check sync status ⭐ Phase 2 complete
-- [x] `dam s3-cleanup` - Delete S3 files ⭐ Phase 2 complete
+- [x] `dam s3-cleanup-remote` / `s3-cleanup-local` - Delete S3/local files ⭐ Phase 2 complete
+- [x] `dam manifest` - Generate project manifest ⭐ Phase 3 complete
+- [x] `dam archive` - Archive to SSD (dry-run + force) ⭐ Phase 3 complete
+- [x] `dam sync-ssd` - Sync from SSD (dry-run) ⭐ Phase 3 complete
 
 ### ⏳ Pending Implementation
 
-**Commands (Copied but need CLI arg support)**:
-- [ ] `dam manifest` - Generate project manifest
-- [ ] `dam archive` - Archive to SSD
-- [ ] `dam sync-ssd` - Sync from SSD
+**Commands**:
+- [x] All DAM commands ✅ COMPLETE
 
 **Testing**:
 - [ ] Manual integration tests (Phase 2)
