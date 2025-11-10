@@ -35,6 +35,22 @@ module Appydave
           *.webm
         ].freeze
 
+        # Directory patterns to exclude (generated/installable content)
+        EXCLUDE_PATTERNS = %w[
+          **/node_modules/**
+          **/.git/**
+          **/.next/**
+          **/dist/**
+          **/build/**
+          **/out/**
+          **/.cache/**
+          **/coverage/**
+          **/.turbo/**
+          **/.vercel/**
+          **/tmp/**
+          **/.DS_Store
+        ].freeze
+
         def initialize(brand, brand_info: nil, brand_path: nil)
           @brand_info = brand_info || load_brand_info(brand)
           @brand = @brand_info.key # Use resolved brand key, not original input
@@ -184,6 +200,7 @@ module Appydave
           LIGHT_FILE_PATTERNS.each do |pattern|
             Dir.glob(File.join(ssd_path, pattern)).each do |source_file|
               next if heavy_file?(source_file)
+              next if excluded_file?(source_file, ssd_path)
 
               copy_stats = copy_light_file(source_file, ssd_path, local_dir, dry_run: dry_run)
               stats[:files] += copy_stats[:files]
@@ -197,6 +214,30 @@ module Appydave
         # Check if file is a heavy video file
         def heavy_file?(source_file)
           HEAVY_FILE_PATTERNS.any? { |pattern| File.fnmatch(pattern, File.basename(source_file)) }
+        end
+
+        # Check if file should be excluded (generated/installable content)
+        def excluded_file?(source_file, ssd_path)
+          relative_path = source_file.sub("#{ssd_path}/", '')
+
+          EXCLUDE_PATTERNS.any? do |pattern|
+            # Extract directory/file name from pattern (remove **)
+            # **/node_modules/** → node_modules
+            # **/.git/** → .git
+            # **/.DS_Store → .DS_Store
+            excluded_name = pattern.gsub('**/', '').chomp('/**')
+
+            # Check path segments for matches
+            path_segments = relative_path.split('/')
+
+            if excluded_name.include?('*')
+              # Pattern with wildcards - use fnmatch on filename
+              File.fnmatch(excluded_name, File.basename(relative_path))
+            else
+              # Check if any path segment matches the excluded name
+              path_segments.include?(excluded_name)
+            end
+          end
         end
 
         # Copy a single light file

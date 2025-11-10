@@ -12,6 +12,22 @@ module Appydave
       class S3Operations
         attr_reader :brand_info, :brand, :project_id, :brand_path, :s3_client
 
+        # Directory patterns to exclude from archive/upload (generated/installable content)
+        EXCLUDE_PATTERNS = %w[
+          **/node_modules/**
+          **/.git/**
+          **/.next/**
+          **/dist/**
+          **/build/**
+          **/out/**
+          **/.cache/**
+          **/coverage/**
+          **/.turbo/**
+          **/.vercel/**
+          **/tmp/**
+          **/.DS_Store
+        ].freeze
+
         def initialize(brand, project_id, brand_info: nil, brand_path: nil, s3_client: nil)
           @project_id = project_id
 
@@ -37,9 +53,11 @@ module Appydave
           Aws::S3::Client.new(
             credentials: credentials,
             region: brand_info.aws.region,
-            http_wire_trace: false,
-            ssl_verify_peer: true,
-            ssl_ca_bundle: '/etc/ssl/cert.pem' # macOS system certificates
+            http_wire_trace: false
+            # AWS SDK auto-detects SSL certificates on all platforms:
+            # - Windows: Uses Windows Certificate Store
+            # - macOS: Finds system certificates automatically
+            # - Linux: Finds OpenSSL certificates
           )
         end
 
@@ -500,25 +518,69 @@ module Appydave
           end
 
           size = calculate_directory_size(source_dir)
-          puts '📋 Copy to SSD:'
+          puts '📋 Copy to SSD (excluding generated files):'
           puts "   Source: #{source_dir}"
           puts "   Dest:   #{dest_dir}"
           puts "   Size:   #{file_size_human(size)}"
           puts ''
 
           if dry_run
-            puts '   [DRY-RUN] Would copy entire project to SSD'
+            puts '   [DRY-RUN] Would copy project to SSD (excluding node_modules, .git, etc.)'
             return true
           end
 
-          FileUtils.mkdir_p(File.dirname(dest_dir))
-          FileUtils.cp_r(source_dir, dest_dir, preserve: true)
-          puts '   ✅ Copied to SSD'
+          FileUtils.mkdir_p(dest_dir)
+
+          # Copy files with exclusion filtering
+          stats = copy_with_exclusions(source_dir, dest_dir)
+
+          puts "   ✅ Copied to SSD (#{stats[:files]} files, excluded #{stats[:excluded]} generated files)"
 
           true
         rescue StandardError => e
           puts "   ✗ Failed to copy: #{e.message}"
           false
+        end
+
+        # Copy directory contents with exclusion filtering
+        def copy_with_exclusions(source_dir, dest_dir)
+          stats = { files: 0, excluded: 0 }
+
+          Dir.glob(File.join(source_dir, '**', '*'), File::FNM_DOTMATCH).each do |source_path|
+            next if File.directory?(source_path)
+            next if ['.', '..'].include?(File.basename(source_path))
+
+            relative_path = source_path.sub("#{source_dir}/", '')
+
+            if excluded_path?(relative_path)
+              stats[:excluded] += 1
+              next
+            end
+
+            dest_path = File.join(dest_dir, relative_path)
+            FileUtils.mkdir_p(File.dirname(dest_path))
+            FileUtils.cp(source_path, dest_path, preserve: true)
+            stats[:files] += 1
+          end
+
+          stats
+        end
+
+        # Check if path should be excluded (generated/installable content)
+        def excluded_path?(relative_path)
+          EXCLUDE_PATTERNS.any? do |pattern|
+            # Extract directory/file name from pattern (remove **)
+            excluded_name = pattern.gsub('**/', '').chomp('/**')
+            path_segments = relative_path.split('/')
+
+            if excluded_name.include?('*')
+              # Pattern with wildcards - use fnmatch on filename
+              File.fnmatch(excluded_name, File.basename(relative_path))
+            else
+              # Check if any path segment matches the excluded name
+              path_segments.include?(excluded_name)
+            end
+          end
         end
 
         # Delete local project directory

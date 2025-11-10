@@ -325,6 +325,60 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
     end
   end
 
+  describe '#excluded_file?' do
+    let(:ssd_path) { '/path/to/ssd/b65-project' }
+
+    it 'excludes node_modules files' do
+      file = "#{ssd_path}/node_modules/package.json"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes nested node_modules files' do
+      file = "#{ssd_path}/node_modules/typescript/lib/en/diagnosticMessages.generated.json"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes .next build directory' do
+      file = "#{ssd_path}/.next/static/chunks/app.js"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes dist directory' do
+      file = "#{ssd_path}/dist/bundle.js"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes build directory' do
+      file = "#{ssd_path}/build/output.js"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes .git directory' do
+      file = "#{ssd_path}/.git/config"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes .DS_Store files' do
+      file = "#{ssd_path}/.DS_Store"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'excludes coverage directory' do
+      file = "#{ssd_path}/coverage/index.html"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be true
+    end
+
+    it 'allows normal project files' do
+      file = "#{ssd_path}/subtitle.srt"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be false
+    end
+
+    it 'allows nested project files' do
+      file = "#{ssd_path}/assets/images/thumbnail.jpg"
+      expect(sync_from_ssd.send(:excluded_file?, file, ssd_path)).to be false
+    end
+  end
+
   describe '#file_already_synced?' do
     let(:source_file) { File.join(temp_dir, 'source.txt') }
     let(:dest_file) { File.join(temp_dir, 'dest.txt') }

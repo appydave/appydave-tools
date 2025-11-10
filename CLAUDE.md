@@ -49,6 +49,29 @@ bin/setup           # Install dependencies and setup development environment
 bin/console         # Interactive Ruby console for experimentation
 ```
 
+### Windows Setup
+
+**For Windows users:** Ruby installation and configuration differs from Mac/Linux.
+
+**Complete Windows guide:** [docs/WINDOWS-SETUP.md](./docs/WINDOWS-SETUP.md)
+
+**Quick Windows setup:**
+1. **Install Ruby:** Download RubyInstaller (3.3+ or 3.4+) from https://rubyinstaller.org/
+   - Choose **Ruby+Devkit (x64)** version
+   - Check "Add Ruby executables to your PATH"
+   - Install MSYS2 toolchain when prompted
+2. **Install gem:** `gem install appydave-tools`
+3. **Configure:** `ad_config -c` (creates config files in `%USERPROFILE%\.config\appydave\`)
+4. **Edit config:** Use forward slashes (`C:/Users/Name/Videos`) or double backslashes (`C:\\Users\\Name\\Videos`) in JSON
+
+**Key Windows differences:**
+- Drive letters instead of mount points (`C:\` vs `/Users/`)
+- Path format in JSON: Use `C:/path` or `C:\\path` (NOT `C:\path`)
+- SSD drives use drive letters (E:, F:) instead of `/Volumes/`
+- AWS CLI requires separate Windows installer
+
+**Testing on Windows:** [docs/dam/windows-testing-guide.md](./docs/dam/windows-testing-guide.md)
+
 ### CLI Tools Usage
 
 **Installation Note:** When installed as a gem (`gem install appydave-tools`), these tools are available as system commands. During development, run them from `bin/` directory as `bin/script_name.rb`.

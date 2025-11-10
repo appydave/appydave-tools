@@ -7,6 +7,8 @@
 
 **Reference**: Original UAT plan at `/Users/davidcruwys/dev/video-projects/video-asset-tools/docs/testing-plan.md`
 
+**Windows Testing**: See [windows-testing-guide.md](./windows-testing-guide.md) for Windows-specific testing scenarios
+
 ---
 
 ## Integration Status Summary

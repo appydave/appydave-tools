@@ -85,9 +85,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       allow(Aws::S3::Client).to receive(:new).with(
         credentials: mock_credentials,
         region: 'us-east-1',
-        http_wire_trace: false,
-        ssl_verify_peer: true,
-        ssl_ca_bundle: '/etc/ssl/cert.pem'
+        http_wire_trace: false
+        # SSL auto-detection removed for cross-platform compatibility
       ).and_return(mock_s3_client)
 
       # Don't inject s3_client to test the creation logic
@@ -473,7 +472,7 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     it 'performs dry-run archive without copying' do
       expect do
         s3_ops.archive(force: false, dry_run: true)
-      end.to output(/\[DRY-RUN\] Would copy entire project/).to_stdout
+      end.to output(/\[DRY-RUN\] Would copy project to SSD \(excluding node_modules, \.git, etc\.\)/).to_stdout
 
       expect(Dir.exist?(File.join(ssd_backup, 'test-project'))).to be false
     end
