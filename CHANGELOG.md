@@ -1,3 +1,11 @@
+## [0.18.1](https://github.com/appydave/appydave-tools/compare/v0.18.0...v0.18.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* add manifest summary showing all generated paths at once ([7f73ff9](https://github.com/appydave/appydave-tools/commit/7f73ff98b5f1e375633279c597c2d9265c278b37))
+* refactor manifest command to reduce complexity for RuboCop ([99d9a85](https://github.com/appydave/appydave-tools/commit/99d9a8586ea86ead65c38ac54acf6755ee4f2664))
+
 # [0.18.0](https://github.com/appydave/appydave-tools/compare/v0.17.1...v0.18.0) (2025-11-10)
 
 
