@@ -182,19 +182,22 @@ module Appydave
           puts '📋 Manifest Summary:'
           puts "   Total projects: #{manifest[:projects].size}"
 
-          local_count = manifest[:projects].count { |p| p[:storage][:local][:exists] }
-          s3_count = manifest[:projects].count { |p| p[:storage][:s3][:exists] }
-          ssd_count = manifest[:projects].count { |p| p[:storage][:ssd][:exists] }
+          # Handle old manifest format gracefully
+          local_count = manifest[:projects].count { |p| p.dig(:storage, :local, :exists) }
+          s3_count = manifest[:projects].count { |p| p.dig(:storage, :s3, :exists) }
+          ssd_count = manifest[:projects].count { |p| p.dig(:storage, :ssd, :exists) }
 
           puts "   Local: #{local_count}"
           puts "   S3 staging: #{s3_count}"
           puts "   SSD backup: #{ssd_count}"
 
-          # Project types
-          storyline_count = manifest[:projects].count { |p| p[:hasStorylineJson] }
-          puts ''
-          puts "   Storyline projects: #{storyline_count}"
-          puts "   FliVideo projects: #{manifest[:projects].size - storyline_count}"
+          # Project types (only show if manifest has this data)
+          storyline_count = manifest[:projects].count { |p| p[:hasStorylineJson] == true }
+          if manifest[:projects].any? { |p| p.key?(:hasStorylineJson) }
+            puts ''
+            puts "   Storyline projects: #{storyline_count}"
+            puts "   FliVideo projects: #{manifest[:projects].size - storyline_count}"
+          end
         end
 
         def sync_status_text(ahead, behind)
