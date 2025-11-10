@@ -1,19 +1,15 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require 'tmpdir'
 
 RSpec.describe Appydave::Tools::Vat::ConfigLoader do
-  let(:temp_folder) { Dir.mktmpdir }
+  include_context 'with vat filesystem'
+
   let(:repo_path) { File.join(temp_folder, 'v-test') }
   let(:config_file) { File.join(repo_path, '.video-tools.env') }
 
   before do
     FileUtils.mkdir_p(repo_path)
-  end
-
-  after do
-    FileUtils.remove_entry(temp_folder)
   end
 
   describe '.load_from_repo' do

@@ -1,27 +1,9 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require 'tmpdir'
 
-# rubocop:disable RSpec/AnyInstance
 RSpec.describe Appydave::Tools::Vat::ProjectResolver do
-  let(:temp_folder) { Dir.mktmpdir }
-  let(:projects_root) { File.join(temp_folder, 'video-projects') }
-  let(:appydave_path) { File.join(projects_root, 'v-appydave') }
-  let(:voz_path) { File.join(projects_root, 'v-voz') }
-
-  before do
-    # Mock the SettingsConfig to return our test projects_root
-    allow_any_instance_of(Appydave::Tools::Configuration::Models::SettingsConfig)
-      .to receive(:video_projects_root).and_return(projects_root)
-
-    # Setup test structure
-    FileUtils.mkdir_p(projects_root)
-  end
-
-  after do
-    FileUtils.remove_entry(temp_folder)
-  end
+  include_context 'with vat filesystem and brands', brands: %w[appydave voz]
 
   describe '.resolve' do
     context 'with FliVideo pattern (short names)' do
@@ -247,4 +229,3 @@ RSpec.describe Appydave::Tools::Vat::ProjectResolver do
     end
   end
 end
-# rubocop:enable RSpec/AnyInstance

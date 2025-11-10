@@ -10,6 +10,9 @@ require 'appydave/tools'
 require 'webmock/rspec'
 require 'vcr' # ChatGPT: https://chatgpt.com/c/f7dc1eee-a11a-4969-8ce1-f51f56cf7103
 
+# Load shared helpers
+require_relative 'support/vat_filesystem_helpers'
+
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = Dir.mktmpdir
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)

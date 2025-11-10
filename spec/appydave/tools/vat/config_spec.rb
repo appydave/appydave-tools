@@ -1,23 +1,10 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require 'tmpdir'
 
 # rubocop:disable RSpec/AnyInstance
 RSpec.describe Appydave::Tools::Vat::Config do
-  let(:temp_folder) { Dir.mktmpdir }
-  let(:projects_root) { File.join(temp_folder, 'video-projects') }
-
-  before do
-    # Mock the SettingsConfig instance to return our test values
-    # This allows Config.configure to run normally while controlling video_projects_root
-    allow_any_instance_of(Appydave::Tools::Configuration::Models::SettingsConfig)
-      .to receive(:video_projects_root).and_call_original
-  end
-
-  after do
-    FileUtils.remove_entry(temp_folder)
-  end
+  include_context 'with vat filesystem'
 
   describe '.projects_root' do
     context 'when settings.json has video-projects-root configured' do
