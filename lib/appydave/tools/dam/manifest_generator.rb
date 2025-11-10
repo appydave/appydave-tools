@@ -35,13 +35,8 @@ module Appydave
           # Collect all unique project IDs from both locations
           all_project_ids = collect_project_ids(ssd_backup, ssd_available)
 
-          if all_project_ids.empty?
-            puts "❌ No projects found for brand '#{brand}'"
-            return { success: false, brand: brand, path: nil }
-          end
-
-          # Build project entries
-          projects = build_project_entries(all_project_ids, ssd_backup, ssd_available)
+          # Build project entries (empty array if no projects)
+          projects = all_project_ids.empty? ? [] : build_project_entries(all_project_ids, ssd_backup, ssd_available)
 
           # Calculate disk usage
           disk_usage = calculate_disk_usage(projects, ssd_backup)
