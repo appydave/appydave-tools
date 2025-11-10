@@ -561,16 +561,69 @@ dam s3-down
 dam s3-status
 ```
 
-### Dry-Run Mode
+### Command Safety Features
 
-Preview actions without making changes:
+#### Dry-Run Support
+
+All filesystem-modifying commands support `--dry-run` to preview changes before execution:
+
+| Command | Dry-Run Support | Force Flag Required | What It Previews |
+|---------|----------------|---------------------|------------------|
+| **s3-up** | ✅ Yes | No | Files to upload to S3 |
+| **s3-down** | ✅ Yes | No | Files to download from S3 |
+| **s3-cleanup-remote** | ✅ Yes | **Yes (`--force`)** | S3 files to delete |
+| **s3-cleanup-local** | ✅ Yes | **Yes (`--force`)** | Local s3-staging files to delete |
+| **archive** | ✅ Yes | Optional (`--force` = delete local) | Project to copy to SSD |
+| **sync-ssd** | ✅ Yes | No | Light files to restore from SSD |
+
+#### Read-Only Commands (No Dry-Run Needed)
+
+These commands only read data and don't modify files:
+
+| Command | Type | What It Does |
+|---------|------|--------------|
+| **list** | Read-only | List brands/projects |
+| **manifest** | Generates JSON | Generate `projects.json` manifest |
+| **s3-status** | Read-only | Check sync status |
+| **help** | Read-only | Show help information |
+
+#### Safety Workflow Examples
+
+**Always preview destructive operations first:**
 
 ```bash
+# Preview S3 upload
 dam s3-up appydave b65 --dry-run
-dam s3-down voz boy-baker --dry-run
-dam s3-cleanup-remote aitldr movie-posters --dry-run
-dam s3-cleanup-local appydave b65 --dry-run
+# Review output, then execute
+dam s3-up appydave b65
+
+# Preview S3 cleanup (requires --force)
+dam s3-cleanup-remote appydave b65 --force --dry-run
+# Review output, then execute
+dam s3-cleanup-remote appydave b65 --force
+
+# Preview archive (with or without local deletion)
+dam archive appydave b63 --dry-run              # Copy only
+dam archive appydave b63 --force --dry-run      # Copy + delete local
+# Review output, then execute
+dam archive appydave b63                        # Copy only
+dam archive appydave b63 --force                # Copy + delete local
+
+# Preview SSD sync
+dam sync-ssd appydave --dry-run
+# Review output, then execute
+dam sync-ssd appydave
 ```
+
+#### Force Flag Behavior
+
+Commands requiring `--force` provide extra protection for destructive operations:
+
+- **s3-cleanup-remote**: Must use `--force` to delete S3 files (prevents accidental deletion)
+- **s3-cleanup-local**: Must use `--force` to delete local staging files
+- **archive**: Optional `--force` flag deletes local copy after successful SSD backup
+  - Without `--force`: Copies to SSD, keeps local copy intact
+  - With `--force`: Copies to SSD, then deletes local copy (frees disk space)
 
 ### Interactive Selection
 

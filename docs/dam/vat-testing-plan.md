@@ -113,6 +113,62 @@ dam list
 
 ---
 
+## Command Safety Features Reference
+
+### Dry-Run and Force Flag Support
+
+All filesystem-modifying commands support `--dry-run` to preview changes before execution:
+
+| Command | Dry-Run Support | Force Flag Required | What It Does |
+|---------|----------------|---------------------|--------------|
+| **s3-up** | ✅ Yes | No | Preview files to upload to S3 |
+| **s3-down** | ✅ Yes | No | Preview files to download from S3 |
+| **s3-cleanup-remote** | ✅ Yes | **Yes (`--force`)** | Preview S3 files to delete |
+| **s3-cleanup-local** | ✅ Yes | **Yes (`--force`)** | Preview local s3-staging files to delete |
+| **archive** | ✅ Yes | Optional (`--force` = delete local) | Preview project copy to SSD |
+| **sync-ssd** | ✅ Yes | No | Preview light files to restore from SSD |
+
+### Read-Only Commands (No Dry-Run Needed)
+
+These commands only read data and don't modify files:
+
+| Command | Type | What It Does |
+|---------|------|--------------|
+| **list** | Read-only | List brands/projects |
+| **manifest** | Generates JSON | Generate `projects.json` manifest |
+| **s3-status** | Read-only | Check sync status |
+| **help** | Read-only | Show help information |
+
+### Force Flag Behavior
+
+Commands requiring `--force` provide extra protection for destructive operations:
+
+- **s3-cleanup-remote**: Must use `--force` to delete S3 files (prevents accidental deletion)
+- **s3-cleanup-local**: Must use `--force` to delete local staging files
+- **archive**: Optional `--force` flag deletes local copy after successful SSD backup
+  - Without `--force`: Copies to SSD, keeps local copy intact
+  - With `--force`: Copies to SSD, then deletes local copy (frees disk space)
+
+### Safety Testing Workflow
+
+**Always test with dry-run first:**
+
+```bash
+# 1. Preview with dry-run
+dam s3-up appydave b65 --dry-run
+dam s3-cleanup-remote appydave b65 --force --dry-run
+dam archive appydave b63 --dry-run
+
+# 2. Review output carefully
+
+# 3. Execute if safe
+dam s3-up appydave b65
+dam s3-cleanup-remote appydave b65 --force
+dam archive appydave b63
+```
+
+---
+
 ## Test Suite
 
 ### Phase 1: Unit Tests (Automated - RSpec)
