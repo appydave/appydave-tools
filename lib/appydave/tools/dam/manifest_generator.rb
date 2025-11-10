@@ -164,11 +164,12 @@ module Appydave
           # Determine project type
           type = determine_project_type(local_path, project_id, local_exists)
 
-          # Check SSD (try both flat and range-based structures)
+          # Check SSD (try flat, calculated range, and search all range folders)
           ssd_exists = if ssd_available
                          flat_ssd_path = File.join(ssd_backup, project_id)
                          range_ssd_path = File.join(ssd_backup, range, project_id)
-                         Dir.exist?(flat_ssd_path) || Dir.exist?(range_ssd_path)
+
+                         Dir.exist?(flat_ssd_path) || Dir.exist?(range_ssd_path) || find_project_in_ssd_ranges(ssd_backup, project_id)
                        else
                          false
                        end
@@ -213,15 +214,9 @@ module Appydave
 
             next unless project[:storage][:ssd][:exists]
 
-            # Try flat structure first, then range-based structure
-            flat_ssd_path = File.join(ssd_backup, project[:id])
-            if Dir.exist?(flat_ssd_path)
-              ssd_bytes += calculate_directory_size(flat_ssd_path)
-            else
-              range = determine_range(project[:id])
-              range_ssd_path = File.join(ssd_backup, range, project[:id])
-              ssd_bytes += calculate_directory_size(range_ssd_path) if Dir.exist?(range_ssd_path)
-            end
+            # Find actual SSD path (flat, calculated range, or search)
+            ssd_path = find_ssd_project_path(ssd_backup, project[:id])
+            ssd_bytes += calculate_directory_size(ssd_path) if ssd_path
           end
 
           {
@@ -267,6 +262,42 @@ module Appydave
         end
 
         # Helper methods
+
+        # Search for project in SSD range folders
+        # @param ssd_backup [String] SSD backup base path
+        # @param project_id [String] Project ID to find
+        # @return [Boolean] true if project found in any range folder
+        def find_project_in_ssd_ranges(ssd_backup, project_id)
+          find_ssd_project_path(ssd_backup, project_id) != nil
+        end
+
+        # Find actual SSD path for project
+        # @param ssd_backup [String] SSD backup base path
+        # @param project_id [String] Project ID to find
+        # @return [String, nil] Full path to project or nil if not found
+        def find_ssd_project_path(ssd_backup, project_id)
+          return nil unless Dir.exist?(ssd_backup)
+
+          # Try flat structure first
+          flat_path = File.join(ssd_backup, project_id)
+          return flat_path if Dir.exist?(flat_path)
+
+          # Try calculated range
+          range = determine_range(project_id)
+          range_path = File.join(ssd_backup, range, project_id)
+          return range_path if Dir.exist?(range_path)
+
+          # Search all range folders
+          Dir.glob(File.join(ssd_backup, '*/')).each do |range_folder_path|
+            range_name = File.basename(range_folder_path)
+            next unless range_folder?(range_name)
+
+            project_path = File.join(range_folder_path, project_id)
+            return project_path if Dir.exist?(project_path)
+          end
+
+          nil
+        end
 
         # Determine range folder for project
         # Both SSD and local archived use 50-number ranges with letter prefixes:
@@ -320,12 +351,14 @@ module Appydave
         end
 
         def range_folder?(folder_name)
-          # Range folder patterns with letter prefixes:
-          # - b00-b49, b50-b99, a00-a49, a50-a99 (letter + 2 digits + dash + same letter + 2 digits)
+          # Range folder patterns:
           # - 000-099 (3 digits + dash + 3 digits)
-          # Must match: same letter on both sides (b00-b49, not b00-a49)
           return true if folder_name =~ /^\d{3}-\d{3}$/
 
+          # - a1-20, a21-40, b50-99 (letter + digits + dash + digits)
+          return true if folder_name =~ /^[a-z]\d+-\d+$/
+
+          # - b00-b49 (letter + 2 digits + dash + same letter + 2 digits)
           if folder_name =~ /^([a-z])(\d{2})-([a-z])(\d{2})$/
             letter1 = Regexp.last_match(1)
             letter2 = Regexp.last_match(3)
