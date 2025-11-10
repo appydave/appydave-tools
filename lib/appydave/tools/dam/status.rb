@@ -191,10 +191,14 @@ module Appydave
           puts "   SSD backup: #{ssd_count}"
 
           # Project types
-          storyline_count = manifest[:projects].count { |p| p[:hasStorylineJson] }
+          storyline_count = manifest[:projects].count { |p| p[:type] == 'storyline' }
+          flivideo_count = manifest[:projects].count { |p| p[:type] == 'flivideo' }
+          general_count = manifest[:projects].count { |p| p[:type] == 'general' }
+
           puts ''
-          puts "   Storyline projects: #{storyline_count}"
-          puts "   FliVideo projects: #{manifest[:projects].size - storyline_count}"
+          puts "   Storyline: #{storyline_count}"
+          puts "   FliVideo: #{flivideo_count}"
+          puts "   General: #{general_count}" if general_count.positive?
         end
 
         def sync_status_text(ahead, behind)

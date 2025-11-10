@@ -93,9 +93,9 @@ module Appydave
                 # Scan projects within SSD range folders
                 Dir.glob(File.join(ssd_path, '*/')).each do |project_path|
                   project_id = File.basename(project_path)
-                  all_project_ids << project_id if valid_project_id?(project_id)
+                  all_project_ids << project_id if valid_project_folder?(project_path)
                 end
-              elsif valid_project_id?(basename)
+              elsif valid_project_folder?(ssd_path)
                 # Direct project in SSD root (legacy structure)
                 all_project_ids << basename
               end
@@ -109,7 +109,7 @@ module Appydave
             next if basename.start_with?('.', '_')
             next if %w[s3-staging archived final].include?(basename)
 
-            all_project_ids << basename if valid_project_id?(basename)
+            all_project_ids << basename if valid_project_folder?(path)
           end
 
           # Scan archived structure (restored/archived projects)
@@ -120,7 +120,7 @@ module Appydave
               # Scan projects within each range folder
               Dir.glob(File.join(range_folder, '*/')).each do |project_path|
                 basename = File.basename(project_path)
-                all_project_ids << basename if valid_project_id?(basename)
+                all_project_ids << basename if valid_project_folder?(project_path)
               end
             end
           end
@@ -161,9 +161,8 @@ module Appydave
           s3_staging_path = File.join(local_path, 's3-staging')
           s3_exists = local_exists && Dir.exist?(s3_staging_path)
 
-          # Check for storyline.json
-          storyline_json_path = File.join(local_path, 'data', 'storyline.json')
-          has_storyline_json = local_exists && File.exist?(storyline_json_path)
+          # Determine project type
+          type = determine_project_type(local_path, project_id, local_exists)
 
           # Check SSD (try both flat and range-based structures)
           ssd_exists = if ssd_available
@@ -176,8 +175,7 @@ module Appydave
 
           {
             id: project_id,
-            type: has_storyline_json ? 'storyline-app' : 'flivideo',
-            hasStorylineJson: has_storyline_json,
+            type: type,
             storage: {
               ssd: {
                 exists: ssd_exists,
@@ -254,8 +252,10 @@ module Appydave
           puts '🔍 Running validations...'
           warnings = []
 
+          # Check for projects with no storage locations
           projects.each do |project|
-            warnings << "⚠️  Invalid project ID format: #{project[:id]}" unless valid_project_id?(project[:id])
+            no_storage = !project[:storage][:local][:exists] && !project[:storage][:ssd][:exists]
+            warnings << "⚠️  Project has no storage: #{project[:id]}" if no_storage
           end
 
           if warnings.empty?
@@ -287,11 +287,36 @@ module Appydave
           end
         end
 
-        def valid_project_id?(project_id)
-          # Valid formats:
-          # - Modern: letter + 2 digits + dash + name (e.g., b63-flivideo)
-          # - Legacy: just numbers (e.g., 006-ac-carnivore-90)
-          !!(project_id =~ /^[a-z]\d{2}-/ || project_id =~ /^\d/)
+        # Check if folder is a valid project (permissive - any folder except infrastructure)
+        def valid_project_folder?(project_path)
+          basename = File.basename(project_path)
+
+          # Exclude infrastructure directories
+          excluded = %w[archived docs node_modules .git .github s3-staging final]
+          return false if excluded.include?(basename)
+
+          # Exclude hidden and underscore-prefixed
+          return false if basename.start_with?('.', '_')
+
+          true
+        end
+
+        # Determine project type based on content and naming
+        def determine_project_type(local_path, project_id, local_exists)
+          # 1. Check for storyline.json (highest priority)
+          if local_exists
+            storyline_json_path = File.join(local_path, 'data', 'storyline.json')
+            return 'storyline' if File.exist?(storyline_json_path)
+          end
+
+          # 2. Check for FliVideo pattern (letter + 2 digits + dash + name)
+          return 'flivideo' if project_id =~ /^[a-z]\d{2}-/
+
+          # 3. Check for legacy pattern (starts with digit)
+          return 'flivideo' if project_id =~ /^\d/
+
+          # 4. Everything else is general
+          'general'
         end
 
         def range_folder?(folder_name)
