@@ -35,7 +35,7 @@ module Appydave
 
         def resolve_project_path(project_id)
           # Resolve short name if needed (b65 -> b65-full-name)
-          resolved = ProjectResolver.new.resolve(brand, project_id)
+          resolved = ProjectResolver.resolve(brand, project_id)
           File.join(brand_path, resolved)
         end
 

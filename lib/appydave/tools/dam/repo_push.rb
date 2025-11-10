@@ -51,7 +51,7 @@ module Appydave
           end
 
           # Resolve short name if needed (b65 -> b65-full-name)
-          resolved = ProjectResolver.new.resolve(brand, project_id)
+          resolved = ProjectResolver.resolve(brand, project_id)
 
           project_entry = manifest[:projects].find { |p| p[:id] == resolved }
           if project_entry
