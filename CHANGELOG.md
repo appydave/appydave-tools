@@ -1,3 +1,11 @@
+# [0.20.0](https://github.com/appydave/appydave-tools/compare/v0.19.0...v0.20.0) (2025-11-10)
+
+
+### Features
+
+* Phase 2: add unified status and git repo commands (status, repo-status, repo-sync, repo-push) ([c9ff7de](https://github.com/appydave/appydave-tools/commit/c9ff7dee9bd2d60954205df08c23dd673960a524))
+* Phase 2: add unified status and git repo commands (status, repo-status, repo-sync, repo-push) ([b74f343](https://github.com/appydave/appydave-tools/commit/b74f3436e188cfa7dbdff386d35cb96d75f80860))
+
 # [0.19.0](https://github.com/appydave/appydave-tools/compare/v0.18.5...v0.19.0) (2025-11-10)
 
 
