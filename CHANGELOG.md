@@ -1,3 +1,10 @@
+## [0.17.1](https://github.com/appydave/appydave-tools/compare/v0.17.0...v0.17.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* review and implement codex recomedations ([32811a0](https://github.com/appydave/appydave-tools/commit/32811a0d4e0deda0a7e94c74dacf38c1f67a0e44))
+
 # [0.17.0](https://github.com/appydave/appydave-tools/compare/v0.16.0...v0.17.0) (2025-11-09)
 
 
