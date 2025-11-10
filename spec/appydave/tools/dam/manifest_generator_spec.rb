@@ -417,15 +417,24 @@ RSpec.describe Appydave::Tools::Dam::ManifestGenerator do
         FileUtils.mkdir_p(File.join(brand_path, 'invalid-project-name'))
       end
 
-      it 'skips invalid projects during collection' do
+      it 'includes all valid folders with appropriate types' do
         generator = create_generator
 
         generator.generate
 
         manifest = JSON.parse(File.read(File.join(brand_path, 'projects.json')))
-        # Only the valid project should be included
-        expect(manifest['projects'].size).to eq(1)
-        expect(manifest['projects'][0]['id']).to eq('b40-valid')
+        # Both projects should be included (permissive validation)
+        expect(manifest['projects'].size).to eq(2)
+
+        # b40-valid should be type: flivideo
+        b40_project = manifest['projects'].find { |p| p['id'] == 'b40-valid' }
+        expect(b40_project).not_to be_nil
+        expect(b40_project['type']).to eq('flivideo')
+
+        # invalid-project-name should be type: general
+        general_project = manifest['projects'].find { |p| p['id'] == 'invalid-project-name' }
+        expect(general_project).not_to be_nil
+        expect(general_project['type']).to eq('general')
       end
     end
   end
