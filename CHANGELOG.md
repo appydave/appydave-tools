@@ -1,3 +1,10 @@
+# [0.19.0](https://github.com/appydave/appydave-tools/compare/v0.18.5...v0.19.0) (2025-11-10)
+
+
+### Features
+
+* Phase 1: add git_remote, S3 tracking, and hasStorylineJson to manifest ([4622271](https://github.com/appydave/appydave-tools/commit/4622271a9e1a01a7145981db4837ed9b69e8f721))
+
 ## [0.18.5](https://github.com/appydave/appydave-tools/compare/v0.18.4...v0.18.5) (2025-11-10)
 
 
