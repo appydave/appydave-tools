@@ -1,3 +1,10 @@
+## [0.20.1](https://github.com/appydave/appydave-tools/compare/v0.20.0...v0.20.1) (2025-11-10)
+
+
+### Bug Fixes
+
+* remove noisy backup log message from self-healing config saves ([f9dacfd](https://github.com/appydave/appydave-tools/commit/f9dacfd74cce5f991c7f4bafb12d1494aa6ee4ab))
+
 # [0.20.0](https://github.com/appydave/appydave-tools/compare/v0.19.0...v0.20.0) (2025-11-10)
 
 
