@@ -169,18 +169,38 @@ class VatCLI
       Appydave::Tools::Configuration::Config.configure
       brands_config = Appydave::Tools::Configuration::Config.brands
 
+      results = []
       brands_config.brands.each do |brand_info|
         brand_key = brand_info.key
         puts ''
         puts '=' * 60
 
         generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_key)
-        generator.generate
+        result = generator.generate
+        results << result if result
+      end
+
+      # Display summary
+      puts ''
+      puts '=' * 60
+      puts '📋 Summary - Generated Manifests:'
+      puts ''
+
+      successful = results.select { |r| r[:success] }
+      failed = results.reject { |r| r[:success] }
+
+      successful.each do |result|
+        brand_display = result[:brand].ljust(15)
+        puts "✅ #{brand_display} #{result[:path]}"
+      end
+
+      failed.each do |result|
+        brand_display = result[:brand].ljust(15)
+        puts "❌ #{brand_display} No projects found"
       end
 
       puts ''
-      puts '=' * 60
-      puts '✅ All brand manifests generated!'
+      puts "Total manifests generated: #{successful.size}"
     elsif brand_arg
       # Generate manifest for specific brand
       Appydave::Tools::Dam::Config.expand_brand(brand_arg)

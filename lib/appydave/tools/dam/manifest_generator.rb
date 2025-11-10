@@ -17,6 +17,7 @@ module Appydave
         end
 
         # Generate manifest for this brand
+        # @return [Hash] Result with :success, :path, and :brand keys
         def generate(output_file: nil)
           output_file ||= File.join(brand_path, 'projects.json')
           ssd_backup = brand_info.locations.ssd_backup
@@ -36,7 +37,7 @@ module Appydave
 
           if all_project_ids.empty?
             puts "❌ No projects found for brand '#{brand}'"
-            return
+            return { success: false, brand: brand, path: nil }
           end
 
           # Build project entries
@@ -69,6 +70,8 @@ module Appydave
 
           # Validations
           run_validations(projects)
+
+          { success: true, brand: brand, path: output_file }
         end
 
         private
