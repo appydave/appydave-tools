@@ -90,11 +90,15 @@ RSpec.describe Appydave::Tools::Dam::ManifestGenerator do
     let(:output_file) { File.join(brand_path, 'projects.json') }
 
     context 'with no projects' do
-      it 'reports no projects found and does not create manifest' do
+      it 'creates manifest with empty projects array' do
         generator = create_generator
 
-        expect { generator.generate }.to output(/❌ No projects found for brand 'test'/).to_stdout
-        expect(File.exist?(output_file)).to be false
+        expect { generator.generate }.to output(/✅ Generated/).to_stdout
+        expect(File.exist?(output_file)).to be true
+
+        manifest = JSON.parse(File.read(output_file))
+        expect(manifest['projects']).to eq([])
+        expect(manifest['config']['brand']).to eq('test')
       end
     end
 

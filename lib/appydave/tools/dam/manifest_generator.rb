@@ -263,7 +263,7 @@ module Appydave
         # @param project_id [String] Project ID to find
         # @return [Boolean] true if project found in any range folder
         def find_project_in_ssd_ranges(ssd_backup, project_id)
-          find_ssd_project_path(ssd_backup, project_id) != nil
+          !find_ssd_project_path(ssd_backup, project_id).nil?
         end
 
         # Find actual SSD path for project
