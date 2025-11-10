@@ -2,8 +2,8 @@
 
 require 'rspec'
 
-RSpec.describe Appydave::Tools::Vat::ConfigLoader do
-  include_context 'with vat filesystem'
+RSpec.describe Appydave::Tools::Dam::ConfigLoader do
+  include_context 'with dam filesystem'
 
   let(:repo_path) { File.join(temp_folder, 'v-test') }
   let(:config_file) { File.join(repo_path, '.video-tools.env') }
@@ -102,7 +102,7 @@ RSpec.describe Appydave::Tools::Vat::ConfigLoader do
       it 'raises ConfigNotFoundError' do
         expect do
           described_class.load_from_repo(repo_path)
-        end.to raise_error(Appydave::Tools::Vat::ConfigLoader::ConfigNotFoundError, /Configuration file not found/)
+        end.to raise_error(Appydave::Tools::Dam::ConfigLoader::ConfigNotFoundError, /Configuration file not found/)
       end
     end
 
@@ -116,7 +116,7 @@ RSpec.describe Appydave::Tools::Vat::ConfigLoader do
       it 'raises InvalidConfigError' do
         expect do
           described_class.load_from_repo(repo_path)
-        end.to raise_error(Appydave::Tools::Vat::ConfigLoader::InvalidConfigError, /Missing required configuration keys/)
+        end.to raise_error(Appydave::Tools::Dam::ConfigLoader::InvalidConfigError, /Missing required configuration keys/)
       end
 
       it 'lists missing keys in error message' do

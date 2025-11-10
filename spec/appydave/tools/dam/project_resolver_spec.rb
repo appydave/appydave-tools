@@ -2,7 +2,7 @@
 
 require 'rspec'
 
-RSpec.describe Appydave::Tools::Vat::ProjectResolver do
+RSpec.describe Appydave::Tools::Dam::ProjectResolver do
   include_context 'with vat filesystem and brands', brands: %w[appydave voz]
 
   describe '.resolve' do

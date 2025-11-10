@@ -1,7 +1,7 @@
-# VAT (Video Asset Tools) - Integration Testing Plan
+# DAM (Digital Asset Management) - Integration Testing Plan
 
 **Date**: 2025-11-08
-**Purpose**: Validate VAT integration into appydave-tools gem
+**Purpose**: Validate DAM integration into appydave-tools gem
 **Tester**: David Cruwys
 **Status**: Ready for User Acceptance Testing
 
@@ -21,21 +21,21 @@
 - ✅ Documentation complete
 
 **Commands - Phase 1 Complete** (CLI args + auto-detect):
-- ✅ `vat help` - Help system
-- ✅ `vat list` - Project discovery (3 modes + pattern matching)
-- ✅ `vat s3-up` - Upload to S3
+- ✅ `dam help` - Help system
+- ✅ `dam list` - Project discovery (3 modes + pattern matching)
+- ✅ `dam s3-up` - Upload to S3
 
 **Commands - Phase 2 Complete** (CLI args + auto-detect):
-- ✅ `vat s3-down` - Download from S3
-- ✅ `vat s3-status` - Check sync status
-- ✅ `vat s3-cleanup` - Delete S3 files
+- ✅ `dam s3-down` - Download from S3
+- ✅ `dam s3-status` - Check sync status
+- ✅ `dam s3-cleanup` - Delete S3 files
 
 **Commands - Not Yet Migrated**:
-- ⏳ `vat manifest` - Generate project manifest
-- ⏳ `vat archive` - Archive to SSD
-- ⏳ `vat sync-ssd` - Sync from SSD
+- ⏳ `dam manifest` - Generate project manifest
+- ⏳ `dam archive` - Archive to SSD
+- ⏳ `dam sync-ssd` - Sync from SSD
 
-**Utilities - Not Migrated** (not VAT commands):
+**Utilities - Not Migrated** (not DAM commands):
 - ❌ `status-all.sh` - Git status for all repos (workflow script, not needed in gem)
 - ❌ `sync-all.sh` - Git pull for all repos (workflow script, not needed in gem)
 - ❌ `clone-all.sh` - Clone all repos (workflow script, not needed in gem)
@@ -55,12 +55,12 @@ cd ~/dev/ad/appydave-tools
 bundle install
 
 # 3. Verify tests pass
-bundle exec rspec spec/appydave/tools/vat/
+bundle exec rspec spec/appydave/tools/dam/
 # Expected: 64 examples, 0 failures
 
-# 4. VAT commands available via bin/
-ls bin/vat*
-# Should show: vat, vat_init.rb, vat_help.rb, vat_list.rb, s3_sync_*.rb
+# 4. DAM commands available via bin/
+ls bin/dam*
+# Should show: dam, dam_init.rb, dam_help.rb, dam_list.rb, s3_sync_*.rb
 ```
 
 **For Gem Testing** (after gem install):
@@ -71,9 +71,9 @@ rake build
 # 2. Install locally
 gem install pkg/appydave-tools-*.gem
 
-# 3. Verify vat command available
-which vat
-# Should show: /Users/davidcruwys/.rbenv/shims/vat (or similar)
+# 3. Verify dam command available
+which dam
+# Should show: /Users/davidcruwys/.rbenv/shims/dam (or similar)
 
 # 4. Initialize configuration
 ad_config -c
@@ -100,12 +100,12 @@ cat ~/.aws/credentials | grep -A2 "\[david-appydave\]"
 ad_config -p brands
 # Should show: All 6 brands with AWS profiles
 
-# Check vat works
-vat help
-# Should show: VAT (Video Asset Tools) help
+# Check dam works
+dam help
+# Should show: DAM (Digital Asset Management) help
 
 # Check config
-vat list
+dam list
 # Should show: Brands: appydave, voz, aitldr, ... (or error if not configured)
 ```
 
@@ -119,7 +119,7 @@ vat list
 
 #### Test 1.1: Config Module
 ```bash
-bundle exec rspec spec/appydave/tools/vat/config_spec.rb
+bundle exec rspec spec/appydave/tools/dam/config_spec.rb
 ```
 **Coverage**:
 - ✅ projects_root configuration
@@ -135,7 +135,7 @@ bundle exec rspec spec/appydave/tools/vat/config_spec.rb
 
 #### Test 1.2: ProjectResolver Module
 ```bash
-bundle exec rspec spec/appydave/tools/vat/project_resolver_spec.rb
+bundle exec rspec spec/appydave/tools/dam/project_resolver_spec.rb
 ```
 **Coverage**:
 - ✅ FliVideo short name expansion (b65 → full name)
@@ -151,7 +151,7 @@ bundle exec rspec spec/appydave/tools/vat/project_resolver_spec.rb
 
 #### Test 1.3: ConfigLoader Module
 ```bash
-bundle exec rspec spec/appydave/tools/vat/config_loader_spec.rb
+bundle exec rspec spec/appydave/tools/dam/config_loader_spec.rb
 ```
 **Coverage**:
 - ✅ .video-tools.env parsing
@@ -171,14 +171,14 @@ bundle exec rspec spec/appydave/tools/vat/config_loader_spec.rb
 #### Test 2.1: Help System
 ```bash
 # Test: Main help
-bin/vat help
+bin/dam help
 
 # Test: Command-specific help
-bin/vat help list
-bin/vat help s3-up
-bin/vat help s3-down
-bin/vat help brands
-bin/vat help workflows
+bin/dam help list
+bin/dam help s3-up
+bin/dam help s3-down
+bin/dam help brands
+bin/dam help workflows
 ```
 **Expected**:
 - Full help overview
@@ -194,7 +194,7 @@ bin/vat help workflows
 #### Test 2.3: List Brands (Mode 1)
 ```bash
 # Test: List brands only
-bin/vat list
+bin/dam list
 ```
 **Expected**: `Brands: aitldr, appydave, joy, kiros, ss, voz` (shortcuts)
 
@@ -206,7 +206,7 @@ bin/vat list
 #### Test 2.4: List Brands with Summary (Mode 2)
 ```bash
 # Test: Brands with project counts
-bin/vat list --summary
+bin/dam list --summary
 ```
 **Expected**:
 ```
@@ -224,7 +224,7 @@ joy: Z projects
 #### Test 2.5: List Brand Projects (Mode 3)
 ```bash
 # Test: All projects for brand
-bin/vat list appydave
+bin/dam list appydave
 ```
 **Expected**: List of all appydave projects (excludes `archived/`, `.git`, etc.)
 
@@ -236,7 +236,7 @@ bin/vat list appydave
 #### Test 2.6: Pattern Matching (Mode 3b)
 ```bash
 # Test: Pattern matching
-bin/vat list appydave 'b6*'
+bin/dam list appydave 'b6*'
 ```
 **Expected**: Only projects starting with `b6` (b60-b69)
 
@@ -351,14 +351,14 @@ bin/s3_sync_cleanup.rb --dry-run
 
 #### Test 3.1: Gem Commands Available
 ```bash
-# Test: vat command in PATH
-which vat
+# Test: dam command in PATH
+which dam
 
 # Test: Help works
-vat help
+dam help
 ```
 **Expected**:
-- `which vat` shows gem bin path
+- `which dam` shows gem bin path
 - Help text displays
 
 **Status**: [ ] Pass [ ] Fail
@@ -368,10 +368,10 @@ vat help
 
 #### Test 3.2: All List Commands Work
 ```bash
-vat list
-vat list --summary
-vat list appydave
-vat list appydave 'b6*'
+dam list
+dam list --summary
+dam list appydave
+dam list appydave 'b6*'
 ```
 **Expected**: All modes work correctly
 
@@ -382,10 +382,10 @@ vat list appydave 'b6*'
 
 #### Test 3.3: S3 Commands Work (CLI Args)
 ```bash
-vat s3-up appydave b65 --dry-run
-vat s3-down appydave b65 --dry-run
-vat s3-status appydave b65
-vat s3-cleanup appydave b65 --dry-run
+dam s3-up appydave b65 --dry-run
+dam s3-down appydave b65 --dry-run
+dam s3-status appydave b65
+dam s3-cleanup appydave b65 --dry-run
 ```
 **Expected**: All commands work with explicit args
 
@@ -398,10 +398,10 @@ vat s3-cleanup appydave b65 --dry-run
 ```bash
 cd ~/dev/video-projects/v-appydave/b65-*
 
-vat s3-up --dry-run
-vat s3-down --dry-run
-vat s3-status
-vat s3-cleanup --dry-run
+dam s3-up --dry-run
+dam s3-down --dry-run
+dam s3-status
+dam s3-cleanup --dry-run
 ```
 **Expected**: All commands auto-detect from PWD
 
@@ -413,12 +413,12 @@ vat s3-cleanup --dry-run
 #### Test 3.5: Brand Shortcuts Work
 ```bash
 # Test: All 6 brand shortcuts
-vat list appydave  # v-appydave
-vat list voz       # v-voz
-vat list aitldr    # v-aitldr
-vat list kiros     # v-kiros
-vat list joy       # v-beauty-and-joy
-vat list ss        # v-supportsignal
+dam list appydave  # v-appydave
+dam list voz       # v-voz
+dam list aitldr    # v-aitldr
+dam list kiros     # v-kiros
+dam list joy       # v-beauty-and-joy
+dam list ss        # v-supportsignal
 ```
 **Expected**: All shortcuts expand correctly
 
@@ -430,7 +430,7 @@ vat list ss        # v-supportsignal
 #### Test 3.6: Short Name Expansion (FliVideo)
 ```bash
 # Test: Short name expands to full name
-vat list appydave b65
+dam list appydave b65
 # Should resolve to: b65-guy-monroe-marketing-plan (or similar)
 ```
 **Expected**: Expands `b65` to full project name
@@ -444,7 +444,7 @@ vat list appydave b65
 
 #### Test 4.1: Invalid Brand Name
 ```bash
-vat list invalid-brand
+dam list invalid-brand
 ```
 **Expected**: Error message listing available brands
 
@@ -455,7 +455,7 @@ vat list invalid-brand
 
 #### Test 4.2: Invalid Project Name
 ```bash
-vat list appydave invalid-project
+dam list appydave invalid-project
 ```
 **Expected**: Error "No project found matching 'invalid-project'"
 
@@ -468,7 +468,7 @@ vat list appydave invalid-project
 ```bash
 # Test: Temporarily rename config
 mv ~/.config/appydave/settings.json ~/.config/appydave/settings.json.bak
-vat list
+dam list
 mv ~/.config/appydave/settings.json.bak ~/.config/appydave/settings.json
 ```
 **Expected**: Error "VIDEO_PROJECTS_ROOT not configured! Run: ad_config -e"
@@ -478,11 +478,11 @@ mv ~/.config/appydave/settings.json.bak ~/.config/appydave/settings.json
 
 ---
 
-#### Test 4.4: No Arguments to vat
+#### Test 4.4: No Arguments to dam
 ```bash
-vat
+dam
 ```
-**Expected**: Usage message and suggestion to run `vat help`
+**Expected**: Usage message and suggestion to run `dam help`
 
 **Status**: [ ] Pass [ ] Fail
 **Notes**: ___________________________________________
@@ -491,7 +491,7 @@ vat
 
 #### Test 4.5: Unknown Command
 ```bash
-vat unknown-command
+dam unknown-command
 ```
 **Expected**: Error "Unknown command: unknown-command"
 
@@ -503,7 +503,7 @@ vat unknown-command
 #### Test 4.6: S3 Commands Without Brand Path
 ```bash
 cd /tmp
-vat s3-up
+dam s3-up
 ```
 **Expected**: Error "Could not detect brand and project from current directory"
 
@@ -516,7 +516,7 @@ vat s3-up
 
 #### Test 5.1: List Performance
 ```bash
-time vat list --summary
+time dam list --summary
 ```
 **Expected**: Completes in < 2 seconds
 
@@ -527,7 +527,7 @@ time vat list --summary
 
 #### Test 5.2: Pattern Matching Performance
 ```bash
-time vat list appydave 'b*'
+time dam list appydave 'b*'
 ```
 **Expected**: Completes in < 1 second
 
@@ -541,17 +541,17 @@ time vat list appydave 'b*'
 #### Test 6.1: Complete Upload/Download Cycle
 ```bash
 # 1. Upload project
-vat s3-up appydave b65
+dam s3-up appydave b65
 
 # 2. Check status
-vat s3-status appydave b65
+dam s3-status appydave b65
 # Expected: All files in sync
 
 # 3. Download to different location (simulate collaborator)
-vat s3-down appydave b65
+dam s3-down appydave b65
 
 # 4. Clean up
-vat s3-cleanup appydave b65 --force
+dam s3-cleanup appydave b65 --force
 ```
 **Expected**: Full workflow works without errors
 
@@ -563,11 +563,11 @@ vat s3-cleanup appydave b65 --force
 #### Test 6.2: Pattern-Based Discovery
 ```bash
 # Discover all b60-series projects
-vat list appydave 'b6*'
+dam list appydave 'b6*'
 
 # Upload multiple projects (if needed)
 for project in b60 b61 b65; do
-  vat s3-up appydave $project --dry-run
+  dam s3-up appydave $project --dry-run
 done
 ```
 **Expected**: Pattern matching helps with batch operations
@@ -581,12 +581,12 @@ done
 
 ### Commands Migrated but Not Updated for CLI Args
 
-These commands were copied from the original VAT but still need Phase 2 updates:
+These commands were copied from the original DAM but still need Phase 2 updates:
 
 #### ⏳ Generate Manifest
 ```bash
 # Current: bin/generate_manifest.rb
-# Expected: vat manifest appydave
+# Expected: dam manifest appydave
 ```
 **Status**: Copied but needs CLI arg support
 **Priority**: Low (utility command, not core workflow)
@@ -596,7 +596,7 @@ These commands were copied from the original VAT but still need Phase 2 updates:
 #### ⏳ Archive Project
 ```bash
 # Current: bin/archive_project.rb
-# Expected: vat archive appydave b63
+# Expected: dam archive appydave b63
 ```
 **Status**: Copied but needs CLI arg support
 **Priority**: Medium (used for completed projects)
@@ -606,7 +606,7 @@ These commands were copied from the original VAT but still need Phase 2 updates:
 #### ⏳ Sync from SSD
 ```bash
 # Current: bin/sync_from_ssd.rb
-# Expected: vat sync-ssd appydave
+# Expected: dam sync-ssd appydave
 ```
 **Status**: Copied but needs CLI arg support
 **Priority**: Medium (used for recovery)
@@ -615,7 +615,7 @@ These commands were copied from the original VAT but still need Phase 2 updates:
 
 ### Workflow Scripts (Not Migrating to Gem)
 
-These are repository management scripts, not VAT commands:
+These are repository management scripts, not DAM commands:
 
 - ❌ `status-all.sh` - Git status for all v-* repos
 - ❌ `sync-all.sh` - Git pull for all repos
@@ -676,19 +676,19 @@ These are repository management scripts, not VAT commands:
 - [x] Documentation complete
 
 **Commands (CLI Args + Auto-Detect)**:
-- [x] `vat help` - Help system
-- [x] `vat list` - All 4 modes working
-- [x] `vat s3-up` - Upload to S3
-- [x] `vat s3-down` - Download from S3 ⭐ Phase 2 complete
-- [x] `vat s3-status` - Check sync status ⭐ Phase 2 complete
-- [x] `vat s3-cleanup` - Delete S3 files ⭐ Phase 2 complete
+- [x] `dam help` - Help system
+- [x] `dam list` - All 4 modes working
+- [x] `dam s3-up` - Upload to S3
+- [x] `dam s3-down` - Download from S3 ⭐ Phase 2 complete
+- [x] `dam s3-status` - Check sync status ⭐ Phase 2 complete
+- [x] `dam s3-cleanup` - Delete S3 files ⭐ Phase 2 complete
 
 ### ⏳ Pending Implementation
 
 **Commands (Copied but need CLI arg support)**:
-- [ ] `vat manifest` - Generate project manifest
-- [ ] `vat archive` - Archive to SSD
-- [ ] `vat sync-ssd` - Sync from SSD
+- [ ] `dam manifest` - Generate project manifest
+- [ ] `dam archive` - Archive to SSD
+- [ ] `dam sync-ssd` - Sync from SSD
 
 **Testing**:
 - [ ] Manual integration tests (Phase 2)
@@ -729,7 +729,7 @@ These are repository management scripts, not VAT commands:
 **Phase 3 - Gem Tests**: [ ] PENDING
 - [ ] Gem builds successfully
 - [ ] Gem installs locally
-- [ ] All vat commands work after install
+- [ ] All dam commands work after install
 
 **Phase 4 - Edge Cases**: [ ] PENDING
 - [ ] Error handling works
@@ -754,7 +754,7 @@ These are repository management scripts, not VAT commands:
 ## Recommended Test Order
 
 **Start here** (automated tests):
-1. ✅ Run all RSpec tests: `bundle exec rspec spec/appydave/tools/vat/`
+1. ✅ Run all RSpec tests: `bundle exec rspec spec/appydave/tools/dam/`
 
 **Then manual development tests** (safest first):
 2. Phase 2.1-2.5: Help and list commands
@@ -777,14 +777,14 @@ These are repository management scripts, not VAT commands:
 
 ## Notes for Tester
 
-### Key Differences from Original VAT
+### Key Differences from Original DAM
 
 1. **Commands now work from anywhere**: Original required `cd` to project directory or explicit paths
 2. **Phase 2 commands complete**: s3-down, s3-status, s3-cleanup now accept CLI args
 3. **Namespace changed**: `VatConfig` → `Appydave::Tools::Vat::Config`
 4. **Gem-based**: Install via `gem install appydave-tools` instead of shell alias
 5. **Better tested**: 64 RSpec tests vs. manual testing only
-6. **Configuration migrated**: `~/.vat-config` → `~/.config/appydave/settings.json` (managed via `ad_config`)
+6. **Configuration migrated**: `~/.dam-config` → `~/.config/appydave/settings.json` (managed via `ad_config`)
 
 ### What to Watch For
 
@@ -797,5 +797,5 @@ These are repository management scripts, not VAT commands:
 
 **Created**: 2025-11-08
 **Version**: 1.0 (Integration Testing Plan)
-**Purpose**: Validate VAT integration into appydave-tools gem
+**Purpose**: Validate DAM integration into appydave-tools gem
 **Reference**: `/Users/davidcruwys/dev/video-projects/video-asset-tools/docs/testing-plan.md`

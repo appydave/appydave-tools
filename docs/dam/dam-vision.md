@@ -1,39 +1,39 @@
 # DAM Vision - Digital Asset Management for Video Projects
 
-> **Note**: This is the original vision document for what became **VAT (Video Asset Tools)**. VAT IS a Digital Asset Management (DAM) system specifically designed for multi-brand video project workflows.
+> **Note**: This is the original vision document for what became **DAM (Digital Asset Management)**. DAM IS a Digital Asset Management (DAM) system specifically designed for multi-brand video project workflows.
 
 ## What is DAM?
 
 Digital Asset Management (DAM) is a system that stores, organizes, and retrieves digital assets such as images, videos, and other multimedia files. DAM systems are used by organizations to manage their digital assets efficiently and effectively.
 
-## VAT as a DAM System
+## DAM as a DAM System
 
-**VAT (Video Asset Tools)** implements this DAM vision with:
+**DAM (Digital Asset Management)** implements this DAM vision with:
 - Multi-tenant brand management (6 brands: AppyDave, VOZ, AITLDR, Kiros, Beauty & Joy, SupportSignal)
 - Hybrid storage strategy (Local → S3 → SSD)
 - Project lifecycle management (create, archive, restore)
 - Asset organization and discovery
 - Configurable workflows per brand
 
-## Why "VAT" instead of "DAM"?
+## Why "DAM" instead of "DAM"?
 
-The name "Video Asset Tools" was chosen for:
+The name "Digital Asset Management" was chosen for:
 - Specificity to video content creation workflows
 - Simplicity for command-line usage
 - Backward compatibility with existing tooling
 
-However, VAT is fundamentally a DAM system. All user stories below have been implemented in VAT.
+However, DAM is fundamentally a DAM system. All user stories below have been implemented in DAM.
 
 ---
 
 ## Original User Stories
 
-These user stories defined the vision for what became VAT. All have been implemented:
+These user stories defined the vision for what became DAM. All have been implemented:
 
 ### Multi-Brand Management ✅
 **Story**: As a content creator, I want to keep track of the different brands I'm running where a business unit represents brand.
 
-**Implementation**: VAT supports 6 brands with individual configurations in `brands.json`.
+**Implementation**: DAM supports 6 brands with individual configurations in `brands.json`.
 
 ### Brand Configuration ✅
 **Story**: As a content creator, I want to manage the types of projects and extra configuration associated with each brand.
@@ -43,7 +43,7 @@ These user stories defined the vision for what became VAT. All have been impleme
 ### Asset Discovery ✅
 **Story**: As a content creator, I want to be able to find assets associated with a project and brand.
 
-**Implementation**: `vat list` command with pattern matching and project discovery.
+**Implementation**: `dam list` command with pattern matching and project discovery.
 
 ### Multi-Location Storage ✅
 **Story**: As a content creator, I may need to split specific projects across multiple drive locations for short and long-term storage and for team sharing.
@@ -68,12 +68,12 @@ These user stories defined the vision for what became VAT. All have been impleme
 ### Project Management ✅
 **Story**: As a content creator, I need to be able to create, remove, rename, update, list project files.
 
-**Implementation**: Full CRUD operations via VAT commands (`list`, `s3-up`, `s3-down`, `s3-status`, `archive`, `manifest`).
+**Implementation**: Full CRUD operations via DAM commands (`list`, `s3-up`, `s3-down`, `s3-status`, `archive`, `manifest`).
 
 ### Archive/Restore ✅
 **Story**: As a content creator, I need to be able to archive or reverse archive project files.
 
-**Implementation**: `vat archive` (copy to SSD) and upcoming `vat sync-ssd` (restore from SSD).
+**Implementation**: `dam archive` (copy to SSD) and upcoming `dam sync-ssd` (restore from SSD).
 
 ### Transcription Management ✅
 **Story**: As a content creator, I need to be able to work with video transcriptions for use by various AI tools.
@@ -109,7 +109,7 @@ These user stories defined the vision for what became VAT. All have been impleme
 
 ## Implementation Summary
 
-All original DAM user stories have been fully implemented in VAT. The system provides:
+All original DAM user stories have been fully implemented in DAM. The system provides:
 
 ✅ Multi-brand video project management
 ✅ Hybrid storage (Local/S3/SSD)
@@ -120,4 +120,4 @@ All original DAM user stories have been fully implemented in VAT. The system pro
 ✅ Comprehensive CLI with help system
 ✅ 297 automated tests, 90.69% coverage
 
-**VAT IS a complete DAM solution for video content creators.**
+**DAM IS a complete DAM solution for video content creators.**

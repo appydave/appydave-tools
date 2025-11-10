@@ -8,7 +8,7 @@ require 'find'
 
 module Appydave
   module Tools
-    module Vat
+    module Dam
       # Project listing functionality for VAT
       class ProjectListing
         # List all brands with summary table

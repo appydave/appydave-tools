@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::Vat::ProjectListing do
+RSpec.describe Appydave::Tools::Dam::ProjectListing do
   let(:temp_root) { Dir.mktmpdir }
   let(:brand1_path) { File.join(temp_root, 'v-appydave') }
   let(:brand2_path) { File.join(temp_root, 'v-voz') }
@@ -20,13 +20,13 @@ RSpec.describe Appydave::Tools::Vat::ProjectListing do
     FileUtils.mkdir_p(File.join(brand2_path, 'the-point'))
 
     # Mock Config
-    allow(Appydave::Tools::Vat::Config).to receive_messages(projects_root: temp_root, available_brands: %w[appydave voz])
-    allow(Appydave::Tools::Vat::Config).to receive(:brand_path).with('appydave').and_return(brand1_path)
-    allow(Appydave::Tools::Vat::Config).to receive(:brand_path).with('v-appydave').and_return(brand1_path)
-    allow(Appydave::Tools::Vat::Config).to receive(:brand_path).with('voz').and_return(brand2_path)
-    allow(Appydave::Tools::Vat::Config).to receive(:brand_path).with('v-voz').and_return(brand2_path)
-    allow(Appydave::Tools::Vat::Config).to receive(:expand_brand).with('appydave').and_return('v-appydave')
-    allow(Appydave::Tools::Vat::Config).to receive(:expand_brand).with('voz').and_return('v-voz')
+    allow(Appydave::Tools::Dam::Config).to receive_messages(projects_root: temp_root, available_brands: %w[appydave voz])
+    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('appydave').and_return(brand1_path)
+    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('v-appydave').and_return(brand1_path)
+    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('voz').and_return(brand2_path)
+    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('v-voz').and_return(brand2_path)
+    allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with('appydave').and_return('v-appydave')
+    allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with('voz').and_return('v-voz')
   end
 
   after do
@@ -45,7 +45,7 @@ RSpec.describe Appydave::Tools::Vat::ProjectListing do
     end
 
     it 'shows message when no brands found' do
-      allow(Appydave::Tools::Vat::Config).to receive(:available_brands).and_return([])
+      allow(Appydave::Tools::Dam::Config).to receive(:available_brands).and_return([])
 
       expect { described_class.list_brands_with_counts }.to output(
         /⚠️  No brands found/
@@ -54,7 +54,7 @@ RSpec.describe Appydave::Tools::Vat::ProjectListing do
 
     it 'uses shortened paths with tilde' do
       allow(Dir).to receive(:home).and_return('/Users/testuser')
-      allow(Appydave::Tools::Vat::Config).to receive(:brand_path).with('appydave')
+      allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('appydave')
                                                                  .and_return('/Users/testuser/dev/video-projects/v-appydave')
 
       expect { described_class.list_brands_with_counts }.to output(
@@ -75,7 +75,7 @@ RSpec.describe Appydave::Tools::Vat::ProjectListing do
     end
 
     it 'shows message when no projects found' do
-      allow(Appydave::Tools::Vat::ProjectResolver).to receive(:list_projects).and_return([])
+      allow(Appydave::Tools::Dam::ProjectResolver).to receive(:list_projects).and_return([])
 
       expect { described_class.list_brand_projects('appydave') }.to output(
         /⚠️  No projects found for brand: v-appydave/
@@ -91,7 +91,7 @@ RSpec.describe Appydave::Tools::Vat::ProjectListing do
 
   describe '.list_with_pattern' do
     before do
-      allow(Appydave::Tools::Vat::ProjectResolver).to receive(:resolve_pattern)
+      allow(Appydave::Tools::Dam::ProjectResolver).to receive(:resolve_pattern)
         .with(brand1_path, 'b6*')
         .and_return(%w[b60-project b61-project b65-project])
     end
@@ -107,7 +107,7 @@ RSpec.describe Appydave::Tools::Vat::ProjectListing do
     end
 
     it 'shows message when no matches found' do
-      allow(Appydave::Tools::Vat::ProjectResolver).to receive(:resolve_pattern)
+      allow(Appydave::Tools::Dam::ProjectResolver).to receive(:resolve_pattern)
         .with(brand1_path, 'b9*')
         .and_return([])
 

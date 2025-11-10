@@ -8,9 +8,24 @@ module Appydave
         class BrandsConfig < ConfigBase
           # Retrieve brand information by brand key (string or symbol)
           def get_brand(brand_key)
-            brand_key = brand_key.to_s
-            info = data['brands'][brand_key] || default_brand_info
-            BrandInfo.new(brand_key, info)
+            brand_key_str = brand_key.to_s
+
+            # Try direct key lookup first (case-insensitive)
+            brand_entry = data['brands'].find { |key, _info| key.downcase == brand_key_str.downcase }
+            if brand_entry
+              actual_key = brand_entry[0]
+              return BrandInfo.new(actual_key, brand_entry[1])
+            end
+
+            # Try lookup by shortcut (case-insensitive)
+            brand_entry = data['brands'].find { |_key, info| info['shortcut']&.downcase == brand_key_str.downcase }
+            if brand_entry
+              actual_key = brand_entry[0]
+              return BrandInfo.new(actual_key, brand_entry[1])
+            end
+
+            # Return default if not found (use normalized lowercase key)
+            BrandInfo.new(brand_key_str.downcase, default_brand_info)
           end
 
           # Set brand information

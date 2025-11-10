@@ -5,15 +5,15 @@ require 'fileutils'
 
 module Appydave
   module Tools
-    module Vat
+    module Dam
       # Generate manifest JSON for video projects
       class ManifestGenerator
         attr_reader :brand, :brand_info, :brand_path
 
         def initialize(brand, brand_info: nil, brand_path: nil)
-          @brand = brand
-          @brand_path = brand_path || Config.brand_path(brand)
           @brand_info = brand_info || load_brand_info(brand)
+          @brand = @brand_info.key # Use resolved brand key, not original input
+          @brand_path = brand_path || Config.brand_path(@brand)
         end
 
         # Generate manifest for this brand

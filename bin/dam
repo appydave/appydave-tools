@@ -7,7 +7,7 @@ $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 
 require 'appydave/tools'
 
-# VAT (Video Asset Tools) - CLI for video project management
+# DAM (Video Asset Tools) - CLI for video project management
 class VatCLI
   def initialize
     @commands = {
@@ -20,6 +20,7 @@ class VatCLI
       's3-cleanup-local' => method(:s3_cleanup_local_command),
       'archive' => method(:archive_command),
       'manifest' => method(:manifest_command),
+      'sync-ssd' => method(:sync_ssd_command),
       # Deprecated aliases (for backward compatibility)
       's3-cleanup' => method(:s3_cleanup_remote_command),
       'cleanup-local' => method(:s3_cleanup_local_command)
@@ -30,9 +31,9 @@ class VatCLI
     command, *args = ARGV
 
     if command.nil?
-      puts 'VAT - Video Asset Tools'
-      puts 'Usage: vat [command] [options]'
-      puts "Run 'vat help' for more information."
+      puts 'DAM - Video Asset Tools'
+      puts 'Usage: dam [command] [options]'
+      puts "Run 'dam help' for more information."
       exit
     end
 
@@ -40,7 +41,7 @@ class VatCLI
       @commands[command].call(args)
     else
       puts "Unknown command: #{command}"
-      puts "Run 'vat help' for available commands."
+      puts "Run 'dam help' for available commands."
       exit 1
     end
   end
@@ -61,7 +62,7 @@ class VatCLI
       show_config_help
     when 'list'
       show_list_help
-    when 's3-up', 's3-down', 's3-status', 's3-cleanup-remote', 's3-cleanup-local', 'archive', 'manifest'
+    when 's3-up', 's3-down', 's3-status', 's3-cleanup-remote', 's3-cleanup-local', 'archive', 'manifest', 'sync-ssd'
       show_s3_help(topic)
     when 's3-cleanup', 'cleanup-local'
       # Deprecated command names - show deprecation notice and new help
@@ -83,13 +84,13 @@ class VatCLI
 
     if brand_arg.nil?
       # List all brands with summary
-      Appydave::Tools::Vat::ProjectListing.list_brands_with_counts
+      Appydave::Tools::Dam::ProjectListing.list_brands_with_counts
     elsif pattern_arg
       # Pattern matching
-      Appydave::Tools::Vat::ProjectListing.list_with_pattern(brand_arg, pattern_arg)
+      Appydave::Tools::Dam::ProjectListing.list_with_pattern(brand_arg, pattern_arg)
     else
       # Specific brand
-      Appydave::Tools::Vat::ProjectListing.list_brand_projects(brand_arg)
+      Appydave::Tools::Dam::ProjectListing.list_brand_projects(brand_arg)
     end
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -99,7 +100,7 @@ class VatCLI
   # S3 Upload
   def s3_up_command(args)
     options = parse_s3_args(args, 's3-up')
-    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.upload(dry_run: options[:dry_run])
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -109,7 +110,7 @@ class VatCLI
   # S3 Download
   def s3_down_command(args)
     options = parse_s3_args(args, 's3-down')
-    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.download(dry_run: options[:dry_run])
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -119,7 +120,7 @@ class VatCLI
   # S3 Status
   def s3_status_command(args)
     options = parse_s3_args(args, 's3-status')
-    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.status
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -129,7 +130,7 @@ class VatCLI
   # S3 Cleanup Remote
   def s3_cleanup_remote_command(args)
     options = parse_s3_args(args, 's3-cleanup-remote')
-    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -139,7 +140,7 @@ class VatCLI
   # S3 Cleanup Local
   def s3_cleanup_local_command(args)
     options = parse_s3_args(args, 's3-cleanup-local')
-    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup_local(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -149,7 +150,7 @@ class VatCLI
   # Archive project to SSD
   def archive_command(args)
     options = parse_s3_args(args, 'archive')
-    s3_ops = Appydave::Tools::Vat::S3Operations.new(options[:brand], options[:project])
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.archive(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -173,7 +174,7 @@ class VatCLI
         puts ''
         puts '=' * 60
 
-        generator = Appydave::Tools::Vat::ManifestGenerator.new(brand_key)
+        generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_key)
         generator.generate
       end
 
@@ -182,17 +183,17 @@ class VatCLI
       puts '✅ All brand manifests generated!'
     elsif brand_arg
       # Generate manifest for specific brand
-      brand = Appydave::Tools::Vat::Config.expand_brand(brand_arg)
-      ENV['BRAND_PATH'] = Appydave::Tools::Vat::Config.brand_path(brand)
+      Appydave::Tools::Dam::Config.expand_brand(brand_arg)
+      ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand_arg)
 
-      generator = Appydave::Tools::Vat::ManifestGenerator.new(brand_arg)
+      generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_arg)
       generator.generate
     else
-      puts 'Usage: vat manifest <brand> [--all]'
+      puts 'Usage: dam manifest <brand> [--all]'
       puts ''
       puts 'Examples:'
-      puts '  vat manifest appydave        # Generate manifest for AppyDave brand'
-      puts '  vat manifest --all           # Generate manifests for all brands'
+      puts '  dam manifest appydave        # Generate manifest for AppyDave brand'
+      puts '  dam manifest --all           # Generate manifests for all brands'
       exit 1
     end
   rescue StandardError => e
@@ -200,6 +201,35 @@ class VatCLI
     exit 1
   end
   # rubocop:enable Metrics/MethodLength
+
+  # Sync light files from SSD to local
+  def sync_ssd_command(args)
+    dry_run = args.include?('--dry-run')
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+
+    if brand_arg
+      # Sync specific brand
+      Appydave::Tools::Dam::Config.expand_brand(brand_arg)
+      ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand_arg)
+
+      syncer = Appydave::Tools::Dam::SyncFromSsd.new(brand_arg)
+      syncer.sync(dry_run: dry_run)
+    else
+      puts 'Usage: dam sync-ssd <brand> [--dry-run]'
+      puts ''
+      puts 'Sync light files (subtitles, images, docs) from SSD to local for archived projects.'
+      puts 'Does NOT sync heavy video files (MP4, MOV, etc.).'
+      puts ''
+      puts 'Examples:'
+      puts '  dam sync-ssd appydave        # Sync all AppyDave projects from SSD'
+      puts '  dam sync-ssd appydave --dry-run  # Preview what would be synced'
+      exit 1
+    end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
 
   # Parse S3 command arguments
   def parse_s3_args(args, command)
@@ -212,21 +242,21 @@ class VatCLI
 
     if brand_arg.nil?
       # Auto-detect from PWD
-      brand, project_id = Appydave::Tools::Vat::ProjectResolver.detect_from_pwd
+      brand, project_id = Appydave::Tools::Dam::ProjectResolver.detect_from_pwd
       if brand.nil? || project_id.nil?
         puts '❌ Could not auto-detect brand/project from current directory'
-        puts "Usage: vat #{command} <brand> <project> [--dry-run]"
+        puts "Usage: dam #{command} <brand> <project> [--dry-run]"
         exit 1
       end
       brand_key = brand # Already detected, use as-is
     else
       brand_key = brand_arg # Use the shortcut/key (e.g., 'appydave')
-      brand = Appydave::Tools::Vat::Config.expand_brand(brand_arg) # Expand for path resolution
-      project_id = Appydave::Tools::Vat::ProjectResolver.resolve(brand_arg, project_arg)
+      brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg) # Expand for path resolution
+      project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
     end
 
     # Set ENV for compatibility with ConfigLoader
-    ENV['BRAND_PATH'] = Appydave::Tools::Vat::Config.brand_path(brand)
+    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
 
     { brand: brand_key, project: project_id, dry_run: dry_run, force: force }
   end
@@ -235,9 +265,9 @@ class VatCLI
   # rubocop:disable Metrics/MethodLength
   def show_main_help
     puts <<~HELP
-      VAT (Video Asset Tools) - Unified CLI for video project management
+      DAM (Video Asset Tools) - Unified CLI for video project management
 
-      Usage: vat [command] [options]
+      Usage: dam [command] [options]
 
       Available Commands:
         help [command]              Show help information
@@ -253,23 +283,24 @@ class VatCLI
         Archive Commands:
         archive <brand> <project>        Copy project to SSD backup
         manifest <brand> [--all]         Generate project manifest
+        sync-ssd <brand>                 Restore light files from SSD
 
       List Modes:
-        vat list                   All brands with counts/sizes
-        vat list appydave          All projects for brand
-        vat list appydave 'b6*'    Pattern matching
+        dam list                   All brands with counts/sizes
+        dam list appydave          All projects for brand
+        dam list appydave 'b6*'    Pattern matching
 
       Help Topics:
-        vat help brands            List available brands
-        vat help workflows         Explain FliVideo vs Storyline workflows
-        vat help config            Configuration file details
+        dam help brands            List available brands
+        dam help workflows         Explain FliVideo vs Storyline workflows
+        dam help config            Configuration file details
 
       Examples:
-        vat list
-        vat s3-up appydave b65
-        vat s3-down voz boy-baker --dry-run
-        vat s3-status appydave b65
-        vat s3-cleanup appydave b65 --force
+        dam list
+        dam s3-up appydave b65
+        dam s3-down voz boy-baker --dry-run
+        dam s3-status appydave b65
+        dam s3-cleanup appydave b65 --force
 
       For more information: https://github.com/appydave/appydave-tools
     HELP
@@ -279,7 +310,7 @@ class VatCLI
     puts <<~HELP
       Available Brands
 
-      VAT supports multi-tenant video project management with brand shortcuts:
+      DAM supports multi-tenant video project management with brand shortcuts:
 
       Brand Shortcuts:
         appydave  → v-appydave         (AppyDave brand videos)
@@ -290,10 +321,10 @@ class VatCLI
         ss        → v-supportsignal    (SupportSignal client)
 
       Usage:
-        vat list                       # Show all brands
-        vat list --summary             # Show brands with project counts
-        vat list appydave              # List all AppyDave projects
-        vat s3-up voz boy-baker        # Upload VOZ project
+        dam list                       # Show all brands
+        dam list --summary             # Show brands with project counts
+        dam list appydave              # List all AppyDave projects
+        dam s3-up voz boy-baker        # Upload VOZ project
     HELP
   end
 
@@ -301,7 +332,7 @@ class VatCLI
     puts <<~HELP
       Video Workflows
 
-      VAT supports two primary video content workflows:
+      DAM supports two primary video content workflows:
 
       1. FliVideo Workflow (AppyDave)
          - Sequential chapter-based recording
@@ -335,7 +366,7 @@ class VatCLI
     puts <<~HELP
       Configuration
 
-      VAT uses two configuration levels:
+      DAM uses two configuration levels:
 
       1. System Configuration (settings.json)
          Location: ~/.config/appydave/settings.json
@@ -381,23 +412,23 @@ class VatCLI
     puts <<~HELP
       List Command
 
-      Usage: vat list [brand] [pattern]
+      Usage: dam list [brand] [pattern]
 
       Modes:
         1. List all brands with summary:
-           vat list
+           dam list
 
         2. List projects for specific brand:
-           vat list appydave
+           dam list appydave
 
         3. Pattern matching:
-           vat list appydave 'b6*'       # All projects b60-b69
-           vat list appydave 'b4*'       # All projects b40-b49
+           dam list appydave 'b6*'       # All projects b60-b69
+           dam list appydave 'b4*'       # All projects b40-b49
 
       Examples:
-        vat list                         # Tabular: brand, project count, size, modified
-        vat list voz                     # Tabular: all VOZ projects with size/date
-        vat list appydave 'b6*'          # Tabular: b60-b69 projects with size/date
+        dam list                         # Tabular: brand, project count, size, modified
+        dam list voz                     # Tabular: all VOZ projects with size/date
+        dam list appydave 'b6*'          # Tabular: b60-b69 projects with size/date
     HELP
   end
 
@@ -410,7 +441,7 @@ class VatCLI
 
         Upload files from local s3-staging/ directory to S3 for collaboration.
 
-        Usage: vat s3-up <brand> <project> [--dry-run]
+        Usage: dam s3-up <brand> <project> [--dry-run]
 
         Features:
           - Smart sync: Skips unchanged files (MD5 comparison)
@@ -418,9 +449,9 @@ class VatCLI
           - Dry-run support: Preview changes without uploading
 
         Examples:
-          vat s3-up appydave b65              # Upload b65 project
-          vat s3-up voz boy-baker --dry-run   # Preview upload
-          vat s3-up                           # Auto-detect from PWD
+          dam s3-up appydave b65              # Upload b65 project
+          dam s3-up voz boy-baker --dry-run   # Preview upload
+          dam s3-up                           # Auto-detect from PWD
 
         Notes:
           - Files must be in project's s3-staging/ directory
@@ -433,7 +464,7 @@ class VatCLI
 
         Download files from S3 to local s3-staging/ directory.
 
-        Usage: vat s3-down <brand> <project> [--dry-run]
+        Usage: dam s3-down <brand> <project> [--dry-run]
 
         Features:
           - Smart sync: Skips unchanged files (MD5 comparison)
@@ -441,9 +472,9 @@ class VatCLI
           - Dry-run support: Preview changes without downloading
 
         Examples:
-          vat s3-down appydave b65            # Download b65 project
-          vat s3-down voz boy-baker --dry-run # Preview download
-          vat s3-down                         # Auto-detect from PWD
+          dam s3-down appydave b65            # Download b65 project
+          dam s3-down voz boy-baker --dry-run # Preview download
+          dam s3-down                         # Auto-detect from PWD
 
         Notes:
           - Creates s3-staging/ directory if needed
@@ -455,7 +486,7 @@ class VatCLI
 
         Check sync status between local and S3 files.
 
-        Usage: vat s3-status <brand> [project]
+        Usage: dam s3-status <brand> [project]
 
         Features:
           - Shows all files (S3 and local)
@@ -464,8 +495,8 @@ class VatCLI
           - Shows file counts for both S3 and local
 
         Examples:
-          vat s3-status appydave b65          # Check b65 status
-          vat s3-status                       # Auto-detect from PWD
+          dam s3-status appydave b65          # Check b65 status
+          dam s3-status                       # Auto-detect from PWD
 
         Status Indicators:
           ✓  [synced]      - Local and S3 match (MD5)
@@ -479,7 +510,7 @@ class VatCLI
 
         Delete all S3 files for a project (use with caution).
 
-        Usage: vat s3-cleanup-remote <brand> <project> --force [--dry-run]
+        Usage: dam s3-cleanup-remote <brand> <project> --force [--dry-run]
 
         Features:
           - Requires --force flag for safety
@@ -487,9 +518,9 @@ class VatCLI
           - Shows deleted/failed counts
 
         Examples:
-          vat s3-cleanup-remote appydave b65 --dry-run  # Preview deletion
-          vat s3-cleanup-remote appydave b65 --force    # Actually delete
-          vat s3-cleanup-remote --force                 # Auto-detect from PWD
+          dam s3-cleanup-remote appydave b65 --dry-run  # Preview deletion
+          dam s3-cleanup-remote appydave b65 --force    # Actually delete
+          dam s3-cleanup-remote --force                 # Auto-detect from PWD
 
         ⚠️  WARNING: This permanently deletes files from S3.
             Ensure you have local backups before running.
@@ -502,7 +533,7 @@ class VatCLI
 
         Delete all local files in the s3-staging/ directory for a project.
 
-        Usage: vat s3-cleanup-local <brand> <project> --force [--dry-run]
+        Usage: dam s3-cleanup-local <brand> <project> --force [--dry-run]
 
         Features:
           - Requires --force flag for safety
@@ -511,9 +542,9 @@ class VatCLI
           - Shows deleted/failed counts
 
         Examples:
-          vat s3-cleanup-local appydave b65 --dry-run  # Preview deletion
-          vat s3-cleanup-local appydave b65 --force    # Actually delete
-          vat s3-cleanup-local --force                 # Auto-detect from PWD
+          dam s3-cleanup-local appydave b65 --dry-run  # Preview deletion
+          dam s3-cleanup-local appydave b65 --force    # Actually delete
+          dam s3-cleanup-local --force                 # Auto-detect from PWD
 
         Use Cases:
           - Free up disk space after uploading to S3
@@ -531,7 +562,7 @@ class VatCLI
 
         Copy completed video project to SSD for long-term backup.
 
-        Usage: vat archive <brand> <project> [--force] [--dry-run]
+        Usage: dam archive <brand> <project> [--force] [--dry-run]
 
         Features:
           - Copies entire project directory to SSD backup location
@@ -541,10 +572,10 @@ class VatCLI
           - Dry-run support: Preview archive operation
 
         Examples:
-          vat archive appydave b63 --dry-run   # Preview archive
-          vat archive appydave b63             # Copy to SSD only
-          vat archive appydave b63 --force     # Copy and delete local
-          vat archive                          # Auto-detect from PWD
+          dam archive appydave b63 --dry-run   # Preview archive
+          dam archive appydave b63             # Copy to SSD only
+          dam archive appydave b63 --force     # Copy and delete local
+          dam archive                          # Auto-detect from PWD
 
         Storage Strategy:
           Local → S3 (90-day collaboration) → SSD (long-term archive)
@@ -567,7 +598,7 @@ class VatCLI
 
         Generate a JSON manifest of all video projects for a brand.
 
-        Usage: vat manifest <brand> [--all]
+        Usage: dam manifest <brand> [--all]
 
         Features:
           - Scans local and SSD storage locations
@@ -578,9 +609,9 @@ class VatCLI
           - Outputs projects.json in brand directory
 
         Examples:
-          vat manifest appydave            # Generate manifest for AppyDave
-          vat manifest voz                 # Generate manifest for VOZ
-          vat manifest --all               # Generate manifests for all brands
+          dam manifest appydave            # Generate manifest for AppyDave
+          dam manifest voz                 # Generate manifest for VOZ
+          dam manifest --all               # Generate manifests for all brands
 
         Output Location:
           - Single brand: <brand-path>/projects.json
@@ -612,6 +643,55 @@ class VatCLI
           - Generate disk usage reports
           - Validate project naming conventions
           - Prepare for sync-ssd operations
+      HELP
+    when 'sync-ssd'
+      puts <<~HELP
+        Sync from SSD Command
+
+        Restore light files (subtitles, images, docs) from SSD to local for archived projects.
+        Does NOT sync heavy video files (MP4, MOV, etc.).
+
+        Usage: dam sync-ssd <brand> [--dry-run]
+
+        Features:
+          - Syncs ALL projects for a brand from manifest (projects.json)
+          - Only copies light files: .srt, .vtt, .jpg, .png, .md, .txt, .json
+          - Excludes heavy files: .mp4, .mov, .avi, .mkv, .webm
+          - Smart skip: Skips files already synced (size comparison)
+          - Creates archived/{range}/{project}/ directory structure
+          - Dry-run support: Preview what will be synced
+
+        Examples:
+          dam sync-ssd appydave              # Sync all AppyDave projects
+          dam sync-ssd appydave --dry-run    # Preview sync
+          dam sync-ssd voz                   # Sync all VOZ projects
+
+        Requirements:
+          - Must have projects.json manifest (run: dam manifest <brand>)
+          - SSD must be mounted
+          - Projects must exist on SSD
+
+        Behavior:
+          - Only syncs projects that exist on SSD but NOT in local flat structure
+          - Creates archived/{range}/{project}/ structure for restored files
+          - Skips projects already in local flat structure
+          - Skips files with same size (already synced)
+
+        Use Cases:
+          - Restore supporting files for archived projects
+          - Get subtitles and images without huge video files
+          - Prepare project for re-editing (download videos separately)
+          - Access project documentation and metadata
+
+        Storage Strategy:
+          SSD (archive) → Local archived/{range}/{project}/ (light files only)
+
+        ⚠️  NOTE: This only syncs LIGHT files. Heavy video files remain on SSD.
+            If you need video files, copy them manually from SSD.
+
+        Configuration:
+          - SSD backup path configured per brand in brands.json
+          - Manifest file: <brand-path>/projects.json
       HELP
     end
   end

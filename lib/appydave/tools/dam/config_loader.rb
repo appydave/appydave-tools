@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module Vat
+    module Dam
       # Configuration loader for video asset tools
       # Loads settings from .video-tools.env file in the repository root
       #

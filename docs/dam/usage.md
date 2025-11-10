@@ -1,6 +1,6 @@
-# VAT (Video Asset Tools) - Usage Guide
+# DAM (Digital Asset Management) - Usage Guide
 
-**VAT** is a unified CLI for managing video projects across local storage, S3 cloud collaboration, and SSD archival storage.
+**DAM** is a unified CLI for managing video projects across local storage, S3 cloud collaboration, and SSD archival storage.
 
 ## Table of Contents
 
@@ -21,22 +21,22 @@
 gem install appydave-tools
 
 # Initialize configuration
-vat init
+dam init
 
 # List available brands
-vat list
+dam list
 
 # List projects for a brand
-vat list appydave
+dam list appydave
 
 # Upload files to S3 for collaboration
-vat s3-up appydave b65
+dam s3-up appydave b65
 
 # Download files from S3
-vat s3-down appydave b65
+dam s3-down appydave b65
 
 # Check sync status
-vat s3-status appydave b65
+dam s3-status appydave b65
 ```
 
 ---
@@ -52,14 +52,14 @@ gem install appydave-tools
 ### Initialize Configuration
 
 ```bash
-vat init
+dam init
 ```
 
-This creates `~/.vat-config` pointing to your video projects directory.
+This creates `~/.dam-config` pointing to your video projects directory.
 
 ### AWS CLI Setup
 
-VAT uses the AWS CLI for S3 operations. Install and configure:
+DAM uses the AWS CLI for S3 operations. Install and configure:
 
 ```bash
 # Install AWS CLI (macOS)
@@ -73,9 +73,9 @@ aws configure
 
 ## Configuration
 
-### System Configuration (`~/.vat-config`)
+### System Configuration (`~/.dam-config`)
 
-Created by `vat init`:
+Created by `dam init`:
 
 ```bash
 VIDEO_PROJECTS_ROOT=/Users/yourname/dev/video-projects
@@ -105,37 +105,37 @@ SSD_BASE=/Volumes/T7/youtube-PUBLISHED/appydave
 
 ### Initialization & Help
 
-#### `vat init`
-Initialize VAT configuration.
+#### `dam init`
+Initialize DAM configuration.
 
 ```bash
-vat init
+dam init
 ```
 
-#### `vat help [command]`
+#### `dam help [command]`
 Show help information.
 
 ```bash
-vat help                # Overview
-vat help s3-up          # Command-specific help
-vat help brands         # List available brands
-vat help workflows      # Explain FliVideo vs Storyline
+dam help                # Overview
+dam help s3-up          # Command-specific help
+dam help brands         # List available brands
+dam help workflows      # Explain FliVideo vs Storyline
 ```
 
 ### Project Discovery
 
-#### `vat list [--summary] [brand] [pattern]`
+#### `dam list [--summary] [brand] [pattern]`
 List brands and projects.
 
 **Mode 1: Brands only (clean list)**
 ```bash
-vat list
+dam list
 # Output: Brands: appydave, aitldr, joy, kiros, ss, voz
 ```
 
 **Mode 2: Brands with project counts (summary)**
 ```bash
-vat list --summary
+dam list --summary
 # Output:
 # appydave: 27 projects
 # voz: 3 projects
@@ -144,31 +144,31 @@ vat list --summary
 
 **Mode 3: Specific brand's projects**
 ```bash
-vat list appydave
+dam list appydave
 # Output: Lists all AppyDave projects
 ```
 
 **Mode 3b: Pattern matching**
 ```bash
-vat list appydave 'b6*'
+dam list appydave 'b6*'
 # Output: Lists b60, b61, b62...b69 projects
 ```
 
 ### S3 Sync Commands
 
-#### `vat s3-up [brand] [project] [--dry-run]`
+#### `dam s3-up [brand] [project] [--dry-run]`
 Upload files from local `s3-staging/` to S3.
 
 ```bash
 # With explicit args
-vat s3-up appydave b65
+dam s3-up appydave b65
 
 # Auto-detect from current directory
 cd ~/dev/video-projects/v-appydave/b65-project
-vat s3-up
+dam s3-up
 
 # Dry-run (preview without uploading)
-vat s3-up appydave b65 --dry-run
+dam s3-up appydave b65 --dry-run
 ```
 
 **What it does:**
@@ -176,19 +176,19 @@ vat s3-up appydave b65 --dry-run
 - Skips files already in sync (MD5 comparison)
 - Shows progress and summary
 
-#### `vat s3-down [brand] [project] [--dry-run]`
+#### `dam s3-down [brand] [project] [--dry-run]`
 Download files from S3 to local `s3-staging/`.
 
 ```bash
 # With explicit args
-vat s3-down appydave b65
+dam s3-down appydave b65
 
 # Auto-detect
 cd ~/dev/video-projects/v-appydave/b65-project
-vat s3-down
+dam s3-down
 
 # Dry-run
-vat s3-down voz boy-baker --dry-run
+dam s3-down voz boy-baker --dry-run
 ```
 
 **What it does:**
@@ -196,11 +196,11 @@ vat s3-down voz boy-baker --dry-run
 - Skips files already in sync
 - Creates `s3-staging/` if it doesn't exist
 
-#### `vat s3-status [brand] [project]`
+#### `dam s3-status [brand] [project]`
 Check sync status between local and S3.
 
 ```bash
-vat s3-status appydave b65
+dam s3-status appydave b65
 ```
 
 **Output:**
@@ -222,51 +222,51 @@ Status:
   ⚠️  Out of sync (file changed): 0
 ```
 
-#### `vat s3-cleanup-remote [brand] [project] [--dry-run] [--force]`
+#### `dam s3-cleanup-remote [brand] [project] [--dry-run] [--force]`
 Delete S3 staging files for a project.
 
 ```bash
 # Preview what would be deleted
-vat s3-cleanup-remote appydave b65 --dry-run
+dam s3-cleanup-remote appydave b65 --dry-run
 
 # Delete with confirmation prompt
-vat s3-cleanup-remote appydave b65
+dam s3-cleanup-remote appydave b65
 
 # Delete without confirmation
-vat s3-cleanup-remote appydave b65 --force
+dam s3-cleanup-remote appydave b65 --force
 ```
 
 **Warning:** This deletes files from S3. Use `--dry-run` first!
 
-**Note:** The old `vat s3-cleanup` command still works but shows a deprecation warning.
+**Note:** The old `dam s3-cleanup` command still works but shows a deprecation warning.
 
-#### `vat s3-cleanup-local [brand] [project] [--dry-run] [--force]`
+#### `dam s3-cleanup-local [brand] [project] [--dry-run] [--force]`
 Delete local s3-staging files for a project.
 
 ```bash
 # Preview what would be deleted
-vat s3-cleanup-local appydave b65 --dry-run
+dam s3-cleanup-local appydave b65 --dry-run
 
 # Delete with confirmation prompt
-vat s3-cleanup-local appydave b65
+dam s3-cleanup-local appydave b65
 
 # Delete without confirmation
-vat s3-cleanup-local appydave b65 --force
+dam s3-cleanup-local appydave b65 --force
 ```
 
 **Warning:** This deletes local files in the s3-staging directory. Use `--dry-run` first!
 
 ### Project Management
 
-#### `vat manifest [brand] [--all]`
+#### `dam manifest [brand] [--all]`
 Generate project manifest for a brand (tracks projects across local + SSD storage).
 
 ```bash
 # Generate manifest for specific brand
-vat manifest appydave
+dam manifest appydave
 
 # Generate manifests for all configured brands
-vat manifest --all
+dam manifest --all
 ```
 
 **What it does:**
@@ -296,18 +296,18 @@ Disk Usage:
 ✅ All validations passed!
 ```
 
-#### `vat archive [brand] [project] [--dry-run] [--force]`
+#### `dam archive [brand] [project] [--dry-run] [--force]`
 Archive completed project to SSD backup location.
 
 ```bash
 # Preview archive operation
-vat archive appydave b63 --dry-run
+dam archive appydave b63 --dry-run
 
 # Copy to SSD (leaves local copy intact)
-vat archive appydave b63
+dam archive appydave b63
 
 # Copy to SSD and delete local copy
-vat archive appydave b63 --force
+dam archive appydave b63 --force
 ```
 
 **What it does:**
@@ -318,14 +318,39 @@ vat archive appydave b63 --force
 
 **Configuration:** Uses `ssd_backup` location from `brands.json` config.
 
-#### `vat sync-ssd [brand]`
-Sync light files from SSD for brand.
+#### `dam sync-ssd [brand] [--dry-run]`
+Restore light files (subtitles, images, docs) from SSD to local for archived projects.
+
+**Important:** Does NOT sync heavy video files (MP4, MOV, etc.)
 
 ```bash
-vat sync-ssd appydave
+# Sync all AppyDave projects from SSD
+dam sync-ssd appydave
+
+# Preview what would be synced
+dam sync-ssd appydave --dry-run
+
+# Sync VOZ projects
+dam sync-ssd voz
 ```
 
-**Status:** ⏳ Coming soon - restore projects from SSD backup
+**What it does:**
+- Reads `projects.json` manifest to find projects on SSD
+- Syncs ALL eligible projects for the brand (not one at a time)
+- Only copies light files: `.srt`, `.vtt`, `.jpg`, `.png`, `.md`, `.txt`, `.json`, `.yml`
+- Excludes heavy files: `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`
+- Creates `archived/{range}/{project}/` directory structure
+- Skips files already synced (size comparison)
+
+**Requirements:**
+- Must have `projects.json` manifest (run: `dam manifest <brand>` first)
+- SSD must be mounted
+- Projects must exist on SSD
+
+**Use Cases:**
+- Restore subtitles and images without huge video files
+- Access project documentation from archived projects
+- Prepare project for re-editing (get metadata, then manually copy videos if needed)
 
 ---
 
@@ -341,7 +366,7 @@ mkdir -p s3-staging
 cp ~/Downloads/intro-footage.mp4 s3-staging/
 
 # Upload to S3
-vat s3-up appydave b65
+dam s3-up appydave b65
 ```
 
 **Jan (downloads from S3):**
@@ -349,40 +374,40 @@ vat s3-up appydave b65
 cd ~/dev/video-projects/v-appydave/b65-guy-monroe
 
 # Check what's available
-vat s3-status appydave b65
+dam s3-status appydave b65
 
 # Download files
-vat s3-down appydave b65
+dam s3-down appydave b65
 
 # Edit files in s3-staging/
 # ...
 
 # Upload edited files back
-vat s3-up appydave b65
+dam s3-up appydave b65
 ```
 
 ### Example 2: Pattern Matching
 
 ```bash
 # List all b60-series projects
-vat list appydave 'b6*'
+dam list appydave 'b6*'
 
 # List all completed projects
-vat list appydave 'b[1-5]*'
+dam list appydave 'b[1-5]*'
 ```
 
 ### Example 3: Cleanup After Project Completion
 
 ```bash
 # Archive to SSD
-vat archive appydave b63
+dam archive appydave b63
 
 # Verify sync status
-vat s3-status appydave b63
+dam s3-status appydave b63
 
 # Clean up S3 (saves storage costs)
-vat s3-cleanup-remote appydave b63 --dry-run  # Preview
-vat s3-cleanup-remote appydave b63 --force     # Execute
+dam s3-cleanup-remote appydave b63 --dry-run  # Preview
+dam s3-cleanup-remote appydave b63 --force     # Execute
 ```
 
 ---
@@ -397,7 +422,7 @@ vat s3-cleanup-remote appydave b63 --force     # Execute
 
 **Short Name Support:**
 ```bash
-vat s3-up appydave b65  # Expands to full project name
+dam s3-up appydave b65  # Expands to full project name
 ```
 
 **Typical Flow:**
@@ -415,7 +440,7 @@ vat s3-up appydave b65  # Expands to full project name
 
 **Full Name Required:**
 ```bash
-vat s3-up voz boy-baker  # Use full project name
+dam s3-up voz boy-baker  # Use full project name
 ```
 
 **Typical Flow:**
@@ -429,7 +454,7 @@ vat s3-up voz boy-baker  # Use full project name
 
 ## Brand Shortcuts
 
-VAT supports brand shortcuts for faster typing:
+DAM supports brand shortcuts for faster typing:
 
 | Shortcut | Full Name | Purpose |
 |----------|-----------|---------|
@@ -443,12 +468,12 @@ VAT supports brand shortcuts for faster typing:
 **Usage:**
 ```bash
 # Both are equivalent
-vat list appydave
-vat list v-appydave
+dam list appydave
+dam list v-appydave
 
 # Both are equivalent
-vat s3-up joy project-name
-vat s3-up v-beauty-and-joy project-name
+dam s3-up joy project-name
+dam s3-up v-beauty-and-joy project-name
 ```
 
 ---
@@ -459,19 +484,19 @@ vat s3-up v-beauty-and-joy project-name
 
 **Solution:**
 ```bash
-vat init
+dam init
 ```
 
 ### "Brand directory not found"
 
 **Check available brands:**
 ```bash
-vat list
+dam list
 ```
 
 **Verify config:**
 ```bash
-cat ~/.vat-config
+cat ~/.dam-config
 ```
 
 ### "No project found matching 'b65'"
@@ -483,10 +508,10 @@ cat ~/.vat-config
 **Debug:**
 ```bash
 # List all projects
-vat list appydave
+dam list appydave
 
 # Use full project name
-vat s3-up appydave b65-full-project-name
+dam s3-up appydave b65-full-project-name
 ```
 
 ### "AWS credentials not found"
@@ -506,7 +531,7 @@ aws configure
 ### "Could not detect brand and project from current directory"
 
 **Solution:** Either:
-1. Provide explicit args: `vat s3-up appydave b65`
+1. Provide explicit args: `dam s3-up appydave b65`
 2. Ensure you're in project directory: `cd v-appydave/b65-project`
 
 ### Files Not Syncing (Always "Skipped")
@@ -515,8 +540,8 @@ aws configure
 
 **Solution:** If you need to force re-upload, delete from S3 first:
 ```bash
-vat s3-cleanup appydave b65 --force
-vat s3-up appydave b65
+dam s3-cleanup appydave b65 --force
+dam s3-up appydave b65
 ```
 
 ---
@@ -531,9 +556,9 @@ All S3 commands support auto-detection:
 cd ~/dev/video-projects/v-appydave/b65-project
 
 # These auto-detect brand and project
-vat s3-up
-vat s3-down
-vat s3-status
+dam s3-up
+dam s3-down
+dam s3-status
 ```
 
 ### Dry-Run Mode
@@ -541,10 +566,10 @@ vat s3-status
 Preview actions without making changes:
 
 ```bash
-vat s3-up appydave b65 --dry-run
-vat s3-down voz boy-baker --dry-run
-vat s3-cleanup-remote aitldr movie-posters --dry-run
-vat s3-cleanup-local appydave b65 --dry-run
+dam s3-up appydave b65 --dry-run
+dam s3-down voz boy-baker --dry-run
+dam s3-cleanup-remote aitldr movie-posters --dry-run
+dam s3-cleanup-local appydave b65 --dry-run
 ```
 
 ### Interactive Selection
@@ -552,7 +577,7 @@ vat s3-cleanup-local appydave b65 --dry-run
 When multiple projects match short name:
 
 ```bash
-vat s3-up appydave b65
+dam s3-up appydave b65
 # Output:
 # ⚠️  Multiple projects match 'b65':
 #   1. b65-first-project
@@ -564,10 +589,10 @@ vat s3-up appydave b65
 
 ## See Also
 
-- **AWS Setup Guide:** [docs/usage/vat/aws-setup.md](./vat/aws-setup.md)
-- **Architecture:** [docs/usage/vat/architecture.md](./vat/architecture.md)
-- **Onboarding:** [docs/usage/vat/onboarding.md](./vat/onboarding.md)
-- **Integration Brief:** [docs/vat-integration-plan.md](../vat-integration-plan.md)
+- **AWS Setup Guide:** [docs/usage/dam/aws-setup.md](./dam/aws-setup.md)
+- **Architecture:** [docs/usage/dam/architecture.md](./dam/architecture.md)
+- **Onboarding:** [docs/usage/dam/onboarding.md](./dam/onboarding.md)
+- **Integration Brief:** [docs/dam-integration-plan.md](../dam-integration-plan.md)
 
 ---
 

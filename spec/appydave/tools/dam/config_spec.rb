@@ -3,8 +3,8 @@
 require 'rspec'
 
 # rubocop:disable RSpec/AnyInstance
-RSpec.describe Appydave::Tools::Vat::Config do
-  include_context 'with vat filesystem'
+RSpec.describe Appydave::Tools::Dam::Config do
+  include_context 'with dam filesystem'
 
   describe '.projects_root' do
     context 'when settings.json has video-projects-root configured' do
@@ -113,6 +113,60 @@ RSpec.describe Appydave::Tools::Vat::Config do
 
     it 'adds v- prefix to unknown brands' do
       expect(described_class.expand_brand('custom')).to eq('v-custom')
+    end
+
+    context 'with case-insensitive matching' do
+      let(:brands_config) { instance_double(Appydave::Tools::Configuration::Models::BrandsConfig) }
+      let(:appydave_brand) do
+        instance_double(
+          Appydave::Tools::Configuration::Models::BrandsConfig::BrandInfo,
+          key: 'appydave',
+          shortcut: 'ad'
+        )
+      end
+      let(:voz_brand) do
+        instance_double(
+          Appydave::Tools::Configuration::Models::BrandsConfig::BrandInfo,
+          key: 'voz',
+          shortcut: 'voz'
+        )
+      end
+
+      before do
+        allow(Appydave::Tools::Configuration::Config).to receive(:configure)
+        allow(Appydave::Tools::Configuration::Config).to receive(:brands).and_return(brands_config)
+        allow(brands_config).to receive(:brands).and_return([appydave_brand, voz_brand])
+      end
+
+      it 'matches brand key in uppercase (APPYDAVE → v-appydave)' do
+        allow(brands_config).to receive(:shortcut?).with('appydave').and_return(false)
+        expect(described_class.expand_brand('APPYDAVE')).to eq('v-appydave')
+      end
+
+      it 'matches brand key in mixed case (AppyDave → v-appydave)' do
+        allow(brands_config).to receive(:shortcut?).with('appydave').and_return(false)
+        expect(described_class.expand_brand('AppyDave')).to eq('v-appydave')
+      end
+
+      it 'matches shortcut in uppercase (AD → v-appydave)' do
+        allow(brands_config).to receive(:shortcut?).with('ad').and_return(false)
+        expect(described_class.expand_brand('AD')).to eq('v-appydave')
+      end
+
+      it 'matches shortcut in mixed case (Ad → v-appydave)' do
+        allow(brands_config).to receive(:shortcut?).with('ad').and_return(false)
+        expect(described_class.expand_brand('Ad')).to eq('v-appydave')
+      end
+
+      it 'matches VOZ in uppercase' do
+        allow(brands_config).to receive(:shortcut?).with('voz').and_return(false)
+        expect(described_class.expand_brand('VOZ')).to eq('v-voz')
+      end
+
+      it 'normalizes unknown brands to lowercase (CUSTOM → v-custom)' do
+        allow(brands_config).to receive(:shortcut?).with('custom').and_return(false)
+        expect(described_class.expand_brand('CUSTOM')).to eq('v-custom')
+      end
     end
   end
 

@@ -30,7 +30,7 @@ gem 'appydave-tools'
 
 ## Quick Start: Configuration
 
-Most tools work out of the box, but some features (VAT, YouTube Manager, OpenAI tools) require configuration.
+Most tools work out of the box, but some features (DAM, YouTube Manager, OpenAI tools) require configuration.
 
 ### First-Time Setup
 
@@ -70,7 +70,7 @@ Opens `~/.config/appydave/` for editing.
 
 Update the configuration files with your specific paths and settings.
 
-**Required for VAT (Video Asset Tools):**
+**Required for DAM (Digital Asset Management):**
 ```json
 {
   "video-projects-root": "/path/to/your/video-projects"
@@ -181,7 +181,7 @@ subtitle_processor join -f "part1.srt,part2.srt" -b 200 -o merged.srt
 
 ---
 
-### 🎬 VAT (Video Asset Tools)
+### 🎬 DAM (Digital Asset Management)
 
 **The problem:** Managing large video files across local storage, cloud collaboration (S3), and archival storage (SSD) is complex and error-prone.
 
@@ -209,6 +209,9 @@ vat archive appydave b63
 # Generate project manifest (tracks all projects across local + SSD)
 vat manifest appydave
 
+# Restore light files (subtitles, images, docs) from SSD (does NOT copy video files)
+vat sync-ssd appydave
+
 # Clean up S3 after project completion
 vat s3-cleanup-remote appydave b65 --force
 
@@ -221,7 +224,7 @@ vat s3-cleanup-local appydave b65 --force
 **Key Features:**
 - **Multi-tenant**: Manages 6 brands (appydave, voz, aitldr, kiros, joy, ss)
 - **Smart sync**: MD5-based file comparison (skip unchanged files)
-- **Pattern matching**: `vat list appydave 'b6*'` (lists b60-b69)
+- **Pattern matching**: `dam list appydave 'b6*'` (lists b60-b69)
 - **Short names**: `b65` → `b65-guy-monroe-marketing-plan` (FliVideo workflow)
 - **Auto-detection**: Run commands from project directory without args
 - **Hybrid storage**: Local → S3 (collaboration) → SSD (archive)
@@ -340,7 +343,7 @@ ad_config -p
 
 **Key Settings:**
 
-- **video-projects-root** - Root directory for all video projects (required for VAT)
+- **video-projects-root** - Root directory for all video projects (required for DAM)
 - **ecamm-recording-folder** - Where Ecamm Live saves recordings
 - **download-folder** - General downloads directory
 - **download-image-folder** - Image downloads (defaults to download-folder)

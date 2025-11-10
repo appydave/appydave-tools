@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module Vat
+    module Dam
       # VatConfig - Configuration management for Video Asset Tools
       #
       # Manages VIDEO_PROJECTS_ROOT and brand path resolution
@@ -35,34 +35,42 @@ module Appydave
             brand = expand_brand(brand_key)
             path = File.join(projects_root, brand)
 
-            raise "Brand directory not found: #{path}\nAvailable brands: #{available_brands.join(', ')}" unless Dir.exist?(path)
+            unless Dir.exist?(path)
+              brands_list = available_brands_display
+              raise "Brand directory not found: #{path}\nAvailable brands:\n#{brands_list}"
+            end
 
             path
           end
 
           # Expand brand shortcut to full brand name
           # Reads from brands.json if available, falls back to hardcoded shortcuts
-          # @param shortcut [String] Brand shortcut (e.g., 'appydave')
+          # @param shortcut [String] Brand shortcut (e.g., 'appydave', 'ad', 'APPYDAVE')
           # @return [String] Full brand name (e.g., 'v-appydave')
           def expand_brand(shortcut)
-            return shortcut if shortcut.start_with?('v-')
+            shortcut_str = shortcut.to_s
+
+            return shortcut_str if shortcut_str.start_with?('v-')
 
             # Try to read from brands.json
             Appydave::Tools::Configuration::Config.configure
             brands_config = Appydave::Tools::Configuration::Config.brands
 
-            # Check if this shortcut exists in brands.json
-            if brands_config.shortcut?(shortcut)
-              brand = brands_config.brands.find { |b| b.shortcut == shortcut }
-              return "v-#{brand.key}" if brand
-            end
+            # Check if input matches a brand key (case-insensitive)
+            brand = brands_config.brands.find { |b| b.key.downcase == shortcut_str.downcase }
+            return "v-#{brand.key}" if brand
+
+            # Check if input matches a brand shortcut (case-insensitive)
+            brand = brands_config.brands.find { |b| b.shortcut.downcase == shortcut_str.downcase }
+            return "v-#{brand.key}" if brand
 
             # Fall back to hardcoded shortcuts for backwards compatibility
-            case shortcut
+            normalized = shortcut_str.downcase
+            case normalized
             when 'joy' then 'v-beauty-and-joy'
             when 'ss' then 'v-supportsignal'
             else
-              "v-#{shortcut}"
+              "v-#{normalized}"
             end
           end
 
@@ -90,6 +98,16 @@ module Appydave
                .sort
           end
 
+          # Get available brands with both shortcut and name for error messages
+          def available_brands_display
+            Appydave::Tools::Configuration::Config.configure
+            brands_config = Appydave::Tools::Configuration::Config.brands
+
+            brands_config.brands.map do |brand|
+              "  #{brand.shortcut.ljust(10)} - #{brand.name}"
+            end.sort.join("\n")
+          end
+
           # Check if directory is a valid brand
           # @param brand_path [String] Full path to potential brand directory
           # @return [Boolean] true if valid brand
@@ -114,14 +132,15 @@ module Appydave
 
           private
 
-          # Auto-detect projects root by finding git repos
+          # Auto-detect projects root by finding v-shared directory
           # @return [String] Detected path or raises error
           def detect_projects_root
             # Try to find v-shared in parent directories
             current = Dir.pwd
             5.times do
               test_path = File.join(current, 'v-shared')
-              return File.dirname(test_path) if Dir.exist?(test_path) && Dir.exist?(File.join(test_path, 'video-asset-tools'))
+              # Return parent of v-shared as projects root
+              return File.dirname(test_path) if Dir.exist?(test_path)
 
               parent = File.dirname(current)
               break if parent == current

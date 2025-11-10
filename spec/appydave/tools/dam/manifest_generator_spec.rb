@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::Vat::ManifestGenerator do
+RSpec.describe Appydave::Tools::Dam::ManifestGenerator do
   let(:temp_dir) { Dir.mktmpdir }
   let(:brand_path) { File.join(temp_dir, 'v-test') }
   let(:ssd_backup) { File.join(temp_dir, 'ssd-backup') }

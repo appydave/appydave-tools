@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::Vat::S3Operations do
+RSpec.describe Appydave::Tools::Dam::S3Operations do
   let(:temp_dir) { Dir.mktmpdir }
   let(:brand_path) { File.join(temp_dir, 'v-test') }
   let(:project_dir) { File.join(brand_path, 'test-project') }

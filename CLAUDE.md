@@ -60,7 +60,7 @@ bin/console         # Interactive Ruby console for experimentation
 | **GPT Context** | `gpt_context` | Collect project files for AI context | ⭐ PRIMARY |
 | **YouTube Manager** | `youtube_manager` | CRUD operations on YouTube video metadata | ✅ ACTIVE |
 | **Subtitle Processor** | `subtitle_processor` | Transform SRT files (clean/merge) | ✅ ACTIVE |
-| **VAT (Video Asset Tools)** | `vat` | Multi-tenant video project storage orchestration | ✅ ACTIVE |
+| **DAM (Digital Asset Management)** | `vat` | Multi-tenant video project storage orchestration | ✅ ACTIVE |
 | **Configuration** | `ad_config` | Manage JSON configs (channels, paths, sequences) | ✅ ACTIVE |
 | **Move Images** | N/A (dev only) | Organize video asset images | ✅ ACTIVE |
 | **Prompt Tools** | `prompt_tools` | OpenAI Completion API wrapper | ⚠️ DEPRECATED API |
@@ -143,7 +143,7 @@ bin/subtitle_processor.rb join -d ./subs -f "*.srt" -s inferred -b 200 -o output
 
 **Note:** Renamed from `subtitle_manager` to `subtitle_processor` (accurate - processes files, doesn't manage state)
 
-#### 4. VAT - Video Asset Tools (`bin/vat`)
+#### 4. DAM - Digital Asset Management (`bin/dam`)
 Multi-tenant video project storage orchestration:
 
 ```bash
@@ -205,7 +205,7 @@ vat sync-ssd appydave
 - System: `video-projects-root` in `~/.config/appydave/settings.json` (**required**)
 - Per-brand: `.video-tools.env` (AWS credentials, S3 bucket, SSD path)
 
-**Migration note:** The old `~/.vat-config` file is deprecated. VAT now uses `settings.json`. See [Configuration Management](#configuration-management) section below.
+**Migration note:** The old `~/.vat-config` file is deprecated. DAM now uses `settings.json`. See [Configuration Management](#configuration-management) section below.
 
 See detailed usage guide: [docs/usage/vat.md](./docs/usage/vat.md)
 
@@ -328,6 +328,43 @@ bin/move_images.rb -f b40 thumb b40
 Bank transaction reconciliation tool - **DEPRECATED, DO NOT USE**
 
 **WARNING:** This tool contains deprecated code and should not be used for new work. Code has been moved to `lib/appydave/tools/deprecated/bank_reconciliation/`
+
+### Git Workflow with Semantic Versioning
+
+**⚠️ IMPORTANT: Always use `kfeat` or `kfix` for commits**
+
+This project uses automated semantic versioning with CI/CD integration. **DO NOT use manual `git commit` commands.**
+
+**Commands:**
+```bash
+kfeat "Your feature description"   # Creates commit → CI runs → Minor version bump (0.14.0 → 0.15.0) → git pull
+kfix "Your bug fix description"    # Creates commit → CI runs → Patch version bump (0.14.0 → 0.14.1) → git pull
+```
+
+**How it works:**
+1. **You run:** `kfeat "add DAM migration"` or `kfix "resolve case-sensitivity bug"`
+2. **Creates commit** with semantic commit message format
+3. **Waits for CI** to complete (runs tests, linting, builds gem)
+4. **Version update** happens automatically on GitHub via semantic-release:
+   - `kfeat` → Minor version bump (new feature)
+   - `kfix` → Patch version bump (bug fix)
+5. **Auto git pull** after CI completes (repo was updated remotely)
+
+**Why use these commands:**
+- Ensures proper semantic versioning
+- Waits for CI to validate changes
+- Automatically syncs version updates from GitHub
+- Prevents version conflicts
+
+**Commit Message Guidelines:**
+- Be descriptive but concise (1-2 sentences)
+- Focus on the "why" rather than the "what"
+- Use imperative mood ("add feature" not "added feature")
+- Examples:
+  - `kfeat "migrate VAT to DAM with full rename"`
+  - `kfix "resolve case-insensitive brand resolution"`
+
+**Note:** For breaking changes that require major version bump, see Gem Version Management section below.
 
 ### Testing & Quality
 ```bash
@@ -491,7 +528,7 @@ General application settings and paths (non-secret configuration).
 
 | Key | Purpose | Used By | Required |
 |-----|---------|---------|----------|
-| `video-projects-root` | Root directory for all video projects | VAT commands | ✅ For VAT |
+| `video-projects-root` | Root directory for all video projects | DAM commands | ✅ For DAM |
 | `ecamm-recording-folder` | Where Ecamm Live saves recordings | Move Images | Optional |
 | `download-folder` | General downloads directory | Move Images | Optional |
 | `download-image-folder` | Image downloads (defaults to `download-folder`) | Move Images | Optional |
@@ -598,16 +635,16 @@ TOOLS_ENABLED=false
 
 **From `~/.vat-config` (DEPRECATED):**
 
-The old `~/.vat-config` file is no longer used. VAT now uses `settings.json`.
+The old `~/.vat-config` file is no longer used. DAM now uses `settings.json`.
 
 **Migration steps:**
 1. Check your old config: `cat ~/.vat-config`
 2. Add value to settings.json: `ad_config -e`
 3. Add: `"video-projects-root": "/your/path/from/vat/config"`
-4. Test VAT still works: `vat list`
+4. Test DAM still works: `dam list`
 5. Delete old file: `rm ~/.vat-config`
 
-**Note:** The `vat init` command is deprecated. Use `ad_config -c` instead.
+**Note:** The `dam init` command is deprecated. Use `ad_config -c` instead.
 
 ## Git Hooks & Security
 

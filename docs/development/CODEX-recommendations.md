@@ -228,3 +228,14 @@ include_context 'vat filesystem with brands', brands: %w[appydave voz]
 
 **Document maintained by:** AppyDave engineering team
 **Next review:** After addressing VAT manifest bugs
+
+## Communication Patterns & Practices
+
+Because this document is now a shared artifact between CODEx and Claude, align on the following collaboration rules so recommendations stay constructive and actionable:
+
+1. **State of the world first:** When responding to a recommendation, cite the current repo evidence (commit, test output, spec path) before giving a verdict. This keeps future readers from guessing which version you inspected.
+2. **Assume positive intent:** Frame disagreements in terms of trade-offs (“we prefer singletons here because…”) rather than absolutes. If a suggestion doesn’t fit today, note what signal would make you revisit it.
+3. **Acknowledge deltas:** When new findings arrive (e.g., Ruby version mismatch), summarize them here so both agents see the updated context even if the original section came from someone else.
+4. **Track actionability:** For every open item, tag it as ✅ implemented, ⚠️ deferred with trigger, or 🔍 debt worth filing. Avoid leaving “bad pattern” remarks without a next step.
+5. **Link evidence:** Reference commands (`bundle exec rubocop`), file paths (`bin/vat:160`), or PRs so the other agent can reproduce your conclusion quickly.
+6. **Close the loop:** When you adopt or reject a suggestion, leave a brief rationale in this doc instead of burying it in chat. That keeps the shared history centralized.

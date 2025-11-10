@@ -7,18 +7,18 @@ require 'aws-sdk-s3'
 
 module Appydave
   module Tools
-    module Vat
+    module Dam
       # S3 operations for VAT (upload, download, status, cleanup)
       class S3Operations
         attr_reader :brand_info, :brand, :project_id, :brand_path, :s3_client
 
         def initialize(brand, project_id, brand_info: nil, brand_path: nil, s3_client: nil)
-          @brand = brand
           @project_id = project_id
 
           # Use injected dependencies or load from configuration
-          @brand_path = brand_path || Config.brand_path(brand)
           @brand_info = brand_info || load_brand_info(brand)
+          @brand = @brand_info.key # Use resolved brand key, not original input
+          @brand_path = brand_path || Config.brand_path(@brand)
           @s3_client = s3_client || create_s3_client(@brand_info)
         end
 

@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module Vat
+    module Dam
       # ProjectResolver - Resolve short project names to full paths
       #
       # Handles:

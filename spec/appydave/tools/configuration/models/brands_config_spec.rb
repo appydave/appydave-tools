@@ -117,12 +117,107 @@ RSpec.describe Appydave::Tools::Configuration::Models::BrandsConfig do
       expect(brand.shortcut).to eq('ad')
     end
 
+    it 'retrieves existing brand by shortcut' do
+      brand = brands_config.get_brand('ad')
+
+      expect(brand.key).to eq('appydave')
+      expect(brand.name).to eq('AppyDave')
+      expect(brand.shortcut).to eq('ad')
+      expect(brand.type).to eq('owned')
+    end
+
+    it 'retrieves existing brand by different shortcut' do
+      brand = brands_config.get_brand('voz')
+
+      expect(brand.key).to eq('voz')
+      expect(brand.name).to eq('VOZ Creative')
+      expect(brand.shortcut).to eq('voz')
+      expect(brand.type).to eq('client')
+    end
+
     it 'returns default brand information for a non-existent brand' do
       brand = brands_config.get_brand('nonexistent_brand')
 
       expect(brand.name).to eq('')
       expect(brand.shortcut).to eq('')
       expect(brand.type).to eq('owned')
+    end
+
+    it 'returns default brand information for a non-existent shortcut' do
+      brand = brands_config.get_brand('xyz')
+
+      expect(brand.key).to eq('xyz')
+      expect(brand.name).to eq('')
+      expect(brand.shortcut).to eq('')
+    end
+
+    context 'with case-insensitive matching (returns true values from config)' do
+      context 'when matching by brand key' do
+        it 'matches lowercase key and returns true values' do
+          brand = brands_config.get_brand('appydave')
+
+          expect(brand.key).to eq('appydave')        # True value from config
+          expect(brand.name).to eq('AppyDave')       # True value from config
+          expect(brand.shortcut).to eq('ad')         # True value from config
+        end
+
+        it 'matches UPPERCASE key and returns true values' do
+          brand = brands_config.get_brand('APPYDAVE')
+
+          expect(brand.key).to eq('appydave')        # True value from config (not APPYDAVE)
+          expect(brand.name).to eq('AppyDave')       # True value from config
+          expect(brand.shortcut).to eq('ad')         # True value from config
+        end
+
+        it 'matches MixedCase key and returns true values' do
+          brand = brands_config.get_brand('AppyDave')
+
+          expect(brand.key).to eq('appydave')        # True value from config (not AppyDave)
+          expect(brand.name).to eq('AppyDave')       # True value from config
+          expect(brand.shortcut).to eq('ad')         # True value from config
+        end
+      end
+
+      context 'when matching by shortcut' do
+        it 'matches lowercase shortcut and returns true values' do
+          brand = brands_config.get_brand('ad')
+
+          expect(brand.key).to eq('appydave')        # True value from config
+          expect(brand.name).to eq('AppyDave')       # True value from config
+          expect(brand.shortcut).to eq('ad')         # True value from config
+        end
+
+        it 'matches UPPERCASE shortcut and returns true values' do
+          brand = brands_config.get_brand('AD')
+
+          expect(brand.key).to eq('appydave')        # True value from config
+          expect(brand.name).to eq('AppyDave')       # True value from config
+          expect(brand.shortcut).to eq('ad')         # True value from config (not AD)
+        end
+
+        it 'matches MixedCase shortcut and returns true values' do
+          brand = brands_config.get_brand('Ad')
+
+          expect(brand.key).to eq('appydave')        # True value from config
+          expect(brand.name).to eq('AppyDave')       # True value from config
+          expect(brand.shortcut).to eq('ad')         # True value from config (not Ad)
+        end
+      end
+
+      context 'when matching different brand' do
+        it 'matches VOZ in any case and returns true values' do
+          brand_lowercase = brands_config.get_brand('voz')
+          brand_uppercase = brands_config.get_brand('VOZ')
+          brand_mixedcase = brands_config.get_brand('Voz')
+
+          # All return same true values
+          [brand_lowercase, brand_uppercase, brand_mixedcase].each do |brand|
+            expect(brand.key).to eq('voz')              # True value
+            expect(brand.name).to eq('VOZ Creative')    # True value
+            expect(brand.shortcut).to eq('voz')         # True value
+          end
+        end
+      end
     end
 
     describe '.youtube_channels' do
