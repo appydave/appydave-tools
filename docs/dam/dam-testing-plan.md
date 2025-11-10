@@ -443,20 +443,7 @@ bin/dam status appydave b65
 
 ---
 
-#### Test 2.17: Status - Auto-Detect ⭐ PHASE 4
-```bash
-# Test: Auto-detect brand and project from PWD
-cd ~/dev/video-projects/v-appydave/b65-*
-bin/dam status
-```
-**Expected**: Auto-detects and shows project status
-
-**Status**: [ ] Pass [ ] Fail
-**Notes**: ___________________________________________
-
----
-
-#### Test 2.18: Repo Status - Single Brand ⭐ PHASE 4
+#### Test 2.17: Repo Status - Single Brand ⭐ PHASE 4
 ```bash
 # Test: Show git status for single brand
 bin/dam repo-status appydave
@@ -468,7 +455,7 @@ bin/dam repo-status appydave
 
 ---
 
-#### Test 2.19: Repo Status - All Brands ⭐ PHASE 4
+#### Test 2.18: Repo Status - All Brands ⭐ PHASE 4
 ```bash
 # Test: Show git status for all brands
 bin/dam repo-status --all
@@ -480,7 +467,7 @@ bin/dam repo-status --all
 
 ---
 
-#### Test 2.20: Repo Sync - Single Brand ⭐ PHASE 4
+#### Test 2.19: Repo Sync - Single Brand ⭐ PHASE 4
 ```bash
 # Test: Pull updates for single brand
 bin/dam repo-sync appydave
@@ -492,7 +479,7 @@ bin/dam repo-sync appydave
 
 ---
 
-#### Test 2.21: Repo Sync - All Brands ⭐ PHASE 4
+#### Test 2.20: Repo Sync - All Brands ⭐ PHASE 4
 ```bash
 # Test: Pull updates for all brands
 bin/dam repo-sync --all
@@ -504,7 +491,7 @@ bin/dam repo-sync --all
 
 ---
 
-#### Test 2.22: Repo Push - Basic ⭐ PHASE 4
+#### Test 2.21: Repo Push - Basic ⭐ PHASE 4
 ```bash
 # Test: Push changes for brand (no project validation)
 bin/dam repo-push appydave
@@ -516,7 +503,7 @@ bin/dam repo-push appydave
 
 ---
 
-#### Test 2.23: Repo Push - With Project Validation ⭐ PHASE 4
+#### Test 2.22: Repo Push - With Project Validation ⭐ PHASE 4
 ```bash
 # Test: Push with project validation
 bin/dam repo-push appydave b65

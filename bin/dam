@@ -273,18 +273,13 @@ class VatCLI
     project_arg = args[1]
 
     if brand_arg.nil?
-      # Auto-detect from PWD
-      brand, project_id = Appydave::Tools::Dam::ProjectResolver.detect_from_pwd
-      if brand.nil?
-        puts '❌ Could not auto-detect brand from current directory'
-        puts 'Usage: dam status <brand> [project]'
-        exit 1
-      end
-      brand_key = brand
-    else
-      brand_key = brand_arg
-      project_id = project_arg ? Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg) : nil
+      puts '❌ Brand argument required'
+      puts 'Usage: dam status <brand> [project]'
+      exit 1
     end
+
+    brand_key = brand_arg
+    project_id = project_arg ? Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg) : nil
 
     status = Appydave::Tools::Dam::Status.new(brand_key, project_id)
     status.show
@@ -415,7 +410,7 @@ class VatCLI
         list [brand] [pattern]      List brands/projects
 
         Status & Monitoring:
-        status [brand] [project]         Show unified status (local/S3/SSD/git)
+        status <brand> [project]         Show unified status (local/S3/SSD/git)
 
         Git Repository Commands:
         repo-status <brand> [--all]      Check git status for brand repos
