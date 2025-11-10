@@ -1,3 +1,10 @@
+## [0.18.5](https://github.com/appydave/appydave-tools/compare/v0.18.4...v0.18.5) (2025-11-10)
+
+
+### Bug Fixes
+
+* update test plan to reflect all DAM commands completed (manifest, archive, sync-ssd) and clarify git repo scripts ([ac1436a](https://github.com/appydave/appydave-tools/commit/ac1436a09c4ae32009f1b98dc697da9a87f1c4ee))
+
 ## [0.18.4](https://github.com/appydave/appydave-tools/compare/v0.18.3...v0.18.4) (2025-11-10)
 
 
