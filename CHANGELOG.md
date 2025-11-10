@@ -1,3 +1,10 @@
+# [0.18.0](https://github.com/appydave/appydave-tools/compare/v0.17.1...v0.18.0) (2025-11-10)
+
+
+### Features
+
+* migrate VAT to DAM with comprehensive rename and case-insensitive brand resolution ([d776c68](https://github.com/appydave/appydave-tools/commit/d776c686e582e714c07fafa959c07327f1e0d36b))
+
 ## [0.17.1](https://github.com/appydave/appydave-tools/compare/v0.17.0...v0.17.1) (2025-11-10)
 
 
