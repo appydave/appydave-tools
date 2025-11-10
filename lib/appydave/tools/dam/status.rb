@@ -1,0 +1,278 @@
+# frozen_string_literal: true
+
+require 'json'
+
+module Appydave
+  module Tools
+    module Dam
+      # Show unified status for video project (local, S3, SSD, git)
+      class Status
+        attr_reader :brand, :project_id, :brand_info, :brand_path, :project_path
+
+        def initialize(brand, project_id = nil)
+          @brand_info = load_brand_info(brand)
+          @brand = @brand_info.key
+          @brand_path = Config.brand_path(@brand)
+          @project_id = project_id
+          @project_path = project_id ? resolve_project_path(project_id) : nil
+        end
+
+        # Show status for project or brand
+        def show
+          if project_id
+            show_project_status
+          else
+            show_brand_status
+          end
+        end
+
+        private
+
+        def load_brand_info(brand)
+          Appydave::Tools::Configuration::Config.configure
+          Appydave::Tools::Configuration::Config.brands.get_brand(brand)
+        end
+
+        def resolve_project_path(project_id)
+          # Resolve short name if needed (b65 -> b65-full-name)
+          resolved = ProjectResolver.new.resolve(brand, project_id)
+          File.join(brand_path, resolved)
+        end
+
+        def show_project_status
+          puts "📊 Status: v-#{brand}/#{File.basename(project_path)}"
+          puts ''
+
+          manifest = load_manifest
+          project_entry = find_project_in_manifest(manifest)
+
+          unless project_entry
+            puts "❌ Project not found in manifest"
+            puts "   Run: dam manifest #{brand}"
+            return
+          end
+
+          show_storage_status(project_entry)
+          show_git_status if git_repo?
+        end
+
+        def show_brand_status
+          puts "📊 Brand Status: v-#{brand}"
+          puts ''
+
+          # Show git remote (with self-healing)
+          remote = Config.git_remote(brand)
+          if remote
+            puts "📡 Git Remote: #{remote}"
+          else
+            puts "📡 Git Remote: Not configured (not a git repository)"
+          end
+          puts ''
+
+          # Show git status
+          if git_repo?
+            show_brand_git_status
+          else
+            puts "Git: Not a git repository"
+          end
+          puts ''
+
+          # Show manifest summary
+          manifest = load_manifest
+          if manifest
+            show_manifest_summary(manifest)
+          else
+            puts "❌ Manifest not found"
+            puts "   Run: dam manifest #{brand}"
+          end
+        end
+
+        def show_storage_status(project_entry)
+          puts 'Storage:'
+
+          # Local storage
+          show_local_status(project_entry)
+
+          # S3 staging (inferred - only show if exists)
+          show_s3_status(project_entry) if project_entry[:storage][:s3][:exists]
+
+          # SSD backup (inferred - only show if configured and exists)
+          show_ssd_status(project_entry) if brand_info.locations.ssd_backup &&
+                                             brand_info.locations.ssd_backup != 'NOT-SET' &&
+                                             project_entry[:storage][:ssd][:exists]
+
+          puts ''
+        end
+
+        def show_local_status(project_entry)
+          local = project_entry[:storage][:local]
+
+          if local[:exists]
+            puts "  📁 Local: ✓ exists (#{local[:structure]} structure)"
+            puts "     Heavy files: #{local[:has_heavy_files] ? 'yes' : 'no'}"
+            puts "     Light files: #{local[:has_light_files] ? 'yes' : 'no'}"
+          else
+            puts "  📁 Local: ✗ does not exist"
+          end
+          puts ''
+        end
+
+        def show_s3_status(project_entry)
+          puts "  ☁️  S3 Staging: ✓ exists"
+
+          # TODO: Query S3 for detailed status (files needing sync)
+          # For now, just show that s3-staging folder exists locally
+          s3_staging_path = File.join(project_path, 's3-staging')
+          if Dir.exist?(s3_staging_path)
+            file_count = Dir.glob(File.join(s3_staging_path, '*')).count
+            puts "     Local staging files: #{file_count}"
+          end
+          puts ''
+        end
+
+        def show_ssd_status(project_entry)
+          puts "  💾 SSD Backup: ✓ exists"
+          puts "     Path: #{project_entry[:storage][:ssd][:path]}"
+          puts ''
+        end
+
+        def show_git_status
+          puts 'Git:'
+
+          status = git_status_info
+
+          puts "  🌿 Branch: #{status[:branch]}"
+          puts "  📡 Remote: #{status[:remote]}" if status[:remote]
+
+          if status[:modified_count] > 0 || status[:untracked_count] > 0
+            puts "  ↕️  Status: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
+          else
+            puts "  ↕️  Status: Clean working directory"
+          end
+
+          if status[:ahead] > 0 || status[:behind] > 0
+            puts "  🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
+          else
+            puts "  🔄 Sync: Up to date"
+          end
+
+          puts ''
+        end
+
+        def show_brand_git_status
+          status = git_status_info
+
+          puts "🌿 Branch: #{status[:branch]}"
+          puts "📡 Remote: #{status[:remote]}" if status[:remote]
+
+          if status[:modified_count] > 0 || status[:untracked_count] > 0
+            puts "↕️  Changes: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
+          else
+            puts "✓ Working directory clean"
+          end
+
+          if status[:ahead] > 0 || status[:behind] > 0
+            puts "🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
+          else
+            puts "✓ Up to date with remote"
+          end
+        end
+
+        def show_manifest_summary(manifest)
+          puts "📋 Manifest Summary:"
+          puts "   Total projects: #{manifest[:projects].size}"
+
+          local_count = manifest[:projects].count { |p| p[:storage][:local][:exists] }
+          s3_count = manifest[:projects].count { |p| p[:storage][:s3][:exists] }
+          ssd_count = manifest[:projects].count { |p| p[:storage][:ssd][:exists] }
+
+          puts "   Local: #{local_count}"
+          puts "   S3 staging: #{s3_count}"
+          puts "   SSD backup: #{ssd_count}"
+
+          # Project types
+          storyline_count = manifest[:projects].count { |p| p[:hasStorylineJson] }
+          puts ''
+          puts "   Storyline projects: #{storyline_count}"
+          puts "   FliVideo projects: #{manifest[:projects].size - storyline_count}"
+        end
+
+        def sync_status_text(ahead, behind)
+          parts = []
+          parts << "#{ahead} ahead" if ahead > 0
+          parts << "#{behind} behind" if behind > 0
+          parts.join(', ')
+        end
+
+        def load_manifest
+          manifest_path = File.join(brand_path, 'projects.json')
+          return nil unless File.exist?(manifest_path)
+
+          JSON.parse(File.read(manifest_path), symbolize_names: true)
+        rescue JSON::ParserError
+          nil
+        end
+
+        def find_project_in_manifest(manifest)
+          return nil unless manifest
+
+          project_name = File.basename(project_path)
+          manifest[:projects].find { |p| p[:id] == project_name }
+        end
+
+        def git_repo?
+          git_dir = File.join(brand_path, '.git')
+          Dir.exist?(git_dir)
+        end
+
+        def git_status_info
+          {
+            branch: current_branch,
+            remote: remote_url,
+            modified_count: modified_files_count,
+            untracked_count: untracked_files_count,
+            ahead: commits_ahead,
+            behind: commits_behind
+          }
+        end
+
+        def current_branch
+          `git -C "#{brand_path}" rev-parse --abbrev-ref HEAD 2>/dev/null`.strip
+        rescue StandardError
+          'unknown'
+        end
+
+        def remote_url
+          result = `git -C "#{brand_path}" remote get-url origin 2>/dev/null`.strip
+          result.empty? ? nil : result
+        rescue StandardError
+          nil
+        end
+
+        def modified_files_count
+          `git -C "#{brand_path}" status --porcelain 2>/dev/null | grep -E "^.M|^M" | wc -l`.strip.to_i
+        rescue StandardError
+          0
+        end
+
+        def untracked_files_count
+          `git -C "#{brand_path}" status --porcelain 2>/dev/null | grep -E "^\\?\\?" | wc -l`.strip.to_i
+        rescue StandardError
+          0
+        end
+
+        def commits_ahead
+          `git -C "#{brand_path}" rev-list --count @{upstream}..HEAD 2>/dev/null`.strip.to_i
+        rescue StandardError
+          0
+        end
+
+        def commits_behind
+          `git -C "#{brand_path}" rev-list --count HEAD..@{upstream} 2>/dev/null`.strip.to_i
+        rescue StandardError
+          0
+        end
+      end
+    end
+  end
+end

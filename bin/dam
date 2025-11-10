@@ -13,6 +13,7 @@ class VatCLI
     @commands = {
       'help' => method(:help_command),
       'list' => method(:list_command),
+      'status' => method(:status_command),
       's3-up' => method(:s3_up_command),
       's3-down' => method(:s3_down_command),
       's3-status' => method(:s3_status_command),
@@ -21,6 +22,9 @@ class VatCLI
       'archive' => method(:archive_command),
       'manifest' => method(:manifest_command),
       'sync-ssd' => method(:sync_ssd_command),
+      'repo-status' => method(:repo_status_command),
+      'repo-sync' => method(:repo_sync_command),
+      'repo-push' => method(:repo_push_command),
       # Deprecated aliases (for backward compatibility)
       's3-cleanup' => method(:s3_cleanup_remote_command),
       'cleanup-local' => method(:s3_cleanup_local_command)
@@ -257,6 +261,112 @@ class VatCLI
       puts '  dam sync-ssd appydave --dry-run  # Preview what would be synced'
       exit 1
     end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Show unified status (local/S3/SSD/git)
+  def status_command(args)
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+    project_arg = args[1]
+
+    if brand_arg.nil?
+      # Auto-detect from PWD
+      brand, project_id = Appydave::Tools::Dam::ProjectResolver.detect_from_pwd
+      if brand.nil?
+        puts '❌ Could not auto-detect brand from current directory'
+        puts 'Usage: dam status <brand> [project]'
+        exit 1
+      end
+      brand_key = brand
+    else
+      brand_key = brand_arg
+      project_id = project_arg ? Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg) : nil
+    end
+
+    status = Appydave::Tools::Dam::Status.new(brand_key, project_id)
+    status.show
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Show git status for brand repositories
+  def repo_status_command(args)
+    all = args.include?('--all')
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+
+    if all
+      # Show status for all brands
+      Appydave::Tools::Dam::RepoStatus.new.show_all
+    elsif brand_arg
+      # Show status for specific brand
+      Appydave::Tools::Dam::RepoStatus.new(brand_arg).show
+    else
+      puts 'Usage: dam repo-status <brand> [--all]'
+      puts ''
+      puts 'Check git status for brand repositories.'
+      puts ''
+      puts 'Examples:'
+      puts '  dam repo-status appydave    # Show git status for AppyDave brand'
+      puts '  dam repo-status --all       # Show git status for all brands'
+      exit 1
+    end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Sync (pull) brand repositories
+  def repo_sync_command(args)
+    all = args.include?('--all')
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+
+    if all
+      # Sync all brands
+      Appydave::Tools::Dam::RepoSync.new.sync_all
+    elsif brand_arg
+      # Sync specific brand
+      Appydave::Tools::Dam::RepoSync.new(brand_arg).sync
+    else
+      puts 'Usage: dam repo-sync <brand> [--all]'
+      puts ''
+      puts 'Pull updates for brand repositories.'
+      puts ''
+      puts 'Examples:'
+      puts '  dam repo-sync appydave    # Pull updates for AppyDave brand'
+      puts '  dam repo-sync --all       # Pull updates for all brands'
+      exit 1
+    end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Push brand repository changes
+  def repo_push_command(args)
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+    project_arg = args[1]
+
+    if brand_arg.nil?
+      puts 'Usage: dam repo-push <brand> [project]'
+      puts ''
+      puts 'Push changes for brand repository.'
+      puts ''
+      puts 'Examples:'
+      puts '  dam repo-push appydave       # Push all changes for AppyDave brand'
+      puts '  dam repo-push appydave b65   # Validate project exists before push'
+      exit 1
+    end
+
+    project_id = project_arg ? Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg) : nil
+
+    Appydave::Tools::Dam::RepoPush.new(brand_arg, project_id).push
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
     exit 1

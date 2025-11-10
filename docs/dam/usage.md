@@ -154,6 +154,143 @@ dam list appydave 'b6*'
 # Output: Lists b60, b61, b62...b69 projects
 ```
 
+### Status & Monitoring
+
+#### `dam status [brand] [project]`
+Show unified status for project or brand (local, S3, SSD, git).
+
+**Brand status:**
+```bash
+dam status appydave
+```
+
+**Output:**
+```
+📊 Brand Status: v-appydave
+📡 Git Remote: git@github.com:klueless-io/v-appydave.git
+
+🌿 Branch: main
+📡 Remote: git@github.com:klueless-io/v-appydave.git
+✓ Working directory clean
+✓ Up to date with remote
+
+📋 Manifest Summary:
+   Total projects: 114
+   Local: 74
+   S3 staging: 12
+   SSD backup: 67
+
+   Storyline projects: 3
+   FliVideo projects: 111
+```
+
+**Project status:**
+```bash
+dam status appydave b65
+```
+
+**Output:**
+```
+📊 Status: v-appydave/b65-guy-monroe-marketing-plan
+
+Storage:
+  📁 Local: ✓ exists (flat structure)
+     Heavy files: no
+     Light files: yes
+
+  ☁️  S3 Staging: ✓ exists
+     Local staging files: 3
+
+  💾 SSD Backup: ✓ exists
+     Path: b65-guy-monroe-marketing-plan
+
+Git:
+  🌿 Branch: main
+  📡 Remote: git@github.com:klueless-io/v-appydave.git
+  ↕️  Status: Clean working directory
+  🔄 Sync: Up to date
+```
+
+**Auto-detect from PWD:**
+```bash
+cd ~/dev/video-projects/v-appydave/b65-project
+dam status
+```
+
+### Git Repository Commands
+
+#### `dam repo-status [brand] [--all]`
+Check git status for brand repositories.
+
+```bash
+# Single brand
+dam repo-status appydave
+
+# All brands
+dam repo-status --all
+```
+
+**Output:**
+```
+🔍 Git Status: v-appydave
+
+🌿 Branch: main
+📡 Remote: git@github.com:klueless-io/v-appydave.git
+✓ Working directory clean
+✓ Up to date with remote
+```
+
+#### `dam repo-sync [brand] [--all]`
+Pull updates for brand repositories.
+
+```bash
+# Single brand
+dam repo-sync appydave
+
+# All brands
+dam repo-sync --all
+```
+
+**Output:**
+```
+🔄 Syncing: v-appydave
+
+✓ Already up to date
+```
+
+**Safety features:**
+- Skips brands with uncommitted changes (prevents conflicts)
+- Shows summary when syncing multiple brands
+
+#### `dam repo-push [brand] [project]`
+Push changes for brand repository.
+
+```bash
+# Push all changes
+dam repo-push appydave
+
+# Validate project exists before push
+dam repo-push appydave b65
+```
+
+**Output:**
+```
+📤 Pushing: v-appydave
+
+✓ Project validated: b65-guy-monroe-marketing-plan
+
+📤 Pushing 2 commit(s)...
+
+✓ Push successful
+
+  main -> main
+```
+
+**Safety features:**
+- Warns if uncommitted changes detected
+- Optional project validation against manifest
+- Shows push summary
+
 ### S3 Sync Commands
 
 #### `dam s3-up [brand] [project] [--dry-run]`
@@ -649,4 +786,4 @@ dam s3-up appydave b65
 
 ---
 
-**Last Updated:** 2025-11-08
+**Last Updated:** 2025-11-10

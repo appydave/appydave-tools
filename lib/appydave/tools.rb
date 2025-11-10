@@ -59,6 +59,10 @@ require 'appydave/tools/dam/s3_operations'
 require 'appydave/tools/dam/project_listing'
 require 'appydave/tools/dam/manifest_generator'
 require 'appydave/tools/dam/sync_from_ssd'
+require 'appydave/tools/dam/status'
+require 'appydave/tools/dam/repo_status'
+require 'appydave/tools/dam/repo_sync'
+require 'appydave/tools/dam/repo_push'
 
 require 'appydave/tools/youtube_automation/gpt_agent'
 
