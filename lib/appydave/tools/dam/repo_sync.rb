@@ -68,7 +68,7 @@ module Appydave
 
         def perform_sync(indent: '')
           # Check for uncommitted changes
-          if has_uncommitted_changes?
+          if uncommitted_changes?
             puts "#{indent}⚠️  Uncommitted changes detected"
             puts "#{indent}   Skipping pull (would cause conflicts)"
             return { brand: brand, status: 'skipped', reason: 'uncommitted changes' }
@@ -93,7 +93,7 @@ module Appydave
           end
         end
 
-        def has_uncommitted_changes?
+        def uncommitted_changes?
           output = `git -C "#{brand_path}" status --porcelain 2>/dev/null`.strip
           !output.empty?
         rescue StandardError
@@ -113,8 +113,8 @@ module Appydave
           puts "  Total repos checked: #{results.size}"
           puts "  Updated: #{updated}"
           puts "  Already current: #{current}"
-          puts "  Skipped: #{skipped}" if skipped > 0
-          puts "  Errors: #{errors}" if errors > 0
+          puts "  Skipped: #{skipped}" if skipped.positive?
+          puts "  Errors: #{errors}" if errors.positive?
         end
       end
     end

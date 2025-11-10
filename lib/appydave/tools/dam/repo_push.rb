@@ -25,9 +25,7 @@ module Appydave
           end
 
           # If project specified, validate it exists in manifest
-          if project_id
-            validate_project
-          end
+          validate_project if project_id
 
           perform_push
         end
@@ -47,8 +45,8 @@ module Appydave
         def validate_project
           manifest = load_manifest
           unless manifest
-            puts "⚠️  Warning: Manifest not found"
-            puts "   Continuing with push (manifest is optional for validation)"
+            puts '⚠️  Warning: Manifest not found'
+            puts '   Continuing with push (manifest is optional for validation)'
             return
           end
 
@@ -58,12 +56,11 @@ module Appydave
           project_entry = manifest[:projects].find { |p| p[:id] == resolved }
           if project_entry
             puts "✓ Project validated: #{resolved}"
-            puts ''
           else
             puts "⚠️  Warning: Project '#{resolved}' not found in manifest"
-            puts "   Continuing with push (manifest may be outdated)"
-            puts ''
+            puts '   Continuing with push (manifest may be outdated)'
           end
+          puts ''
         end
 
         def load_manifest
@@ -77,15 +74,15 @@ module Appydave
 
         def perform_push
           # Check for uncommitted changes
-          if has_uncommitted_changes?
-            puts "⚠️  Warning: Uncommitted changes detected"
+          if uncommitted_changes?
+            puts '⚠️  Warning: Uncommitted changes detected'
             puts ''
           end
 
           # Check if ahead of remote
           ahead = commits_ahead
           if ahead.zero?
-            puts "✓ Nothing to push (up to date with remote)"
+            puts '✓ Nothing to push (up to date with remote)'
             return
           end
 
@@ -97,17 +94,17 @@ module Appydave
           exit_code = $CHILD_STATUS.exitstatus
 
           if exit_code.zero?
-            puts "✓ Push successful"
+            puts '✓ Push successful'
             puts ''
             show_push_summary(output)
           else
-            puts "❌ Push failed:"
+            puts '❌ Push failed:'
             puts output
             exit 1
           end
         end
 
-        def has_uncommitted_changes?
+        def uncommitted_changes?
           output = `git -C "#{brand_path}" status --porcelain 2>/dev/null`.strip
           !output.empty?
         rescue StandardError

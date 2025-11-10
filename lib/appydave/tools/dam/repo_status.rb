@@ -67,13 +67,13 @@ module Appydave
           puts "#{indent}🌿 Branch: #{status[:branch]}"
           puts "#{indent}📡 Remote: #{status[:remote]}" if status[:remote]
 
-          if status[:modified_count] > 0 || status[:untracked_count] > 0
+          if status[:modified_count].positive? || status[:untracked_count].positive?
             puts "#{indent}↕️  Changes: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
           else
             puts "#{indent}✓ Working directory clean"
           end
 
-          if status[:ahead] > 0 || status[:behind] > 0
+          if status[:ahead].positive? || status[:behind].positive?
             puts "#{indent}🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
           else
             puts "#{indent}✓ Up to date with remote"
@@ -82,8 +82,8 @@ module Appydave
 
         def sync_status_text(ahead, behind)
           parts = []
-          parts << "#{ahead} ahead" if ahead > 0
-          parts << "#{behind} behind" if behind > 0
+          parts << "#{ahead} ahead" if ahead.positive?
+          parts << "#{behind} behind" if behind.positive?
           parts.join(', ')
         end
 

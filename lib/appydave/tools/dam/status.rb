@@ -47,7 +47,7 @@ module Appydave
           project_entry = find_project_in_manifest(manifest)
 
           unless project_entry
-            puts "❌ Project not found in manifest"
+            puts '❌ Project not found in manifest'
             puts "   Run: dam manifest #{brand}"
             return
           end
@@ -65,7 +65,7 @@ module Appydave
           if remote
             puts "📡 Git Remote: #{remote}"
           else
-            puts "📡 Git Remote: Not configured (not a git repository)"
+            puts '📡 Git Remote: Not configured (not a git repository)'
           end
           puts ''
 
@@ -73,7 +73,7 @@ module Appydave
           if git_repo?
             show_brand_git_status
           else
-            puts "Git: Not a git repository"
+            puts 'Git: Not a git repository'
           end
           puts ''
 
@@ -82,7 +82,7 @@ module Appydave
           if manifest
             show_manifest_summary(manifest)
           else
-            puts "❌ Manifest not found"
+            puts '❌ Manifest not found'
             puts "   Run: dam manifest #{brand}"
           end
         end
@@ -98,8 +98,8 @@ module Appydave
 
           # SSD backup (inferred - only show if configured and exists)
           show_ssd_status(project_entry) if brand_info.locations.ssd_backup &&
-                                             brand_info.locations.ssd_backup != 'NOT-SET' &&
-                                             project_entry[:storage][:ssd][:exists]
+                                            brand_info.locations.ssd_backup != 'NOT-SET' &&
+                                            project_entry[:storage][:ssd][:exists]
 
           puts ''
         end
@@ -112,13 +112,13 @@ module Appydave
             puts "     Heavy files: #{local[:has_heavy_files] ? 'yes' : 'no'}"
             puts "     Light files: #{local[:has_light_files] ? 'yes' : 'no'}"
           else
-            puts "  📁 Local: ✗ does not exist"
+            puts '  📁 Local: ✗ does not exist'
           end
           puts ''
         end
 
-        def show_s3_status(project_entry)
-          puts "  ☁️  S3 Staging: ✓ exists"
+        def show_s3_status(_project_entry)
+          puts '  ☁️  S3 Staging: ✓ exists'
 
           # TODO: Query S3 for detailed status (files needing sync)
           # For now, just show that s3-staging folder exists locally
@@ -131,7 +131,7 @@ module Appydave
         end
 
         def show_ssd_status(project_entry)
-          puts "  💾 SSD Backup: ✓ exists"
+          puts '  💾 SSD Backup: ✓ exists'
           puts "     Path: #{project_entry[:storage][:ssd][:path]}"
           puts ''
         end
@@ -144,16 +144,16 @@ module Appydave
           puts "  🌿 Branch: #{status[:branch]}"
           puts "  📡 Remote: #{status[:remote]}" if status[:remote]
 
-          if status[:modified_count] > 0 || status[:untracked_count] > 0
+          if status[:modified_count].positive? || status[:untracked_count].positive?
             puts "  ↕️  Status: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
           else
-            puts "  ↕️  Status: Clean working directory"
+            puts '  ↕️  Status: Clean working directory'
           end
 
-          if status[:ahead] > 0 || status[:behind] > 0
+          if status[:ahead].positive? || status[:behind].positive?
             puts "  🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
           else
-            puts "  🔄 Sync: Up to date"
+            puts '  🔄 Sync: Up to date'
           end
 
           puts ''
@@ -165,21 +165,21 @@ module Appydave
           puts "🌿 Branch: #{status[:branch]}"
           puts "📡 Remote: #{status[:remote]}" if status[:remote]
 
-          if status[:modified_count] > 0 || status[:untracked_count] > 0
+          if status[:modified_count].positive? || status[:untracked_count].positive?
             puts "↕️  Changes: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
           else
-            puts "✓ Working directory clean"
+            puts '✓ Working directory clean'
           end
 
-          if status[:ahead] > 0 || status[:behind] > 0
+          if status[:ahead].positive? || status[:behind].positive?
             puts "🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
           else
-            puts "✓ Up to date with remote"
+            puts '✓ Up to date with remote'
           end
         end
 
         def show_manifest_summary(manifest)
-          puts "📋 Manifest Summary:"
+          puts '📋 Manifest Summary:'
           puts "   Total projects: #{manifest[:projects].size}"
 
           local_count = manifest[:projects].count { |p| p[:storage][:local][:exists] }
@@ -199,8 +199,8 @@ module Appydave
 
         def sync_status_text(ahead, behind)
           parts = []
-          parts << "#{ahead} ahead" if ahead > 0
-          parts << "#{behind} behind" if behind > 0
+          parts << "#{ahead} ahead" if ahead.positive?
+          parts << "#{behind} behind" if behind.positive?
           parts.join(', ')
         end
 
