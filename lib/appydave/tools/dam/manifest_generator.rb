@@ -129,65 +129,58 @@ module Appydave
         end
 
         def build_project_entries(all_project_ids, ssd_backup, ssd_available)
-          projects = []
+          all_project_ids.map { |project_id| build_project_entry(project_id, ssd_backup, ssd_available) }
+        end
 
-          all_project_ids.each do |project_id|
-            # Check flat structure (active projects)
-            flat_path = File.join(brand_path, project_id)
-            flat_exists = Dir.exist?(flat_path)
+        def build_project_entry(project_id, ssd_backup, ssd_available)
+          # Check flat structure (active projects)
+          flat_path = File.join(brand_path, project_id)
+          flat_exists = Dir.exist?(flat_path)
 
-            # Check archived structure (restored/archived projects)
-            range = determine_range(project_id)
-            archived_path = File.join(brand_path, 'archived', range, project_id)
-            archived_exists = Dir.exist?(archived_path)
+          # Check archived structure (restored/archived projects)
+          range = determine_range(project_id)
+          archived_path = File.join(brand_path, 'archived', range, project_id)
+          archived_exists = Dir.exist?(archived_path)
 
-            # Determine which path to use for file detection
-            local_path = flat_exists ? flat_path : (archived_exists ? archived_path : flat_path)
-            local_exists = flat_exists || archived_exists
+          # Determine which path to use for file detection
+          local_path = if flat_exists
+                         flat_path
+                       else
+                         (archived_exists ? archived_path : flat_path)
+                       end
+          local_exists = flat_exists || archived_exists
 
-            # Determine structure type
-            structure = if flat_exists
-                          'flat'
-                        elsif archived_exists
-                          'archived'
-                        end
+          # Determine structure type
+          structure = if flat_exists
+                        'flat'
+                      elsif archived_exists
+                        'archived'
+                      end
 
-            # Check SSD (try both flat and range-based structures)
-            ssd_exists = false
-            ssd_path = nil
-            if ssd_available
-              # Try flat structure first (legacy)
-              flat_ssd_path = File.join(ssd_backup, project_id)
-              # Try range-based structure (current)
-              range_ssd_path = File.join(ssd_backup, range, project_id)
+          # Check SSD (try both flat and range-based structures)
+          ssd_exists = if ssd_available
+                         flat_ssd_path = File.join(ssd_backup, project_id)
+                         range_ssd_path = File.join(ssd_backup, range, project_id)
+                         Dir.exist?(flat_ssd_path) || Dir.exist?(range_ssd_path)
+                       else
+                         false
+                       end
 
-              if Dir.exist?(flat_ssd_path)
-                ssd_exists = true
-                ssd_path = project_id
-              elsif Dir.exist?(range_ssd_path)
-                ssd_exists = true
-                ssd_path = project_id
-              end
-            end
-
-            projects << {
-              id: project_id,
-              storage: {
-                ssd: {
-                  exists: ssd_exists,
-                  path: ssd_exists ? project_id : nil
-                },
-                local: {
-                  exists: local_exists,
-                  structure: structure,
-                  has_heavy_files: local_exists ? heavy_files?(local_path) : false,
-                  has_light_files: local_exists ? light_files?(local_path) : false
-                }
+          {
+            id: project_id,
+            storage: {
+              ssd: {
+                exists: ssd_exists,
+                path: ssd_exists ? project_id : nil
+              },
+              local: {
+                exists: local_exists,
+                structure: structure,
+                has_heavy_files: local_exists ? heavy_files?(local_path) : false,
+                has_light_files: local_exists ? light_files?(local_path) : false
               }
             }
-          end
-
-          projects
+          }
         end
 
         def calculate_disk_usage(projects, ssd_backup)
@@ -207,16 +200,16 @@ module Appydave
               end
             end
 
-            if project[:storage][:ssd][:exists]
-              # Try flat structure first, then range-based structure
-              flat_ssd_path = File.join(ssd_backup, project[:id])
-              if Dir.exist?(flat_ssd_path)
-                ssd_bytes += calculate_directory_size(flat_ssd_path)
-              else
-                range = determine_range(project[:id])
-                range_ssd_path = File.join(ssd_backup, range, project[:id])
-                ssd_bytes += calculate_directory_size(range_ssd_path) if Dir.exist?(range_ssd_path)
-              end
+            next unless project[:storage][:ssd][:exists]
+
+            # Try flat structure first, then range-based structure
+            flat_ssd_path = File.join(ssd_backup, project[:id])
+            if Dir.exist?(flat_ssd_path)
+              ssd_bytes += calculate_directory_size(flat_ssd_path)
+            else
+              range = determine_range(project[:id])
+              range_ssd_path = File.join(ssd_backup, range, project[:id])
+              ssd_bytes += calculate_directory_size(range_ssd_path) if Dir.exist?(range_ssd_path)
             end
           end
 
@@ -274,7 +267,7 @@ module Appydave
             range_start = (number / 50) * 50
             range_end = range_start + 49
             # Format with leading zeros and letter prefix
-            "#{letter}%02d-#{letter}%02d" % [range_start, range_end]
+            format("#{letter}%02d-#{letter}%02d", range_start, range_end)
           else
             # Legacy pattern or unknown
             '000-099'
