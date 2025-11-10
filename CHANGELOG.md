@@ -1,3 +1,10 @@
+## [0.18.4](https://github.com/appydave/appydave-tools/compare/v0.18.3...v0.18.4) (2025-11-10)
+
+
+### Bug Fixes
+
+* document dry-run and force flag support for all DAM commands in usage guide and test plan ([b4f54da](https://github.com/appydave/appydave-tools/commit/b4f54da17589b31c029d5ef62c92af8b3724ee2f))
+
 ## [0.18.3](https://github.com/appydave/appydave-tools/compare/v0.18.2...v0.18.3) (2025-11-10)
 
 
