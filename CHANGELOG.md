@@ -1,3 +1,11 @@
+## [0.18.3](https://github.com/appydave/appydave-tools/compare/v0.18.2...v0.18.3) (2025-11-10)
+
+
+### Bug Fixes
+
+* resolve archived structure detection and range folder calculation for DAM manifest and sync ([dec1400](https://github.com/appydave/appydave-tools/commit/dec1400c561f11959fb6aecd7761e916ca525082))
+* resolve rubocop violations in manifest_generator (refactor build_project_entry, simplify SSD check) ([ced61be](https://github.com/appydave/appydave-tools/commit/ced61be41c3da352831d46e3486968f5ee55842c))
+
 ## [0.18.2](https://github.com/appydave/appydave-tools/compare/v0.18.1...v0.18.2) (2025-11-10)
 
 
