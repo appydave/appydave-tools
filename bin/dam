@@ -158,69 +158,80 @@ class VatCLI
   end
 
   # Generate manifest
-  # rubocop:disable Metrics/MethodLength
   def manifest_command(args)
     all_brands = args.include?('--all')
     args = args.reject { |arg| arg.start_with?('--') }
     brand_arg = args[0]
 
     if all_brands
-      # Generate manifest for all brands
-      Appydave::Tools::Configuration::Config.configure
-      brands_config = Appydave::Tools::Configuration::Config.brands
-
-      results = []
-      brands_config.brands.each do |brand_info|
-        brand_key = brand_info.key
-        puts ''
-        puts '=' * 60
-
-        generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_key)
-        result = generator.generate
-        results << result if result
-      end
-
-      # Display summary
-      puts ''
-      puts '=' * 60
-      puts '📋 Summary - Generated Manifests:'
-      puts ''
-
-      successful = results.select { |r| r[:success] }
-      failed = results.reject { |r| r[:success] }
-
-      successful.each do |result|
-        brand_display = result[:brand].ljust(15)
-        puts "✅ #{brand_display} #{result[:path]}"
-      end
-
-      failed.each do |result|
-        brand_display = result[:brand].ljust(15)
-        puts "❌ #{brand_display} No projects found"
-      end
-
-      puts ''
-      puts "Total manifests generated: #{successful.size}"
+      generate_all_manifests
     elsif brand_arg
-      # Generate manifest for specific brand
-      Appydave::Tools::Dam::Config.expand_brand(brand_arg)
-      ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand_arg)
-
-      generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_arg)
-      generator.generate
+      generate_single_manifest(brand_arg)
     else
-      puts 'Usage: dam manifest <brand> [--all]'
-      puts ''
-      puts 'Examples:'
-      puts '  dam manifest appydave        # Generate manifest for AppyDave brand'
-      puts '  dam manifest --all           # Generate manifests for all brands'
-      exit 1
+      show_manifest_usage
     end
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
     exit 1
   end
-  # rubocop:enable Metrics/MethodLength
+
+  def generate_all_manifests
+    Appydave::Tools::Configuration::Config.configure
+    brands_config = Appydave::Tools::Configuration::Config.brands
+
+    results = []
+    brands_config.brands.each do |brand_info|
+      brand_key = brand_info.key
+      puts ''
+      puts '=' * 60
+
+      generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_key)
+      result = generator.generate
+      results << result if result
+    end
+
+    display_manifest_summary(results)
+  end
+
+  def generate_single_manifest(brand_arg)
+    Appydave::Tools::Dam::Config.expand_brand(brand_arg)
+    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand_arg)
+
+    generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_arg)
+    generator.generate
+  end
+
+  def show_manifest_usage
+    puts 'Usage: dam manifest <brand> [--all]'
+    puts ''
+    puts 'Examples:'
+    puts '  dam manifest appydave        # Generate manifest for AppyDave brand'
+    puts '  dam manifest --all           # Generate manifests for all brands'
+    exit 1
+  end
+
+  def display_manifest_summary(results)
+    puts ''
+    puts '=' * 60
+    puts '📋 Summary - Generated Manifests:'
+    puts ''
+
+    successful = results.select { |r| r[:success] }
+    failed = results.reject { |r| r[:success] }
+
+    successful.each do |result|
+      brand_display = result[:brand].ljust(15)
+      puts "✅ #{brand_display} #{result[:path]}"
+    end
+
+    failed.each do |result|
+      brand_display = result[:brand].ljust(15)
+      puts "❌ #{brand_display} No projects found"
+    end
+
+    puts ''
+    puts "Total manifests generated: #{successful.size}"
+  end
 
   # Sync light files from SSD to local
   def sync_ssd_command(args)
