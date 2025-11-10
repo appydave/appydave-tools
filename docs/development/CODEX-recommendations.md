@@ -1,6 +1,6 @@
 # CODEX Recommendations - Review & Status
 
-> Last updated: 2025-11-10
+> Last updated: 2025-11-10 08:12:59 UTC
 > Original recommendations provided by Codex (GPT-5) on 2025-11-09
 
 This document captures Codex's architectural recommendations with implementation status and verdicts after engineering review.
@@ -145,6 +145,19 @@ end
 **Status:** 🔍 **Acknowledged as real bugs** - Worth investigating
 
 **Note:** These are legitimate technical debt items, not style preferences. Recommend creating GitHub issues for tracking.
+
+### 🔍 DAM Manifest & Sync Addendum (2025-11-10)
+
+New DAM code mirrors the VAT manifest/sync flow but reintroduces several bugs plus new inconsistencies:
+
+- **Archived projects still missing:** `collect_project_ids` explicitly skips the `archived` directory (`lib/appydave/tools/dam/manifest_generator.rb:70-99`), so the later logic that probes `brand_path/archived/<range>/<project>` never runs; manifests omit the majority of historical work. This also means `SyncFromSsd.should_sync_project?` (`lib/appydave/tools/dam/sync_from_ssd.rb:77-96`) will think everything is already local because manifests never flag archived presence.  
+- **Range math diverges between components:** Manifest uses `project_id =~ /^[a-z](\d+)/` to build ranges (`lib/appydave/tools/dam/manifest_generator.rb:214-224`), but the SSD sync hard-codes `/^b(\d+)/` (`lib/appydave/tools/dam/sync_from_ssd.rb:123-138`). Projects outside the `b` prefix (aitldr, voz, etc.) will all collapse into the fallback `000-099`, creating collisions.  
+- **SSD paths lose grouping info:** Manifests record `path: project_id` for SSD entries (`lib/appydave/tools/dam/manifest_generator.rb:119-126`), ignoring the range folders that exist on disk. The sync tool then assumes `ssd/<project_id>` (line 98) and will fail whenever the SSD organizes projects under range subdirectories.  
+- **Disk usage ignores archived location:** Even when a project only exists under `archived/<range>`, `calculate_disk_usage` points at `File.join(brand_path, project[:id])` (`lib/appydave/tools/dam/manifest_generator.rb:131-146`), so archived-only projects report 0 bytes. Need to reuse the resolved `local_path` (flat vs archived) instead of rebuilding the path blindly.  
+- **Heavy file detection still shallow:** `heavy_files?` only inspects direct children (`lib/appydave/tools/dam/manifest_generator.rb:233-239`), while `light_files?` walks `**/*`. Any team that keeps footage under nested folders (e.g., `/final/video.mp4`) gets `has_heavy_files: false`, which downstream sync logic relies on.  
+- **Sync exclusion filter misidentifies generated folders:** `EXCLUDE_PATTERNS` contain glob syntax (`**/node_modules/**`, `**/.DS_Store`), but `excluded_file?` strips `**/` and compares raw path segments (`lib/appydave/tools/dam/sync_from_ssd.rb:160-182`), so patterns like `.DS_Store` or `.turbo` may still slip through or block unrelated files. Consider using `File.fnmatch` with the original glob rather than manual string surgery.
+
+Action: Fold these findings into the existing VAT manifest backlog or spin up DAM‑specific tickets so both manifest implementations converge on a single, tested service.
 
 ---
 

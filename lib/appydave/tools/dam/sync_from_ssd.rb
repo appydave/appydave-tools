@@ -149,11 +149,11 @@ module Appydave
 
         # Determine if project should be synced
         def should_sync_project?(project)
-          # Only sync if project exists on SSD but NOT in local flat structure
+          # Only sync if project exists on SSD but NOT locally (either flat or archived)
           return false unless project[:storage][:ssd][:exists]
 
-          # Skip if exists locally in flat structure
-          return false if project[:storage][:local][:exists] && project[:storage][:local][:structure] == 'flat'
+          # Skip if exists locally in any structure (flat or archived)
+          return false if project[:storage][:local][:exists]
 
           true
         end

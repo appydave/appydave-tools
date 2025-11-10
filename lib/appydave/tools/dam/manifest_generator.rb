@@ -86,12 +86,23 @@ module Appydave
 
           # Scan SSD (if available)
           if ssd_available
-            Dir.glob(File.join(ssd_backup, '*/')).each do |project_path|
-              all_project_ids << File.basename(project_path)
+            Dir.glob(File.join(ssd_backup, '*/')).each do |ssd_path|
+              basename = File.basename(ssd_path)
+
+              if range_folder?(basename)
+                # Scan projects within SSD range folders
+                Dir.glob(File.join(ssd_path, '*/')).each do |project_path|
+                  project_id = File.basename(project_path)
+                  all_project_ids << project_id if valid_project_id?(project_id)
+                end
+              elsif valid_project_id?(basename)
+                # Direct project in SSD root (legacy structure)
+                all_project_ids << basename
+              end
             end
           end
 
-          # Scan local (all projects in brand directory)
+          # Scan local flat structure (active projects only)
           Dir.glob(File.join(brand_path, '*/')).each do |path|
             basename = File.basename(path)
             # Skip hidden and special directories
@@ -101,6 +112,19 @@ module Appydave
             all_project_ids << basename if valid_project_id?(basename)
           end
 
+          # Scan archived structure (restored/archived projects)
+          archived_base = File.join(brand_path, 'archived')
+          if Dir.exist?(archived_base)
+            # Scan range folders (e.g., archived/a50-a99/, archived/b50-b99/)
+            Dir.glob(File.join(archived_base, '*/')).each do |range_folder|
+              # Scan projects within each range folder
+              Dir.glob(File.join(range_folder, '*/')).each do |project_path|
+                basename = File.basename(project_path)
+                all_project_ids << basename if valid_project_id?(basename)
+              end
+            end
+          end
+
           all_project_ids.uniq.sort
         end
 
@@ -108,11 +132,43 @@ module Appydave
           projects = []
 
           all_project_ids.each do |project_id|
-            local_path = File.join(brand_path, project_id)
-            ssd_path = ssd_available ? File.join(ssd_backup, project_id) : nil
+            # Check flat structure (active projects)
+            flat_path = File.join(brand_path, project_id)
+            flat_exists = Dir.exist?(flat_path)
 
-            local_exists = Dir.exist?(local_path)
-            ssd_exists = ssd_path && Dir.exist?(ssd_path)
+            # Check archived structure (restored/archived projects)
+            range = determine_range(project_id)
+            archived_path = File.join(brand_path, 'archived', range, project_id)
+            archived_exists = Dir.exist?(archived_path)
+
+            # Determine which path to use for file detection
+            local_path = flat_exists ? flat_path : (archived_exists ? archived_path : flat_path)
+            local_exists = flat_exists || archived_exists
+
+            # Determine structure type
+            structure = if flat_exists
+                          'flat'
+                        elsif archived_exists
+                          'archived'
+                        end
+
+            # Check SSD (try both flat and range-based structures)
+            ssd_exists = false
+            ssd_path = nil
+            if ssd_available
+              # Try flat structure first (legacy)
+              flat_ssd_path = File.join(ssd_backup, project_id)
+              # Try range-based structure (current)
+              range_ssd_path = File.join(ssd_backup, range, project_id)
+
+              if Dir.exist?(flat_ssd_path)
+                ssd_exists = true
+                ssd_path = project_id
+              elsif Dir.exist?(range_ssd_path)
+                ssd_exists = true
+                ssd_path = project_id
+              end
+            end
 
             projects << {
               id: project_id,
@@ -123,6 +179,7 @@ module Appydave
                 },
                 local: {
                   exists: local_exists,
+                  structure: structure,
                   has_heavy_files: local_exists ? heavy_files?(local_path) : false,
                   has_light_files: local_exists ? light_files?(local_path) : false
                 }
@@ -139,13 +196,27 @@ module Appydave
 
           projects.each do |project|
             if project[:storage][:local][:exists]
-              local_path = File.join(brand_path, project[:id])
-              local_bytes += calculate_directory_size(local_path)
+              # Try flat structure first, then archived structure
+              flat_path = File.join(brand_path, project[:id])
+              if Dir.exist?(flat_path)
+                local_bytes += calculate_directory_size(flat_path)
+              else
+                range = determine_range(project[:id])
+                archived_path = File.join(brand_path, 'archived', range, project[:id])
+                local_bytes += calculate_directory_size(archived_path) if Dir.exist?(archived_path)
+              end
             end
 
             if project[:storage][:ssd][:exists]
-              ssd_path = File.join(ssd_backup, project[:id])
-              ssd_bytes += calculate_directory_size(ssd_path)
+              # Try flat structure first, then range-based structure
+              flat_ssd_path = File.join(ssd_backup, project[:id])
+              if Dir.exist?(flat_ssd_path)
+                ssd_bytes += calculate_directory_size(flat_ssd_path)
+              else
+                range = determine_range(project[:id])
+                range_ssd_path = File.join(ssd_backup, range, project[:id])
+                ssd_bytes += calculate_directory_size(range_ssd_path) if Dir.exist?(range_ssd_path)
+              end
             end
           end
 
@@ -190,11 +261,48 @@ module Appydave
         end
 
         # Helper methods
+
+        # Determine range folder for project
+        # Both SSD and local archived use 50-number ranges with letter prefixes:
+        # b00-b49, b50-b99, a01-a49, a50-a99
+        def determine_range(project_id)
+          # FliVideo/Modern pattern: b40, a82, etc.
+          if project_id =~ /^([a-z])(\d+)/
+            letter = Regexp.last_match(1)
+            number = Regexp.last_match(2).to_i
+            # 50-number ranges (0-49, 50-99)
+            range_start = (number / 50) * 50
+            range_end = range_start + 49
+            # Format with leading zeros and letter prefix
+            "#{letter}%02d-#{letter}%02d" % [range_start, range_end]
+          else
+            # Legacy pattern or unknown
+            '000-099'
+          end
+        end
+
         def valid_project_id?(project_id)
           # Valid formats:
           # - Modern: letter + 2 digits + dash + name (e.g., b63-flivideo)
           # - Legacy: just numbers (e.g., 006-ac-carnivore-90)
           !!(project_id =~ /^[a-z]\d{2}-/ || project_id =~ /^\d/)
+        end
+
+        def range_folder?(folder_name)
+          # Range folder patterns with letter prefixes:
+          # - b00-b49, b50-b99, a00-a49, a50-a99 (letter + 2 digits + dash + same letter + 2 digits)
+          # - 000-099 (3 digits + dash + 3 digits)
+          # Must match: same letter on both sides (b00-b49, not b00-a49)
+          return true if folder_name =~ /^\d{3}-\d{3}$/
+
+          if folder_name =~ /^([a-z])(\d{2})-([a-z])(\d{2})$/
+            letter1 = Regexp.last_match(1)
+            letter2 = Regexp.last_match(3)
+            # Must be same letter on both sides
+            return letter1 == letter2
+          end
+
+          false
         end
 
         def heavy_files?(dir)
