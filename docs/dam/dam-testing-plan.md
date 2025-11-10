@@ -1,6 +1,6 @@
 # DAM (Digital Asset Management) - Integration Testing Plan
 
-**Date**: 2025-11-08
+**Date**: 2025-11-10
 **Purpose**: Validate DAM integration into appydave-tools gem
 **Tester**: David Cruwys
 **Status**: Ready for User Acceptance Testing
@@ -37,25 +37,17 @@
 - ✅ `dam archive` - Archive to SSD with dry-run and force options
 - ✅ `dam sync-ssd` - Restore light files from SSD (dry-run supported)
 
-**Git Repository Management Scripts - Intentionally Not Migrated**:
+**Commands - Phase 4 Complete** (Status & Git Integration):
+- ✅ `dam status` - Unified status view (local/S3/SSD/git)
+- ✅ `dam repo-status` - Git status for brand repositories (supports `--all`)
+- ✅ `dam repo-sync` - Pull updates for brand repositories (supports `--all`)
+- ✅ `dam repo-push` - Push changes for brand repository (optional project validation)
 
-These are **shell scripts** for managing the multi-repo video-projects git structure, NOT video asset management commands:
-
-- ❌ `status-all.sh` - Runs `git status` on all v-* brand repos (git workflow, not asset management)
-- ❌ `sync-all.sh` - Runs `git pull` on all v-* brand repos (git workflow, not asset management)
-- ❌ `clone-all.sh` - Clones all v-* brand repos if missing (git workflow, not asset management)
-
-**Why not migrated:**
-1. These manage **git repositories**, not **video assets**
-2. They loop through brand folders running git commands
-3. They're workflow automation for the video-projects repo structure
-4. They belong in `/video-projects/v-shared/`, not in the appydave-tools gem
-5. Different use case: repo management vs. video file management
-
-**If you want these migrated:** We could add `dam repo-status`, `dam repo-sync`, `dam repo-clone` commands, but they would:
-- Need Ruby implementations of multi-repo git operations
-- Duplicate functionality that shell scripts handle well
-- Mix concerns (video assets vs. git repos)
+**New Manifest Fields (Phase 4)**:
+- ✅ `git_remote` - Self-healing git remote URL detection in brands.json
+- ✅ `s3: { exists: true/false }` - S3 staging folder tracking in manifest
+- ✅ `type: 'flivideo' | 'storyline-app'` - Project type detection
+- ✅ `hasStorylineJson: true/false` - Storyline project identification
 
 ---
 
@@ -150,9 +142,18 @@ These commands only read data and don't modify files:
 | Command | Type | What It Does |
 |---------|------|--------------|
 | **list** | Read-only | List brands/projects |
+| **status** | Read-only | Show unified status (local/S3/SSD/git) |
+| **repo-status** | Read-only | Check git status for brand repos |
 | **manifest** | Generates JSON | Generate `projects.json` manifest |
 | **s3-status** | Read-only | Check sync status |
 | **help** | Read-only | Show help information |
+
+### Git Commands (Special Behavior)
+
+| Command | Type | What It Does | Safety Features |
+|---------|------|--------------|-----------------|
+| **repo-sync** | Modifies (git pull) | Pull updates for brand repos | Skips if uncommitted changes |
+| **repo-push** | Modifies (git push) | Push changes for brand repo | Warns if uncommitted changes, optional project validation |
 
 ### Force Flag Behavior
 
@@ -670,31 +671,18 @@ All video asset management commands have been successfully migrated and are full
 - ✅ `dam archive` - Archive to SSD (dry-run + optional force)
 - ✅ `dam sync-ssd` - Restore light files from SSD (dry-run)
 
+### Phase 4: Status & Git Integration
+- ✅ `dam status` - Unified status view (local/S3/SSD/git)
+- ✅ `dam repo-status` - Git status for brand repositories (`--all` support)
+- ✅ `dam repo-sync` - Pull updates for brand repositories (`--all` support)
+- ✅ `dam repo-push` - Push changes with optional project validation
+
 ### All Commands Support:
 - **CLI args**: `dam <command> <brand> <project>`
 - **Auto-detect**: Works from project directory (where applicable)
 - **Dry-run**: All destructive operations support `--dry-run`
 - **Force flags**: Extra safety for deletions
-
----
-
-## Git Repository Scripts - Separate Concern
-
-The following shell scripts are **intentionally not migrated** as they manage git repositories, not video assets:
-
-### `/video-projects/v-shared/*.sh`
-
-- `status-all.sh` - Runs `git status` on all v-* brand repos
-- `sync-all.sh` - Runs `git pull` on all v-* brand repos
-- `clone-all.sh` - Clones missing v-* brand repos
-
-**Why separate:**
-1. Different domain: Git repository management vs. video asset management
-2. Different tools: Shell + git commands vs. Ruby + AWS/file operations
-3. Different location: Belongs in video-projects workspace, not in distributed gem
-4. Shell scripts work perfectly for this use case
-
-**If migration is desired:** Could add `dam repo-status/sync/clone` but would duplicate working shell functionality and mix concerns.
+- **Git integration**: Unified status + repo management commands
 
 ---
 

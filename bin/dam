@@ -414,6 +414,14 @@ class VatCLI
         help [command]              Show help information
         list [brand] [pattern]      List brands/projects
 
+        Status & Monitoring:
+        status [brand] [project]         Show unified status (local/S3/SSD/git)
+
+        Git Repository Commands:
+        repo-status <brand> [--all]      Check git status for brand repos
+        repo-sync <brand> [--all]        Pull updates for brand repos
+        repo-push <brand> [project]      Push changes for brand repo
+
         S3 Sync Commands:
         s3-up <brand> <project>          Upload to S3 staging
         s3-down <brand> <project>        Download from S3 staging
@@ -438,6 +446,10 @@ class VatCLI
 
       Examples:
         dam list
+        dam status appydave
+        dam status appydave b65
+        dam repo-status appydave
+        dam repo-sync appydave
         dam s3-up appydave b65
         dam s3-down voz boy-baker --dry-run
         dam s3-status appydave b65
