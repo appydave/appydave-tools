@@ -117,6 +117,7 @@ module Appydave
               'type' => 'owned',
               'youtube_channels' => [],
               'team' => [],
+              'git_remote' => nil,
               'locations' => {
                 'video_projects' => '',
                 'ssd_backup' => ''
@@ -144,7 +145,7 @@ module Appydave
 
           # Type-safe class to access brand properties
           class BrandInfo
-            attr_accessor :key, :name, :shortcut, :type, :youtube_channels, :team, :locations, :aws, :settings
+            attr_accessor :key, :name, :shortcut, :type, :youtube_channels, :team, :git_remote, :locations, :aws, :settings
 
             def initialize(key, data)
               @key = key
@@ -153,6 +154,7 @@ module Appydave
               @type = data['type'] || 'owned'
               @youtube_channels = data['youtube_channels'] || []
               @team = data['team'] || []
+              @git_remote = data['git_remote']
               @locations = BrandLocation.new(data['locations'] || {})
               @aws = BrandAws.new(data['aws'] || {})
               @settings = BrandSettings.new(data['settings'] || {})
@@ -165,6 +167,7 @@ module Appydave
                 'type' => @type,
                 'youtube_channels' => @youtube_channels,
                 'team' => @team,
+                'git_remote' => @git_remote,
                 'locations' => @locations.to_h,
                 'aws' => @aws.to_h,
                 'settings' => @settings.to_h

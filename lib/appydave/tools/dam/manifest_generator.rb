@@ -157,6 +157,14 @@ module Appydave
                         'archived'
                       end
 
+          # Check S3 staging (only if local exists)
+          s3_staging_path = File.join(local_path, 's3-staging')
+          s3_exists = local_exists && Dir.exist?(s3_staging_path)
+
+          # Check for storyline.json
+          storyline_json_path = File.join(local_path, 'data', 'storyline.json')
+          has_storyline_json = local_exists && File.exist?(storyline_json_path)
+
           # Check SSD (try both flat and range-based structures)
           ssd_exists = if ssd_available
                          flat_ssd_path = File.join(ssd_backup, project_id)
@@ -168,10 +176,15 @@ module Appydave
 
           {
             id: project_id,
+            type: has_storyline_json ? 'storyline-app' : 'flivideo',
+            hasStorylineJson: has_storyline_json,
             storage: {
               ssd: {
                 exists: ssd_exists,
                 path: ssd_exists ? project_id : nil
+              },
+              s3: {
+                exists: s3_exists
               },
               local: {
                 exists: local_exists,

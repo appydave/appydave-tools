@@ -43,6 +43,31 @@ module Appydave
             path
           end
 
+          # Get git remote URL for a brand (with self-healing)
+          # @param brand_key [String] Brand key (e.g., 'appydave', 'voz')
+          # @return [String, nil] Git remote URL or nil if not a git repo
+          def git_remote(brand_key)
+            Appydave::Tools::Configuration::Config.configure
+            brands_config = Appydave::Tools::Configuration::Config.brands
+            brand_info = brands_config.get_brand(brand_key)
+
+            # 1. Check if git_remote is already configured
+            return brand_info.git_remote if brand_info.git_remote && !brand_info.git_remote.empty?
+
+            # 2. Try to infer from git command
+            brand_path_dir = brand_path(brand_key)
+            inferred_remote = infer_git_remote(brand_path_dir)
+
+            # 3. Auto-save if inferred successfully
+            if inferred_remote
+              brand_info.git_remote = inferred_remote
+              brands_config.set_brand(brand_info.key, brand_info)
+              brands_config.save
+            end
+
+            inferred_remote
+          end
+
           # Expand brand shortcut to full brand name
           # Reads from brands.json if available, falls back to hardcoded shortcuts
           # @param shortcut [String] Brand shortcut (e.g., 'appydave', 'ad', 'APPYDAVE')
@@ -164,6 +189,19 @@ module Appydave
                 config.settings.set('video-projects-root', '/path/to/your/video-projects')
                 config.save
             ERROR
+          end
+
+          # Infer git remote URL from git repository
+          # @param path [String] Path to git repository
+          # @return [String, nil] Remote URL or nil if not a git repo
+          def infer_git_remote(path)
+            return nil unless Dir.exist?(path)
+
+            # Try to get git remote URL
+            result = `git -C "#{path}" remote get-url origin 2>/dev/null`.strip
+            result.empty? ? nil : result
+          rescue StandardError
+            nil
           end
         end
       end
