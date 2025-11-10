@@ -1,3 +1,10 @@
+## [0.18.2](https://github.com/appydave/appydave-tools/compare/v0.18.1...v0.18.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* resolve Windows compatibility by removing hardcoded SSL certificate path ([fb4e6f7](https://github.com/appydave/appydave-tools/commit/fb4e6f74437e898229e1863f361d8ed4274a4ca6))
+
 ## [0.18.1](https://github.com/appydave/appydave-tools/compare/v0.18.0...v0.18.1) (2025-11-10)
 
 
