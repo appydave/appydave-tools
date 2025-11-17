@@ -1,3 +1,10 @@
+## [0.21.2](https://github.com/appydave/appydave-tools/compare/v0.21.1...v0.21.2) (2025-11-17)
+
+
+### Bug Fixes
+
+* fix exe/dam wrapper to properly execute bin/dam by setting PROGRAM_NAME ([cec43c3](https://github.com/appydave/appydave-tools/commit/cec43c3489ab868d120293daebf3456819ae6b11))
+
 ## [0.21.1](https://github.com/appydave/appydave-tools/compare/v0.21.0...v0.21.1) (2025-11-17)
 
 
