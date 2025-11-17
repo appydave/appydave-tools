@@ -85,8 +85,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       allow(Aws::S3::Client).to receive(:new).with(
         credentials: mock_credentials,
         region: 'us-east-1',
-        http_wire_trace: false
-        # SSL auto-detection removed for cross-platform compatibility
+        http_wire_trace: false,
+        ssl_verify_peer: false
       ).and_return(mock_s3_client)
 
       # Don't inject s3_client to test the creation logic
@@ -106,7 +106,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       )
 
       expect do
-        described_class.new('test', 'test-project', brand_info: bad_brand_info, brand_path: brand_path)
+        s3_ops = described_class.new('test', 'test-project', brand_info: bad_brand_info, brand_path: brand_path)
+        s3_ops.s3_client # Trigger lazy loading to cause the error
       end.to raise_error("AWS profile not configured for brand 'test'")
     end
   end

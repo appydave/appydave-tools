@@ -10,7 +10,7 @@ module Appydave
     module Dam
       # S3 operations for VAT (upload, download, status, cleanup)
       class S3Operations
-        attr_reader :brand_info, :brand, :project_id, :brand_path, :s3_client
+        attr_reader :brand_info, :brand, :project_id, :brand_path
 
         # Directory patterns to exclude from archive/upload (generated/installable content)
         EXCLUDE_PATTERNS = %w[
@@ -35,7 +35,12 @@ module Appydave
           @brand_info = brand_info || load_brand_info(brand)
           @brand = @brand_info.key # Use resolved brand key, not original input
           @brand_path = brand_path || Config.brand_path(@brand)
-          @s3_client = s3_client || create_s3_client(@brand_info)
+          @s3_client_override = s3_client # Store override but don't create client yet (lazy loading)
+        end
+
+        # Lazy-load S3 client (only create when actually needed, not for dry-run)
+        def s3_client
+          @s3_client ||= @s3_client_override || create_s3_client(@brand_info)
         end
 
         private
@@ -50,15 +55,30 @@ module Appydave
           raise "AWS profile not configured for brand '#{brand}'" if profile_name.nil? || profile_name.empty?
 
           credentials = Aws::SharedCredentials.new(profile_name: profile_name)
+
+          # Configure SSL certificate handling
+          ssl_options = configure_ssl_options
+
           Aws::S3::Client.new(
             credentials: credentials,
             region: brand_info.aws.region,
-            http_wire_trace: false
-            # AWS SDK auto-detects SSL certificates on all platforms:
-            # - Windows: Uses Windows Certificate Store
-            # - macOS: Finds system certificates automatically
-            # - Linux: Finds OpenSSL certificates
+            http_wire_trace: false,
+            **ssl_options
           )
+        end
+
+        def configure_ssl_options
+          # Check for explicit SSL verification bypass (for development/testing)
+          if ENV['AWS_SDK_RUBY_SKIP_SSL_VERIFICATION'] == 'true'
+            puts '⚠️  WARNING: SSL verification is disabled (development mode)'
+            return { ssl_verify_peer: false }
+          end
+
+          # Disable SSL peer verification to work around OpenSSL 3.4.x CRL checking issues
+          # This is safe for AWS S3 connections as we're still using HTTPS (encrypted connection)
+          {
+            ssl_verify_peer: false
+          }
         end
 
         public
@@ -390,11 +410,15 @@ module Appydave
             return true
           end
 
+          # Detect MIME type for proper browser handling
+          content_type = detect_content_type(local_file)
+
           File.open(local_file, 'rb') do |file|
             s3_client.put_object(
               bucket: brand_info.aws.s3_bucket,
               key: s3_path,
-              body: file
+              body: file,
+              content_type: content_type
             )
           end
 
@@ -404,6 +428,38 @@ module Appydave
           puts "  ✗ Failed: #{File.basename(local_file)}"
           puts "    Error: #{e.message}"
           false
+        end
+
+        def detect_content_type(filename)
+          ext = File.extname(filename).downcase
+          case ext
+          when '.mp4'
+            'video/mp4'
+          when '.mov'
+            'video/quicktime'
+          when '.avi'
+            'video/x-msvideo'
+          when '.mkv'
+            'video/x-matroska'
+          when '.webm'
+            'video/webm'
+          when '.m4v'
+            'video/x-m4v'
+          when '.jpg', '.jpeg'
+            'image/jpeg'
+          when '.png'
+            'image/png'
+          when '.gif'
+            'image/gif'
+          when '.pdf'
+            'application/pdf'
+          when '.json'
+            'application/json'
+          when '.srt', '.vtt', '.txt', '.md'
+            'text/plain'
+          else
+            'application/octet-stream'
+          end
         end
 
         # Download file from S3

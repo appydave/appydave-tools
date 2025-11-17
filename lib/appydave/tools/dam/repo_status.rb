@@ -67,16 +67,15 @@ module Appydave
           puts "#{indent}🌿 Branch: #{status[:branch]}"
           puts "#{indent}📡 Remote: #{status[:remote]}" if status[:remote]
 
-          if status[:modified_count].positive? || status[:untracked_count].positive?
-            puts "#{indent}↕️  Changes: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
-          else
-            puts "#{indent}✓ Working directory clean"
-          end
-
-          if status[:ahead].positive? || status[:behind].positive?
+          # Priority logic: Show EITHER changes with file list OR sync status
+          # Check if repo has uncommitted changes (matches old script: git diff-index --quiet HEAD --)
+          if uncommitted_changes?
+            puts "#{indent}⚠️  Has uncommitted changes:"
+            show_file_list(indent: indent)
+          elsif status[:ahead].positive? || status[:behind].positive?
             puts "#{indent}🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
           else
-            puts "#{indent}✓ Up to date with remote"
+            puts "#{indent}✓ Clean - up to date with remote"
           end
         end
 
@@ -133,6 +132,29 @@ module Appydave
           `git -C "#{brand_path}" rev-list --count HEAD..@{upstream} 2>/dev/null`.strip.to_i
         rescue StandardError
           0
+        end
+
+        # Check if repo has uncommitted changes (matches old script: git diff-index --quiet HEAD --)
+        def uncommitted_changes?
+          # git diff-index returns 0 if clean, 1 if there are changes
+          system("git -C \"#{brand_path}\" diff-index --quiet HEAD -- 2>/dev/null")
+          !$CHILD_STATUS.success?
+        rescue StandardError
+          false
+        end
+
+        # Show file list using git status --short (matches old script)
+        def show_file_list(indent: '')
+          output = `git -C "#{brand_path}" status --short 2>/dev/null`.strip
+          return if output.empty?
+
+          # Add indentation to each line (matches old script: sed 's/^/      /')
+          file_indent = "#{indent}     "
+          output.lines.each do |line|
+            puts "#{file_indent}#{line.strip}"
+          end
+        rescue StandardError
+          # Silently fail if git status fails
         end
       end
     end

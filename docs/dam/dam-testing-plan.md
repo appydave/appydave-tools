@@ -7,7 +7,7 @@
 
 **Reference**: Original UAT plan at `/Users/davidcruwys/dev/video-projects/video-asset-tools/docs/testing-plan.md`
 
-**Windows Testing**: See [windows-testing-guide.md](./windows-testing-guide.md) for Windows-specific testing scenarios
+**Windows Testing**: See [dam-testing-plan-windows-powershell.md](./dam-testing-plan-windows-powershell.md) for Windows-specific testing scenarios
 
 ---
 
@@ -245,14 +245,14 @@ bundle exec rspec spec/appydave/tools/dam/config_loader_spec.rb
 #### Test 2.1: Help System
 ```bash
 # Test: Main help
-bin/dam help
+dam help
 
 # Test: Command-specific help
-bin/dam help list
-bin/dam help s3-up
-bin/dam help s3-down
-bin/dam help brands
-bin/dam help workflows
+dam help list
+dam help s3-up
+dam help s3-down
+dam help brands
+dam help workflows
 ```
 **Expected**:
 - Full help overview
@@ -265,40 +265,22 @@ bin/dam help workflows
 
 ---
 
-#### Test 2.3: List Brands (Mode 1)
+#### Test 2.3: List Brands
 ```bash
-# Test: List brands only
-bin/dam list
+# Test: List all brands with project counts
+dam list
 ```
-**Expected**: `Brands: aitldr, appydave, joy, kiros, ss, voz` (shortcuts)
+**Expected**: Tabular output showing all brands with project counts, sizes, and paths
 
 **Status**: [ ] Pass [ ] Fail
 **Notes**: ___________________________________________
 
 ---
 
-#### Test 2.4: List Brands with Summary (Mode 2)
-```bash
-# Test: Brands with project counts
-bin/dam list --summary
-```
-**Expected**:
-```
-aitldr: X projects
-appydave: Y projects
-joy: Z projects
-...
-```
-
-**Status**: [ ] Pass [ ] Fail
-**Notes**: ___________________________________________
-
----
-
-#### Test 2.5: List Brand Projects (Mode 3)
+#### Test 2.4: List Brand Projects
 ```bash
 # Test: All projects for brand
-bin/dam list appydave
+dam list appydave
 ```
 **Expected**: List of all appydave projects (excludes `archived/`, `.git`, etc.)
 
@@ -307,10 +289,10 @@ bin/dam list appydave
 
 ---
 
-#### Test 2.6: Pattern Matching (Mode 3b)
+#### Test 2.5: Pattern Matching
 ```bash
 # Test: Pattern matching
-bin/dam list appydave 'b6*'
+dam list appydave 'b6*'
 ```
 **Expected**: Only projects starting with `b6` (b60-b69)
 
@@ -319,7 +301,7 @@ bin/dam list appydave 'b6*'
 
 ---
 
-#### Test 2.7: S3 Upload with CLI Args
+#### Test 2.6: S3 Upload with CLI Args
 ```bash
 # Test: Upload with explicit args (dry-run)
 bin/s3_sync_up.rb appydave b65 --dry-run
@@ -331,7 +313,7 @@ bin/s3_sync_up.rb appydave b65 --dry-run
 
 ---
 
-#### Test 2.8: S3 Upload Auto-Detect
+#### Test 2.7: S3 Upload Auto-Detect
 ```bash
 # Test: Upload from project directory
 cd ~/dev/video-projects/v-appydave/b65-*
@@ -344,7 +326,7 @@ bin/s3_sync_up.rb --dry-run
 
 ---
 
-#### Test 2.9: S3 Download with CLI Args ⭐ NEW
+#### Test 2.8: S3 Download with CLI Args ⭐ NEW
 ```bash
 # Test: Download with explicit args (dry-run)
 bin/s3_sync_down.rb appydave b65 --dry-run
@@ -356,7 +338,7 @@ bin/s3_sync_down.rb appydave b65 --dry-run
 
 ---
 
-#### Test 2.10: S3 Download Auto-Detect ⭐ NEW
+#### Test 2.9: S3 Download Auto-Detect ⭐ NEW
 ```bash
 # Test: Download from project directory
 cd ~/dev/video-projects/v-appydave/b65-*
@@ -369,7 +351,7 @@ bin/s3_sync_down.rb --dry-run
 
 ---
 
-#### Test 2.11: S3 Status with CLI Args ⭐ NEW
+#### Test 2.10: S3 Status with CLI Args ⭐ NEW
 ```bash
 # Test: Check status with explicit args
 bin/s3_sync_status.rb appydave b65
@@ -381,7 +363,7 @@ bin/s3_sync_status.rb appydave b65
 
 ---
 
-#### Test 2.12: S3 Status Auto-Detect ⭐ NEW
+#### Test 2.11: S3 Status Auto-Detect ⭐ NEW
 ```bash
 # Test: Check status from project directory
 cd ~/dev/video-projects/v-appydave/b65-*
@@ -394,7 +376,7 @@ bin/s3_sync_status.rb
 
 ---
 
-#### Test 2.13: S3 Cleanup with CLI Args ⭐ NEW
+#### Test 2.12: S3 Cleanup with CLI Args ⭐ NEW
 ```bash
 # Test: Cleanup with explicit args (dry-run)
 bin/s3_sync_cleanup.rb appydave b65 --dry-run
@@ -406,7 +388,7 @@ bin/s3_sync_cleanup.rb appydave b65 --dry-run
 
 ---
 
-#### Test 2.14: S3 Cleanup Auto-Detect ⭐ NEW
+#### Test 2.13: S3 Cleanup Auto-Detect ⭐ NEW
 ```bash
 # Test: Cleanup from project directory
 cd ~/dev/video-projects/v-appydave/b65-*
@@ -419,10 +401,10 @@ bin/s3_sync_cleanup.rb --dry-run
 
 ---
 
-#### Test 2.15: Status - Brand Overview ⭐ PHASE 4
+#### Test 2.14: Status - Brand Overview ⭐ PHASE 4
 ```bash
 # Test: Show unified status for entire brand
-bin/dam status appydave
+dam status appydave
 ```
 **Expected**: Shows brand git status, manifest summary (total projects, local, S3, SSD counts)
 
@@ -431,10 +413,10 @@ bin/dam status appydave
 
 ---
 
-#### Test 2.16: Status - Specific Project ⭐ PHASE 4
+#### Test 2.15: Status - Specific Project ⭐ PHASE 4
 ```bash
 # Test: Show detailed status for specific project
-bin/dam status appydave b65
+dam status appydave b65
 ```
 **Expected**: Shows storage locations (local, S3 staging, SSD backup) and git status for project
 
@@ -443,10 +425,10 @@ bin/dam status appydave b65
 
 ---
 
-#### Test 2.17: Repo Status - Single Brand ⭐ PHASE 4
+#### Test 2.16: Repo Status - Single Brand ⭐ PHASE 4
 ```bash
 # Test: Show git status for single brand
-bin/dam repo-status appydave
+dam repo-status appydave
 ```
 **Expected**: Shows branch, remote, working directory status, sync status
 
@@ -455,10 +437,10 @@ bin/dam repo-status appydave
 
 ---
 
-#### Test 2.18: Repo Status - All Brands ⭐ PHASE 4
+#### Test 2.17: Repo Status - All Brands ⭐ PHASE 4
 ```bash
 # Test: Show git status for all brands
-bin/dam repo-status --all
+dam repo-status --all
 ```
 **Expected**: Shows git status for all configured brands (appydave, voz, aitldr, etc.)
 
@@ -467,10 +449,10 @@ bin/dam repo-status --all
 
 ---
 
-#### Test 2.19: Repo Sync - Single Brand ⭐ PHASE 4
+#### Test 2.18: Repo Sync - Single Brand ⭐ PHASE 4
 ```bash
 # Test: Pull updates for single brand
-bin/dam repo-sync appydave
+dam repo-sync appydave
 ```
 **Expected**: Pulls updates if available, skips if uncommitted changes, shows status
 
@@ -479,10 +461,10 @@ bin/dam repo-sync appydave
 
 ---
 
-#### Test 2.20: Repo Sync - All Brands ⭐ PHASE 4
+#### Test 2.19: Repo Sync - All Brands ⭐ PHASE 4
 ```bash
 # Test: Pull updates for all brands
-bin/dam repo-sync --all
+dam repo-sync --all
 ```
 **Expected**: Syncs all brands, shows summary, skips brands with uncommitted changes
 
@@ -491,10 +473,10 @@ bin/dam repo-sync --all
 
 ---
 
-#### Test 2.21: Repo Push - Basic ⭐ PHASE 4
+#### Test 2.20: Repo Push - Basic ⭐ PHASE 4
 ```bash
 # Test: Push changes for brand (no project validation)
-bin/dam repo-push appydave
+dam repo-push appydave
 ```
 **Expected**: Pushes commits, shows push summary
 
@@ -503,10 +485,10 @@ bin/dam repo-push appydave
 
 ---
 
-#### Test 2.22: Repo Push - With Project Validation ⭐ PHASE 4
+#### Test 2.21: Repo Push - With Project Validation ⭐ PHASE 4
 ```bash
 # Test: Push with project validation
-bin/dam repo-push appydave b65
+dam repo-push appydave b65
 ```
 **Expected**: Validates project exists in manifest before pushing, shows validation message
 

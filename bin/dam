@@ -25,6 +25,8 @@ class VatCLI
       'repo-status' => method(:repo_status_command),
       'repo-sync' => method(:repo_sync_command),
       'repo-push' => method(:repo_push_command),
+      's3-share' => method(:s3_share_command),
+      's3-discover' => method(:s3_discover_command),
       # Deprecated aliases (for backward compatibility)
       's3-cleanup' => method(:s3_cleanup_remote_command),
       'cleanup-local' => method(:s3_cleanup_local_command)
@@ -66,6 +68,10 @@ class VatCLI
       show_config_help
     when 'list'
       show_list_help
+    when 's3-share'
+      show_s3_share_help
+    when 's3-discover'
+      show_s3_discover_help
     when 's3-up', 's3-down', 's3-status', 's3-cleanup-remote', 's3-cleanup-local', 'archive', 'manifest', 'sync-ssd'
       show_s3_help(topic)
     when 's3-cleanup', 'cleanup-local'
@@ -146,6 +152,30 @@ class VatCLI
     options = parse_s3_args(args, 's3-cleanup-local')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup_local(force: options[:force], dry_run: options[:dry_run])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Share file via pre-signed URL
+  def s3_share_command(args)
+    options = parse_share_args(args)
+
+    share_ops = Appydave::Tools::Dam::ShareOperations.new(options[:brand], options[:project])
+    share_ops.generate_links(files: options[:file], expires: options[:expires], download: options[:download])
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Discover files in S3 for a project
+  def s3_discover_command(args)
+    options = parse_discover_args(args)
+    files = fetch_s3_files(options[:brand_key], options[:project_id])
+
+    return if handle_empty_files(files, options[:brand_key], options[:project_id])
+
+    display_s3_files(files, options[:brand_key], options[:project_id], options[:shareable])
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
     exit 1
@@ -397,6 +427,113 @@ class VatCLI
     { brand: brand_key, project: project_id, dry_run: dry_run, force: force }
   end
 
+  def parse_share_args(args)
+    # Extract --expires flag
+    expires = '7d' # default
+    if (expires_index = args.index('--expires'))
+      expires = args[expires_index + 1]
+      args.delete_at(expires_index + 1)
+      args.delete_at(expires_index)
+    end
+
+    # Extract --download flag
+    download = args.include?('--download')
+
+    # Remove other flags
+    args = args.reject { |arg| arg.start_with?('--') }
+
+    brand_arg = args[0]
+    project_arg = args[1]
+    file_arg = args[2]
+
+    show_share_usage_and_exit if brand_arg.nil? || project_arg.nil? || file_arg.nil?
+
+    brand_key = brand_arg
+    brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
+    project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
+
+    # Set ENV for compatibility with ConfigLoader
+    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
+
+    { brand: brand_key, project: project_id, file: file_arg, expires: expires, download: download }
+  end
+
+  def show_share_usage_and_exit
+    puts 'Usage: dam s3-share <brand> <project> <file> [--expires 7d] [--download]'
+    puts ''
+    puts 'Options:'
+    puts '  --expires TIME    Expiry time (default: 7d)'
+    puts '  --download        Force download instead of viewing in browser'
+    puts ''
+    puts 'Examples:'
+    puts '  dam s3-share appydave b70 video.mp4'
+    puts '  dam s3-share appydave b70 video.mp4 --expires 24h'
+    puts '  dam s3-share appydave b70 video.mp4 --download'
+    puts '  dam s3-share voz boy-baker final-edit.mov --expires 3d --download'
+    exit 1
+  end
+
+  def parse_discover_args(args)
+    shareable = args.include?('--shareable')
+    args = args.reject { |arg| arg.start_with?('--') }
+
+    brand_arg = args[0]
+    project_arg = args[1]
+
+    if brand_arg.nil? || project_arg.nil?
+      puts 'Usage: dam s3-discover <brand> <project> [--shareable]'
+      puts ''
+      puts 'Examples:'
+      puts '  dam s3-discover appydave b70              # List files'
+      puts '  dam s3-discover appydave b70 --shareable  # Generate share commands'
+      exit 1
+    end
+
+    brand_key = brand_arg
+    brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
+    project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
+
+    # Set ENV for compatibility with ConfigLoader
+    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
+
+    { brand_key: brand_key, project_id: project_id, shareable: shareable }
+  end
+
+  def fetch_s3_files(brand_key, project_id)
+    s3_ops = Appydave::Tools::Dam::S3Operations.new(brand_key, project_id)
+    s3_ops.list_s3_files
+  end
+
+  def handle_empty_files(files, brand_key, project_id)
+    return false unless files.empty?
+
+    puts "📭 No files found in S3 for #{brand_key}/#{project_id}"
+    puts ''
+    puts 'Upload files first:'
+    puts "  dam s3-up #{brand_key} #{project_id}"
+    true
+  end
+
+  def display_s3_files(files, brand_key, project_id, shareable)
+    puts ''
+    puts "📁 Files in S3: #{brand_key}/#{project_id}"
+    puts ''
+
+    files.each do |file_info|
+      # list_s3_files returns array of hashes with 'Key', 'Size', 'ETag'
+      s3_key = file_info['Key']
+      filename = File.basename(s3_key)
+
+      if shareable
+        puts "dam s3-share #{brand_key} #{project_id} #{filename}"
+      else
+        puts filename
+      end
+    end
+
+    puts ''
+  end
+
   # Help text methods
   # rubocop:disable Metrics/MethodLength
   def show_main_help
@@ -424,6 +561,10 @@ class VatCLI
         s3-cleanup-remote <brand> <project>  Delete S3 files
         s3-cleanup-local <brand> <project>   Delete local s3-staging files
 
+        S3 Sharing Commands:
+        s3-discover <brand> <project>    List files available in S3
+        s3-share <brand> <project> <file> Generate shareable pre-signed URL
+
         Archive Commands:
         archive <brand> <project>        Copy project to SSD backup
         manifest <brand> [--all]         Generate project manifest
@@ -448,7 +589,11 @@ class VatCLI
         dam s3-up appydave b65
         dam s3-down voz boy-baker --dry-run
         dam s3-status appydave b65
-        dam s3-cleanup appydave b65 --force
+        dam s3-discover appydave b70
+        dam s3-discover appydave b70 --shareable
+        dam s3-share appydave b70 video.mp4
+        dam s3-share appydave b70 video.mp4 --expires 24h
+        dam s3-cleanup-remote appydave b65 --force
 
       For more information: https://github.com/appydave/appydave-tools
     HELP
@@ -469,9 +614,9 @@ class VatCLI
         ss        → v-supportsignal    (SupportSignal client)
 
       Usage:
-        dam list                       # Show all brands
-        dam list --summary             # Show brands with project counts
+        dam list                       # Show all brands with counts
         dam list appydave              # List all AppyDave projects
+        dam list appydave 'b6*'        # List AppyDave projects matching pattern
         dam s3-up voz boy-baker        # Upload VOZ project
     HELP
   end
@@ -577,6 +722,108 @@ class VatCLI
         dam list                         # Tabular: brand, project count, size, modified
         dam list voz                     # Tabular: all VOZ projects with size/date
         dam list appydave 'b6*'          # Tabular: b60-b69 projects with size/date
+    HELP
+  end
+
+  def show_s3_share_help
+    puts <<~HELP
+      S3 Share Command - Generate Shareable Pre-Signed URLs
+
+      Generate time-limited secure URLs for sharing video files with clients.
+      Recipients don't need AWS access - just click the link in their browser!
+
+      Usage: dam s3-share <brand> <project> <file> [OPTIONS]
+
+      Options:
+        --expires TIME    Expiry time (default: 7d)
+                         Examples: 24h, 48h, 3d, 7d
+        --download        Force download instead of viewing in browser (default: inline viewing)
+
+      How It Works:
+        1. Generates pre-signed S3 URL (time-limited, secure)
+        2. Copies URL to clipboard automatically
+        3. Shows expiry date/time
+        4. By default: Opens in browser (inline) - perfect for video playback
+        5. With --download: Forces file download
+
+      Examples:
+        dam s3-share appydave b70 video.mp4
+        # → View in browser (default), 7-day expiry
+
+        dam s3-share appydave b70 video.mp4 --download
+        # → Force download, 7-day expiry
+
+        dam s3-share appydave b70 final-edit.mp4 --expires 24h
+        # → View in browser, 24-hour expiry for quick review
+
+        dam s3-share voz boy-baker scene-01.mov --expires 3d --download
+        # → Force download, 3-day expiry for client approval
+
+      Viewing Modes:
+        🎬 Default (inline):  Opens in browser - great for video playback
+        📥 --download flag:   Forces download - better for archiving
+
+      Security:
+        ✅ Time-limited (expires automatically)
+        ✅ Cryptographically signed (can't be tampered with)
+        ✅ No AWS state stored (signature encodes everything)
+        ✅ Revocable (delete S3 file if needed)
+        ⚠️  Anyone with URL can access (don't share publicly)
+
+      Prerequisites:
+        - File must be uploaded to S3 first
+        - Run: dam s3-up <brand> <project>
+
+      Use Cases:
+        - Share videos with clients for review (inline)
+        - Send final files for download (--download)
+        - Provide temporary access to collaborators
+        - Quick video sharing without email attachments
+
+      For more information: https://github.com/appydave/appydave-tools
+    HELP
+  end
+
+  def show_s3_discover_help
+    puts <<~HELP
+      S3 Discover Command - List Files in S3
+
+      Discover what video files exist in S3 for a project.
+      Useful before sharing to see available files.
+
+      Usage: dam s3-discover <brand> <project> [--shareable]
+
+      Modes:
+        Default         List filenames only
+        --shareable     Generate ready-to-run share commands
+
+      Examples:
+        dam s3-discover appydave b70
+        # Output:
+        # xmen.mp4
+        # behind-the-scenes.mov
+
+        dam s3-discover appydave b70 --shareable
+        # Output:
+        # dam s3-share appydave b70 xmen.mp4
+        # dam s3-share appydave b70 behind-the-scenes.mov
+
+      Workflow:
+        1. Upload files: dam s3-up appydave b70
+        2. Discover files: dam s3-discover appydave b70
+        3. Share specific file: dam s3-share appydave b70 xmen.mp4
+
+      Use Cases:
+        - Find files available for sharing
+        - Generate multiple share commands at once
+        - Quick project file listing without downloading
+        - Copy-paste shareable commands for clients
+
+      Prerequisites:
+        - Files must be uploaded to S3 first
+        - Run: dam s3-up <brand> <project>
+
+      For more information: https://github.com/appydave/appydave-tools
     HELP
   end
 
