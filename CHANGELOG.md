@@ -1,3 +1,20 @@
+# [0.21.0](https://github.com/appydave/appydave-tools/compare/v0.20.1...v0.21.0) (2025-11-17)
+
+
+### Bug Fixes
+
+* create manifest for brands with no projects ([4fea6bd](https://github.com/appydave/appydave-tools/commit/4fea6bd47ac705b2875eb901737b3a11b905619f))
+* improve range folder and SSD detection ([fc0f58b](https://github.com/appydave/appydave-tools/commit/fc0f58b44ed6bf484d8fec10f3d1c38f8caa5206))
+* remove require 'pry' from bin scripts - not in gemspec dependencies, breaks gem install on fresh systems ([624c2a9](https://github.com/appydave/appydave-tools/commit/624c2a976fde3995423e4b6a147d57249bd98c15))
+* rename predicate methods to end with ? - handle_empty_files and find_project_in_ssd_ranges ([2c6b188](https://github.com/appydave/appydave-tools/commit/2c6b188c55b866aa5465403fd60b18e116445fe0))
+* rubocop and test fixes ([3580c47](https://github.com/appydave/appydave-tools/commit/3580c47f461e5681e91e679addf23c7706f9bfd7))
+* use ProjectResolver as class method in status and repo_push ([c0c8535](https://github.com/appydave/appydave-tools/commit/c0c853572fef9dccedd544a31ee369d5c0efa886))
+
+
+### Features
+
+* add three-tier project type detection (storyline, flivideo, general) ([54ac404](https://github.com/appydave/appydave-tools/commit/54ac4045c8d3d49f63456de2dcfa9969f33169ea))
+
 ## [0.20.1](https://github.com/appydave/appydave-tools/compare/v0.20.0...v0.20.1) (2025-11-10)
 
 
