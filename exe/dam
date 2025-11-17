@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
 require 'appydave/tools'
 
-load File.expand_path('../bin/dam', __dir__)
+# Set $PROGRAM_NAME to the bin/dam file so the guard passes
+$PROGRAM_NAME = File.expand_path('../bin/dam', __dir__)
+
+load $PROGRAM_NAME
