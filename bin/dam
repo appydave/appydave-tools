@@ -173,7 +173,7 @@ class VatCLI
     options = parse_discover_args(args)
     files = fetch_s3_files(options[:brand_key], options[:project_id])
 
-    return if handle_empty_files(files, options[:brand_key], options[:project_id])
+    return if handle_empty_files?(files, options[:brand_key], options[:project_id])
 
     display_s3_files(files, options[:brand_key], options[:project_id], options[:shareable])
   rescue StandardError => e
@@ -504,7 +504,7 @@ class VatCLI
     s3_ops.list_s3_files
   end
 
-  def handle_empty_files(files, brand_key, project_id)
+  def handle_empty_files?(files, brand_key, project_id)
     return false unless files.empty?
 
     puts "📭 No files found in S3 for #{brand_key}/#{project_id}"

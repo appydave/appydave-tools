@@ -164,7 +164,7 @@ module Appydave
                          flat_ssd_path = File.join(ssd_backup, project_id)
                          range_ssd_path = File.join(ssd_backup, range, project_id)
 
-                         Dir.exist?(flat_ssd_path) || Dir.exist?(range_ssd_path) || find_project_in_ssd_ranges(ssd_backup, project_id)
+                         Dir.exist?(flat_ssd_path) || Dir.exist?(range_ssd_path) || find_project_in_ssd_ranges?(ssd_backup, project_id)
                        else
                          false
                        end
@@ -262,7 +262,7 @@ module Appydave
         # @param ssd_backup [String] SSD backup base path
         # @param project_id [String] Project ID to find
         # @return [Boolean] true if project found in any range folder
-        def find_project_in_ssd_ranges(ssd_backup, project_id)
+        def find_project_in_ssd_ranges?(ssd_backup, project_id)
           !find_ssd_project_path(ssd_backup, project_id).nil?
         end
 
