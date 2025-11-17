@@ -1,3 +1,10 @@
+## [0.21.1](https://github.com/appydave/appydave-tools/compare/v0.21.0...v0.21.1) (2025-11-17)
+
+
+### Bug Fixes
+
+* add dam executable to exe directory - required for gem installation ([301464f](https://github.com/appydave/appydave-tools/commit/301464f62d9c1f6572c5024ae7daa49e5b360a5e))
+
 # [0.21.0](https://github.com/appydave/appydave-tools/compare/v0.20.1...v0.21.0) (2025-11-17)
 
 
