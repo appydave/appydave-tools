@@ -48,29 +48,34 @@ More detailed configuration guides (not yet created):
 
 ## 🏗️ Architecture (Understanding How It Works)
 
-### System Design
+### DAM (Digital Asset Management)
 
-- **[Configuration Systems Analysis](./architecture/configuration-systems.md)** - How brands/channels/NameManager relate ✅
-- **[CLI Patterns](./architecture/cli-patterns.md)** - CLI architecture patterns ✅
-- **[CLI Pattern Comparison](./architecture/cli-pattern-comparison.md)** - Visual pattern guide ✅
-- **[DAM Vision](./architecture/dam-vision.md)** - DAM strategic vision and roadmap ✅
+**Complete documentation for DAM visualization and CLI system:**
 
-### Design Decisions (PRDs and Session Logs)
+- **[Implementation Roadmap](./architecture/dam/implementation-roadmap.md)** ⭐ START HERE - Complete development guide ✅
+- **[DAM Vision](./architecture/dam/dam-vision.md)** - Strategic vision and roadmap ✅
+- **[Data Model](./architecture/dam/dam-data-model.md)** - Complete entity schema and relationships ✅
+- **[Visualization Requirements](./architecture/dam/dam-visualization-requirements.md)** - Astro dashboard specification ✅
+- **[CLI Enhancements](./architecture/dam/dam-cli-enhancements.md)** - Command implementation details ✅
+- **[Jan Collaboration Guide](./architecture/dam/jan-collaboration-guide.md)** - Team workflow reference ✅
+
+**DAM Design Decisions:**
+- **[002 - Client Sharing](./architecture/dam/design-decisions/002-client-sharing.md)** 🔄 IN PROGRESS
+- **[003 - Git Integration](./architecture/dam/design-decisions/003-git-integration.md)** 📋 PLANNED
+
+### CLI Architecture
+
+- **[CLI Patterns](./architecture/cli/cli-patterns.md)** - CLI architecture patterns ✅
+- **[CLI Pattern Comparison](./architecture/cli/cli-pattern-comparison.md)** - Visual pattern guide ✅
+
+### Configuration Systems
+
+- **[Configuration Systems Analysis](./architecture/configuration/configuration-systems.md)** - How brands/channels/NameManager relate ✅
+
+### Design Decisions (General)
 
 - **[001 - Unified Brands Configuration](./architecture/design-decisions/001-unified-brands-config.md)** ✅ COMPLETED
-- **[002 - Client Sharing](./architecture/design-decisions/002-client-sharing.md)** 🔄 IN PROGRESS
-- **[003 - Git Integration](./architecture/design-decisions/003-git-integration.md)** 📋 PLANNED
 - **[Session: 2025-11-09 DAM Refactoring](./architecture/design-decisions/session-2025-11-09.md)** ✅
-
-### Future Architecture Topics
-
-These topics would be useful but haven't been documented yet:
-
-- **DAM Architecture Deep Dive** 📝 (detailed DAM system design)
-- **Configuration Schema Reference** 📝 (complete schema for all config files)
-- **API Design Patterns** 📝 (internal API patterns used across tools)
-- **Storage Backends** 📝 (S3, SSD, local filesystem integration)
-- **Multi-Tenant Design** 📝 (how brands system enables multi-tenancy)
 
 ---
 
@@ -147,15 +152,26 @@ docs/
 │           └── dam-testing-plan-windows-powershell.md
 │
 ├── architecture/                                  # WHY/HOW systems work
-│   ├── configuration-systems.md                   # System overlap analysis
-│   ├── cli-patterns.md                            # CLI architecture
-│   ├── cli-pattern-comparison.md                  # Pattern visual guide
-│   ├── dam-vision.md                              # DAM roadmap
+│   ├── dam/                                       # DAM system documentation
+│   │   ├── implementation-roadmap.md              # ⭐ START HERE - Complete dev guide
+│   │   ├── dam-vision.md                          # Strategic vision
+│   │   ├── dam-data-model.md                      # Entity schema
+│   │   ├── dam-visualization-requirements.md      # Astro dashboard spec
+│   │   ├── dam-cli-enhancements.md                # CLI implementation
+│   │   ├── jan-collaboration-guide.md             # Team workflow
+│   │   └── design-decisions/                      # DAM-specific PRDs
+│   │       ├── 002-client-sharing.md
+│   │       └── 003-git-integration.md
 │   │
-│   └── design-decisions/                          # PRDs, ADRs, session logs
+│   ├── cli/                                       # CLI architecture
+│   │   ├── cli-patterns.md                        # CLI patterns
+│   │   └── cli-pattern-comparison.md              # Pattern guide
+│   │
+│   ├── configuration/                             # Configuration system
+│   │   └── configuration-systems.md               # System overlap analysis
+│   │
+│   └── design-decisions/                          # General PRDs, ADRs, session logs
 │       ├── 001-unified-brands-config.md
-│       ├── 002-client-sharing.md
-│       ├── 003-git-integration.md
 │       └── session-2025-11-09.md
 │
 ├── templates/                                     # COPY THESE files
@@ -178,24 +194,29 @@ docs/
 
 | Task | Documentation |
 |------|---------------|
+| **DAM development** | [Implementation Roadmap](./architecture/dam/implementation-roadmap.md) ⭐ |
 | **Video storage management** | [DAM Usage](./guides/tools/dam/dam-usage.md) |
 | **S3 sync for collaboration** | [DAM Usage](./guides/tools/dam/dam-usage.md) |
+| **Understand DAM architecture** | [DAM Data Model](./architecture/dam/dam-data-model.md) |
+| **Build DAM dashboard** | [Visualization Requirements](./architecture/dam/dam-visualization-requirements.md) |
 | **Gather AI context** | [GPT Context](./guides/tools/gpt-context.md) |
 | **Manage YouTube videos** | [YouTube Manager](./guides/tools/youtube-manager.md) |
 | **Process subtitles** | [Subtitle Processor](./guides/tools/subtitle-processor.md) |
 | **Configure tools** | [Configuration Tool](./guides/tools/configuration.md) |
 | **Set up on Windows** | [Windows Setup](./guides/platforms/windows/) |
-| **Build new CLI tool** | [CLI Patterns](./architecture/cli-patterns.md) |
-| **Understand system design** | [Configuration Systems](./architecture/configuration-systems.md) |
+| **Build new CLI tool** | [CLI Patterns](./architecture/cli/cli-patterns.md) |
+| **Understand system design** | [Configuration Systems](./architecture/configuration/configuration-systems.md) |
 
 ### By Audience
 
 | Audience | Start Here |
 |----------|------------|
+| **DAM Developers** | [Implementation Roadmap](./architecture/dam/implementation-roadmap.md) ⭐ |
 | **End Users** | [Guides](#-guides-how-to-use) - Individual tool documentation |
 | **Windows Users** | [Windows Setup](./guides/platforms/windows/) |
+| **Team Members (Jan)** | [Jan Collaboration Guide](./architecture/dam/jan-collaboration-guide.md) |
 | **Developers** | [Development](#%EF%B8%8F-development-contributing) - Contributing guides |
-| **Contributors** | [CLI Patterns](./architecture/cli-patterns.md) |
+| **Contributors** | [CLI Patterns](./architecture/cli/cli-patterns.md) |
 | **Architects** | [Architecture](#%EF%B8%8F-architecture-understanding-how-it-works) - System design |
 
 ---
