@@ -36,6 +36,12 @@ mkmf.log
 # Environment File
 .env
 
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
 # Gems should not use a Gemfile.lock
 Gemfile.lock
 
