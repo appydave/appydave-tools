@@ -56,7 +56,8 @@ More detailed configuration guides (not yet created):
 - **[DAM Vision](./architecture/dam/dam-vision.md)** - Strategic vision and roadmap ✅
 - **[Data Model](./architecture/dam/dam-data-model.md)** - Complete entity schema and relationships ✅
 - **[Visualization Requirements](./architecture/dam/dam-visualization-requirements.md)** - Astro dashboard specification ✅
-- **[CLI Enhancements](./architecture/dam/dam-cli-enhancements.md)** - Command implementation details ✅
+- **[CLI Enhancements](./architecture/dam/dam-cli-enhancements.md)** - Command requirements specification ✅
+- **[CLI Implementation Guide](./architecture/dam/dam-cli-implementation-guide.md)** - Code-level implementation details ✅
 - **[Jan Collaboration Guide](./architecture/dam/jan-collaboration-guide.md)** - Team workflow reference ✅
 
 **DAM Design Decisions:**
