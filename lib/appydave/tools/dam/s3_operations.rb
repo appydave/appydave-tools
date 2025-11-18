@@ -389,7 +389,21 @@ module Appydave
 
         # Calculate MD5 hash of a file
         def file_md5(file_path)
-          Digest::MD5.file(file_path).hexdigest
+          # Use chunked reading for large files to avoid "Invalid argument @ io_fread" errors
+          puts "  🔍 Calculating MD5 for #{File.basename(file_path)}..." if ENV['DEBUG']
+          md5 = Digest::MD5.new
+          File.open(file_path, 'rb') do |file|
+            while (chunk = file.read(8192))
+              md5.update(chunk)
+            end
+          end
+          result = md5.hexdigest
+          puts "  ✓ MD5: #{result[0..7]}..." if ENV['DEBUG']
+          result
+        rescue StandardError => e
+          puts "  ⚠️  Warning: Failed to calculate MD5 for #{File.basename(file_path)}: #{e.message}"
+          puts "  → Will upload without MD5 comparison"
+          nil
         end
 
         # Get MD5 of file in S3 (from ETag)
@@ -413,21 +427,59 @@ module Appydave
           # Detect MIME type for proper browser handling
           content_type = detect_content_type(local_file)
 
-          File.open(local_file, 'rb') do |file|
-            s3_client.put_object(
+          # For large files, use TransferManager for managed uploads (supports multipart)
+          file_size = File.size(local_file)
+          start_time = Time.now
+
+          if file_size > 100 * 1024 * 1024 # > 100MB
+            puts "  📤 Uploading large file (#{file_size_human(file_size)})..."
+
+            # Use TransferManager for multipart upload (modern AWS SDK approach)
+            transfer_manager = Aws::S3::TransferManager.new(client: s3_client)
+            transfer_manager.upload_file(
+              local_file,
               bucket: brand_info.aws.s3_bucket,
               key: s3_path,
-              body: file,
               content_type: content_type
             )
+          else
+            # For smaller files, use direct put_object
+            File.open(local_file, 'rb') do |file|
+              s3_client.put_object(
+                bucket: brand_info.aws.s3_bucket,
+                key: s3_path,
+                body: file,
+                content_type: content_type
+              )
+            end
           end
 
-          puts "  ✓ Uploaded: #{File.basename(local_file)} (#{file_size_human(File.size(local_file))})"
+          elapsed = Time.now - start_time
+          elapsed_str = format_duration(elapsed)
+          puts "  ✓ Uploaded: #{File.basename(local_file)} (#{file_size_human(file_size)}) in #{elapsed_str}"
           true
         rescue Aws::S3::Errors::ServiceError => e
           puts "  ✗ Failed: #{File.basename(local_file)}"
           puts "    Error: #{e.message}"
           false
+        rescue StandardError => e
+          puts "  ✗ Failed: #{File.basename(local_file)}"
+          puts "    Error: #{e.class} - #{e.message}"
+          false
+        end
+
+        def format_duration(seconds)
+          if seconds < 60
+            "#{seconds.round(1)}s"
+          elsif seconds < 3600
+            minutes = (seconds / 60).floor
+            secs = (seconds % 60).round
+            "#{minutes}m #{secs}s"
+          else
+            hours = (seconds / 3600).floor
+            minutes = ((seconds % 3600) / 60).floor
+            "#{hours}h #{minutes}m"
+          end
         end
 
         def detect_content_type(filename)

@@ -27,6 +27,7 @@ class VatCLI
       'repo-push' => method(:repo_push_command),
       's3-share' => method(:s3_share_command),
       's3-discover' => method(:s3_discover_command),
+      's3-scan' => method(:s3_scan_command),
       # Deprecated aliases (for backward compatibility)
       's3-cleanup' => method(:s3_cleanup_remote_command),
       'cleanup-local' => method(:s3_cleanup_local_command)
@@ -1092,6 +1093,133 @@ class VatCLI
   end
   # rubocop:enable Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/MethodLength
+
+  # S3 Scan - Query AWS S3 for actual file listings
+  def s3_scan_command(args)
+    all_brands = args.include?('--all')
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+
+    if all_brands
+      scan_all_brands_s3
+    elsif brand_arg
+      scan_single_brand_s3(brand_arg)
+    else
+      puts 'Usage: dam s3-scan <brand> [--all]'
+      puts ''
+      puts 'Scan S3 bucket to update project manifests with actual S3 file data.'
+      puts ''
+      puts 'Examples:'
+      puts '  dam s3-scan appydave      # Scan AppyDave S3 bucket'
+      puts '  dam s3-scan --all         # Scan all brands'
+      exit 1
+    end
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    puts e.backtrace.first(5).join("\n") if ENV['DEBUG']
+    exit 1
+  end
+
+  def scan_single_brand_s3(brand_arg)
+    puts "🔄 Scanning S3 for #{brand_arg}..."
+    puts ''
+
+    brand_key = brand_arg
+    scanner = Appydave::Tools::Dam::S3Scanner.new(brand_key)
+
+    # Scan all projects
+    results = scanner.scan_all_projects
+
+    if results.empty?
+      puts ''
+      puts "⚠️  No projects found in S3 for #{brand_key}"
+      puts '   This may indicate:'
+      puts '   - No files uploaded to S3 yet'
+      puts '   - S3 bucket or prefix misconfigured'
+      puts '   - AWS credentials issue'
+      return
+    end
+
+    # Load existing manifest
+    Appydave::Tools::Configuration::Config.configure
+    brand_path = Appydave::Tools::Dam::Config.brand_path(brand_key)
+    manifest_path = File.join(brand_path, 'projects.json')
+
+    unless File.exist?(manifest_path)
+      puts ''
+      puts "❌ Manifest not found: #{manifest_path}"
+      puts "   Run: dam manifest #{brand_key}"
+      puts "   Then retry: dam s3-scan #{brand_key}"
+      exit 1
+    end
+
+    manifest = JSON.parse(File.read(manifest_path), symbolize_names: true)
+
+    # Merge S3 scan data into manifest
+    updated_count = 0
+    manifest[:projects].each do |project|
+      project_id = project[:id]
+      s3_data = results[project_id]
+      next unless s3_data
+
+      project[:storage][:s3] = s3_data
+      updated_count += 1
+    end
+
+    # Update timestamp and note
+    manifest[:config][:last_updated] = Time.now.utc.iso8601
+    manifest[:config][:note] = 'Auto-generated manifest with S3 scan data. Regenerate with: dam s3-scan'
+
+    # Write updated manifest
+    File.write(manifest_path, JSON.pretty_generate(manifest))
+
+    puts ''
+    puts "✅ Updated manifest with S3 data: #{manifest_path}"
+    puts "   Scanned #{results.size} projects in S3"
+    puts "   Updated #{updated_count} projects in manifest"
+    puts ''
+  end
+
+  def scan_all_brands_s3
+    Appydave::Tools::Configuration::Config.configure
+    brands_config = Appydave::Tools::Configuration::Config.brands
+
+    results = []
+    brands_config.brands.each do |brand_info|
+      brand_key = brand_info.key
+      puts ''
+      puts '=' * 60
+
+      begin
+        scan_single_brand_s3(brand_key)
+        results << { brand: brand_key, success: true }
+      rescue StandardError => e
+        puts "❌ Failed to scan #{brand_key}: #{e.message}"
+        results << { brand: brand_key, success: false, error: e.message }
+      end
+    end
+
+    puts ''
+    puts '=' * 60
+    puts '📋 Summary - S3 Scans:'
+    puts ''
+
+    successful = results.select { |r| r[:success] }
+    failed = results.reject { |r| r[:success] }
+
+    successful.each do |result|
+      brand_display = result[:brand].ljust(15)
+      puts "✅ #{brand_display} Scanned successfully"
+    end
+
+    failed.each do |result|
+      brand_display = result[:brand].ljust(15)
+      puts "❌ #{brand_display} #{result[:error]}"
+    end
+
+    puts ''
+    puts "Total brands scanned: #{successful.size}/#{results.size}"
+  end
 end
 
 # Run CLI
