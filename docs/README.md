@@ -1,65 +1,125 @@
 # AppyDave Tools Documentation
 
-**Welcome to the AppyDave Tools documentation!**
-
-This directory contains comprehensive documentation for all tools, features, and development guides.
+**Documentation organized by purpose:** guides (how to), architecture (why/how it works), templates (copy these), development (contribute).
 
 ---
 
-## 📚 Quick Navigation
+## 📖 Guides (How To Use)
 
-### User Documentation
+### Tools
 
-- **[VAT (Video Asset Tools)](./vat/)** - Video project storage orchestration
-  - [Usage Guide](./vat/usage.md) - Complete usage reference
-  - [Testing Plan](./vat/vat-testing-plan.md) - User acceptance testing
-  - [Implementation Status](./vat/vat-implementation-status.md) - Feature matrix
-  - [Integration Plan](./vat/vat-integration-plan.md) - Migration details
-  - [Refactoring Summary](./vat/vat-refactoring-summary.md) - Architecture changes
+- **[DAM - Digital Asset Management](./guides/tools/dam/)** - Video project storage orchestration
+  - [Usage Guide](./guides/tools/dam/dam-usage.md) ✅
+  - [Testing Plan](./guides/tools/dam/dam-testing-plan.md) ✅
+- **[GPT Context](./guides/tools/gpt-context.md)** - Gather files for AI context ✅
+- **[YouTube Manager](./guides/tools/youtube-manager.md)** - Manage YouTube metadata ✅
+- **[Subtitle Processor](./guides/tools/subtitle-processor.md)** - Clean/merge SRT files ✅
+- **[Configuration Tool](./guides/tools/configuration.md)** - Manage config files ✅
+- **[YouTube Automation](./guides/tools/youtube-automation.md)** - Automation workflows ✅
+- **[Prompt Tools](./guides/tools/prompt-tools.md)** - OpenAI completion wrapper ✅
+- **[Move Images](./guides/tools/move-images.md)** - Organize video assets ✅
+- **[Bank Reconciliation](./guides/tools/bank-reconciliation.md)** - DEPRECATED ✅
+- **[Name Manager](./guides/tools/name-manager.md)** - Naming utilities ✅
+- **[CLI Actions](./guides/tools/cli-actions.md)** - CLI base actions ✅
 
-- **[Tools](./tools/)** - Individual tool documentation
-  - GPT Context Gatherer
-  - YouTube Manager
-  - Subtitle Processor
-  - Configuration Management
-  - And more...
+### Platform-Specific
 
-### Developer Documentation
+- **[Windows Setup](./guides/platforms/windows/)** - Windows/WSL installation ✅
+  - [Installation Guide](./guides/platforms/windows/installation.md) ✅
+  - [Testing Plan](./guides/platforms/windows/dam-testing-plan-windows-powershell.md) ✅
 
-- **[Development Guides](./development/)** - How to build tools
-  - [CLI Architecture Patterns](./development/cli-architecture-patterns.md) - Pattern reference
-  - [Pattern Comparison](./development/pattern-comparison.md) - Visual guide
-  - [Quick Reference](./development/README.md) - Fast pattern selection
+### Configuration
 
-### System Documentation
+- **[Configuration Setup Guide](./guides/configuration-setup.md)** - Complete configuration reference ✅
+  - Quick start, file locations, settings reference
+  - Migration from legacy configs
+  - Backup and recovery
 
-- **[Project & Brand Systems Analysis](./project-brand-systems-analysis.md)** - Deep dive into overlapping systems
-  - VAT system (storage orchestration)
-  - Channels configuration (YouTube metadata)
-  - NameManager (naming conventions)
-  - Integration points and recommendations
+### Future Configuration Guides
 
-### Archive
+More detailed configuration guides (not yet created):
 
-- **[Archive](./archive/)** - Deprecated documentation
-  - Old versions of documentation
-  - Historical reference material
+- **Settings Deep Dive** 📝 (detailed explanation of each setting)
+- **Channels System** 📝 (YouTube channel management)
+- **Brands System** 📝 (multi-brand/multi-tenant architecture)
+- **Advanced Configuration** 📝 (environment-specific configs, team setups)
 
 ---
 
-## 🎯 Common Tasks
+## 🏗️ Architecture (Understanding How It Works)
 
-### "I want to use a tool"
-→ See individual tool documentation in [`tools/`](./tools/) or [`vat/`](./vat/)
+### System Design
 
-### "I want to build a new tool"
-→ Start with [`development/README.md`](./development/README.md) for CLI pattern selection
+- **[Configuration Systems Analysis](./architecture/configuration-systems.md)** - How brands/channels/NameManager relate ✅
+- **[CLI Patterns](./architecture/cli-patterns.md)** - CLI architecture patterns ✅
+- **[CLI Pattern Comparison](./architecture/cli-pattern-comparison.md)** - Visual pattern guide ✅
+- **[DAM Vision](./architecture/dam-vision.md)** - DAM strategic vision and roadmap ✅
 
-### "I want to understand the architecture"
-→ Read [`development/cli-architecture-patterns.md`](./development/cli-architecture-patterns.md)
+### Design Decisions (PRDs and Session Logs)
 
-### "I want to understand how systems relate"
-→ Read [`project-brand-systems-analysis.md`](./project-brand-systems-analysis.md)
+- **[001 - Unified Brands Configuration](./architecture/design-decisions/001-unified-brands-config.md)** ✅ COMPLETED
+- **[002 - Client Sharing](./architecture/design-decisions/002-client-sharing.md)** 🔄 IN PROGRESS
+- **[003 - Git Integration](./architecture/design-decisions/003-git-integration.md)** 📋 PLANNED
+- **[Session: 2025-11-09 DAM Refactoring](./architecture/design-decisions/session-2025-11-09.md)** ✅
+
+### Future Architecture Topics
+
+These topics would be useful but haven't been documented yet:
+
+- **DAM Architecture Deep Dive** 📝 (detailed DAM system design)
+- **Configuration Schema Reference** 📝 (complete schema for all config files)
+- **API Design Patterns** 📝 (internal API patterns used across tools)
+- **Storage Backends** 📝 (S3, SSD, local filesystem integration)
+- **Multi-Tenant Design** 📝 (how brands system enables multi-tenancy)
+
+---
+
+## 📋 Templates (Copy These)
+
+Ready-to-use configuration templates:
+
+- **[settings.example.json](./templates/settings.example.json)** - Settings template ✅
+- **[channels.example.json](./templates/channels.example.json)** - Channels template ✅
+- **[.env.example](./templates/.env.example)** - Environment variables template ✅
+- **brands.example.json** 📝 (not yet created - should mirror brands.json structure with placeholders)
+
+**To use templates:**
+```bash
+# Copy to config directory
+cp docs/templates/settings.example.json ~/.config/appydave/settings.json
+cp docs/templates/channels.example.json ~/.config/appydave/channels.json
+
+# Copy .env to project root
+cp docs/templates/.env.example .env
+
+# Edit with your values
+ad_config -e
+```
+
+---
+
+## 🛠️ Development (Contributing)
+
+Documentation for contributors and developers:
+
+- **[CODEX Recommendations](./development/codex-recommendations.md)** - AI coding guidelines ✅
+
+### Future Development Topics
+
+Planned documentation for contributors:
+
+- **Contributing Guide** 📝 (how to contribute, PR process, coding standards)
+- **Testing Guide** 📝 (how to run tests, write specs, coverage requirements)
+- **Release Process** 📝 (semantic versioning, CI/CD, gem publishing)
+- **Development Setup** 📝 (rbenv, bundler, guard, development workflow)
+
+---
+
+## 🗄️ Archive
+
+Historical and deprecated documentation:
+
+- **[Archive](./archive/)** - Deprecated documentation ✅
 
 ---
 
@@ -68,72 +128,84 @@ This directory contains comprehensive documentation for all tools, features, and
 ```
 docs/
 ├── README.md (this file)                          # Documentation index
-├── project-brand-systems-analysis.md              # System overlap analysis
 │
-├── vat/                                           # VAT documentation
-│   ├── usage.md                                   # User guide
-│   ├── vat-testing-plan.md                        # Testing guide
-│   ├── vat-implementation-status.md               # Feature status
-│   ├── vat-integration-plan.md                    # Integration details
-│   └── vat-refactoring-summary.md                 # Architecture changes
+├── guides/                                        # HOW TO use things
+│   ├── tools/                                     # Individual tool guides
+│   │   ├── dam/                                   # DAM-specific guides
+│   │   │   ├── dam-usage.md
+│   │   │   └── dam-testing-plan.md
+│   │   ├── gpt-context.md
+│   │   ├── youtube-manager.md
+│   │   ├── subtitle-processor.md
+│   │   ├── configuration.md
+│   │   └── ... (11 tool guides total)
+│   │
+│   └── platforms/                                 # Platform-specific setup
+│       └── windows/                               # Windows/WSL guides
+│           ├── README.md
+│           ├── installation.md
+│           └── dam-testing-plan-windows-powershell.md
 │
-├── tools/                                         # Individual tool docs
-│   ├── gpt-context.md
-│   ├── youtube-manager.md
-│   ├── subtitle-processor.md
-│   └── ... (more tools)
+├── architecture/                                  # WHY/HOW systems work
+│   ├── configuration-systems.md                   # System overlap analysis
+│   ├── cli-patterns.md                            # CLI architecture
+│   ├── cli-pattern-comparison.md                  # Pattern visual guide
+│   ├── dam-vision.md                              # DAM roadmap
+│   │
+│   └── design-decisions/                          # PRDs, ADRs, session logs
+│       ├── 001-unified-brands-config.md
+│       ├── 002-client-sharing.md
+│       ├── 003-git-integration.md
+│       └── session-2025-11-09.md
 │
-├── development/                                   # Developer guides
-│   ├── README.md                                  # Quick reference
-│   ├── cli-architecture-patterns.md               # Pattern guide
-│   └── pattern-comparison.md                      # Visual comparison
+├── templates/                                     # COPY THESE files
+│   ├── settings.example.json
+│   ├── channels.example.json
+│   └── .env.example
 │
-└── archive/                                       # Old documentation
-    └── ... (deprecated docs)
+├── development/                                   # FOR CONTRIBUTORS
+│   └── codex-recommendations.md
+│
+└── archive/                                       # OLD/DEPRECATED
+    └── ... (historical docs)
 ```
 
 ---
 
-## 🔍 Finding What You Need
-
-### By Tool Name
-
-| Tool | Documentation |
-|------|---------------|
-| **VAT** | [`vat/usage.md`](./vat/usage.md) |
-| **GPT Context** | [`tools/gpt-context.md`](./tools/gpt-context.md) |
-| **YouTube Manager** | [`tools/youtube-manager.md`](./tools/youtube-manager.md) |
-| **Subtitle Processor** | [`tools/subtitle-processor.md`](./tools/subtitle-processor.md) |
-| **Configuration** | [`tools/configuration.md`](./tools/configuration.md) |
+## 🔍 Quick Reference
 
 ### By Task
 
 | Task | Documentation |
 |------|---------------|
-| **Video storage management** | [`vat/usage.md`](./vat/usage.md) |
-| **S3 sync for collaboration** | [`vat/usage.md`](./vat/usage.md) |
-| **Gather AI context** | [`tools/gpt-context.md`](./tools/gpt-context.md) |
-| **Manage YouTube videos** | [`tools/youtube-manager.md`](./tools/youtube-manager.md) |
-| **Process subtitles** | [`tools/subtitle-processor.md`](./tools/subtitle-processor.md) |
-| **Build new CLI tool** | [`development/cli-architecture-patterns.md`](./development/cli-architecture-patterns.md) |
+| **Video storage management** | [DAM Usage](./guides/tools/dam/dam-usage.md) |
+| **S3 sync for collaboration** | [DAM Usage](./guides/tools/dam/dam-usage.md) |
+| **Gather AI context** | [GPT Context](./guides/tools/gpt-context.md) |
+| **Manage YouTube videos** | [YouTube Manager](./guides/tools/youtube-manager.md) |
+| **Process subtitles** | [Subtitle Processor](./guides/tools/subtitle-processor.md) |
+| **Configure tools** | [Configuration Tool](./guides/tools/configuration.md) |
+| **Set up on Windows** | [Windows Setup](./guides/platforms/windows/) |
+| **Build new CLI tool** | [CLI Patterns](./architecture/cli-patterns.md) |
+| **Understand system design** | [Configuration Systems](./architecture/configuration-systems.md) |
 
 ### By Audience
 
 | Audience | Start Here |
 |----------|------------|
-| **End Users** | Individual tool docs in [`tools/`](./tools/) or [`vat/`](./vat/) |
-| **Developers** | [`development/README.md`](./development/README.md) |
-| **Contributors** | [`development/cli-architecture-patterns.md`](./development/cli-architecture-patterns.md) |
-| **Architects** | [`project-brand-systems-analysis.md`](./project-brand-systems-analysis.md) |
+| **End Users** | [Guides](#-guides-how-to-use) - Individual tool documentation |
+| **Windows Users** | [Windows Setup](./guides/platforms/windows/) |
+| **Developers** | [Development](#%EF%B8%8F-development-contributing) - Contributing guides |
+| **Contributors** | [CLI Patterns](./architecture/cli-patterns.md) |
+| **Architects** | [Architecture](#%EF%B8%8F-architecture-understanding-how-it-works) - System design |
 
 ---
 
-## 🆕 Recently Added
+## Legend
 
-- **2025-11-09**: VAT refactoring to Pattern 2 architecture
-- **2025-11-09**: CLI architecture patterns documentation
-- **2025-11-09**: Project & brand systems analysis
-- **2025-11-08**: VAT integration into appydave-tools
+- ✅ = Exists (real file with content)
+- 📝 = Placeholder (future documentation, not yet created)
+- 🔄 = In Progress
+- 📋 = Planned
 
 ---
 
@@ -148,15 +220,16 @@ All documentation in this repository follows the [AI Conventions](../../.ai-conv
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing Documentation
 
 When adding new documentation:
 
 1. **Choose the right location**:
-   - Tool documentation → `tools/`
-   - VAT-specific → `vat/`
-   - Developer guides → `development/`
-   - System analysis → root of `docs/`
+   - How-to guides → `guides/tools/` or `guides/platforms/`
+   - System understanding → `architecture/`
+   - Design decisions → `architecture/design-decisions/`
+   - Templates → `templates/`
+   - Contributor info → `development/`
 
 2. **Use kebab-case** for filenames (e.g., `my-new-tool.md`)
 
@@ -164,6 +237,8 @@ When adding new documentation:
 
 4. **Follow existing patterns** - check similar docs for style guidance
 
+5. **Mark status** - Use ✅ for complete docs, 📝 for placeholders
+
 ---
 
-**Last updated**: 2025-11-09
+**Last updated**: 2025-11-18
