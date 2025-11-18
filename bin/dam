@@ -566,6 +566,9 @@ class VatCLI
         s3-discover <brand> <project>    List files available in S3
         s3-share <brand> <project> <file> Generate shareable pre-signed URL
 
+        S3 Data Commands:
+        s3-scan <brand> [--all]          Scan S3 bucket for actual file data
+
         Archive Commands:
         archive <brand> <project>        Copy project to SSD backup
         manifest <brand> [--all]         Generate project manifest
@@ -594,6 +597,8 @@ class VatCLI
         dam s3-discover appydave b70 --shareable
         dam s3-share appydave b70 video.mp4
         dam s3-share appydave b70 video.mp4 --expires 24h
+        dam s3-scan appydave
+        dam s3-scan --all
         dam s3-cleanup-remote appydave b65 --force
 
       For more information: https://github.com/appydave/appydave-tools
