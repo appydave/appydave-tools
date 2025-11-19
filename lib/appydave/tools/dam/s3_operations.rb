@@ -158,6 +158,12 @@ module Appydave
           project_dir = File.join(brand_path, project_id)
           staging_dir = File.join(project_dir, 's3-staging')
 
+          # Ensure project directory exists before download
+          unless Dir.exist?(project_dir)
+            puts "📁 Creating project directory: #{project_id}"
+            FileUtils.mkdir_p(project_dir) unless dry_run
+          end
+
           s3_files = list_s3_files
 
           if s3_files.empty?
