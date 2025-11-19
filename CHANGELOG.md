@@ -1,3 +1,10 @@
+# [0.24.0](https://github.com/appydave/appydave-tools/compare/v0.23.0...v0.24.0) (2025-11-19)
+
+
+### Features
+
+* create project directory before S3 download - fixes WSL permission denied error when downloading to non-existent projects ([5819a65](https://github.com/appydave/appydave-tools/commit/5819a658c7aae028107c00eebe073d9a100d246a))
+
 # [0.23.0](https://github.com/appydave/appydave-tools/compare/v0.22.0...v0.23.0) (2025-11-19)
 
 
