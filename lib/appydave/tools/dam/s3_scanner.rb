@@ -84,9 +84,27 @@ module Appydave
           Appydave::Tools::Configuration::Config.brands.get_brand(brand)
         end
 
+        # Determine which AWS profile to use based on current user
+        # Priority: current user's default_aws_profile > brand's aws.profile
+        def determine_aws_profile(brand_info)
+          # Get current user from settings
+          current_user_key = Appydave::Tools::Configuration::Config.settings.current_user
+
+          if current_user_key
+            # Look up current user's default AWS profile
+            users = Appydave::Tools::Configuration::Config.brands.data['users']
+            user_info = users[current_user_key]
+
+            return user_info['default_aws_profile'] if user_info && user_info['default_aws_profile']
+          end
+
+          # Fallback to brand's AWS profile
+          brand_info.aws.profile
+        end
+
         def create_s3_client(brand_info)
-          profile_name = brand_info.aws.profile
-          raise "AWS profile not configured for brand '#{@brand}'" if profile_name.nil? || profile_name.empty?
+          profile_name = determine_aws_profile(brand_info)
+          raise "AWS profile not configured for current user or brand '#{@brand}'" if profile_name.nil? || profile_name.empty?
 
           credentials = Aws::SharedCredentials.new(profile_name: profile_name)
 

@@ -32,6 +32,10 @@ module Appydave
             get('download-image-folder') || download_folder
           end
 
+          def current_user
+            get('current_user')
+          end
+
           def print
             log.subheading 'Settings Configuration'
 
