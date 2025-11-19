@@ -26,6 +26,7 @@ module Appydave
           **/.vercel/**
           **/tmp/**
           **/.DS_Store
+          **/*:Zone.Identifier
         ].freeze
 
         def initialize(brand, project_id, brand_info: nil, brand_path: nil, s3_client: nil)
@@ -132,6 +133,13 @@ module Appydave
 
           files.each do |file|
             relative_path = file.sub("#{staging_dir}/", '')
+
+            # Skip excluded files (e.g., Windows Zone.Identifier, .DS_Store)
+            if excluded_path?(relative_path)
+              skipped += 1
+              next
+            end
+
             s3_path = build_s3_key(relative_path)
 
             # Check if file already exists with same MD5
