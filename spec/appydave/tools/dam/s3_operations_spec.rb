@@ -189,6 +189,38 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
       expect { s3_ops.upload(dry_run: false) }.to output(/⏭️  Skipped: test-file.txt/).to_stdout
     end
+
+    it 'excludes Windows Zone.Identifier files from upload' do
+      # Create a Zone.Identifier file
+      zone_file = File.join(staging_dir, 'video.mp4:Zone.Identifier')
+      File.write(zone_file, 'test zone data')
+
+      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+
+      # Should not attempt to upload Zone.Identifier file
+      expect(mock_s3_client).to receive(:put_object).once do |args|
+        expect(args[:key]).not_to include('Zone.Identifier')
+        expect(args[:key]).to eq('staging/v-test/test-project/test-file.txt')
+      end
+
+      s3_ops.upload(dry_run: false)
+    end
+
+    it 'excludes .DS_Store files from upload' do
+      # Create a .DS_Store file
+      ds_store = File.join(staging_dir, '.DS_Store')
+      File.write(ds_store, 'mac metadata')
+
+      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+
+      # Should not attempt to upload .DS_Store file
+      expect(mock_s3_client).to receive(:put_object).once do |args|
+        expect(args[:key]).not_to include('.DS_Store')
+        expect(args[:key]).to eq('staging/v-test/test-project/test-file.txt')
+      end
+
+      s3_ops.upload(dry_run: false)
+    end
   end
 
   describe '#download' do
@@ -239,6 +271,40 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       expect(mock_s3_client).not_to receive(:get_object)
 
       expect { s3_ops.download(dry_run: false) }.to output(/⏭️  Skipped: video.mp4/).to_stdout
+    end
+
+    it 'creates project directory if it does not exist' do
+      # Remove the entire project directory
+      FileUtils.rm_rf(project_dir)
+
+      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
+      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+
+      expect(mock_s3_client).to receive(:get_object) do |args|
+        FileUtils.mkdir_p(File.dirname(args[:response_target]))
+        File.write(args[:response_target], 'downloaded content')
+      end
+
+      expect do
+        s3_ops.download(dry_run: false)
+      end.to output(/📁 Creating project directory: test-project/).to_stdout
+
+      # Verify directory was created
+      expect(Dir.exist?(project_dir)).to be true
+    end
+
+    it 'shows download timing in output' do
+      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
+      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+
+      expect(mock_s3_client).to receive(:get_object) do |args|
+        FileUtils.mkdir_p(File.dirname(args[:response_target]))
+        File.write(args[:response_target], 'downloaded content')
+      end
+
+      expect do
+        s3_ops.download(dry_run: false)
+      end.to output(/✓ Downloaded: video\.mp4 \(\d+\.?\d* [KMGT]?B\) in \d+\.?\d*s/).to_stdout
     end
   end
 
@@ -509,6 +575,42 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       expect do
         s3_ops.archive(force: false, dry_run: false)
       end.to output(/⚠️  Already exists on SSD/).to_stdout
+    end
+  end
+
+  describe '#excluded_path?' do
+    let(:s3_ops) { create_s3_operations }
+
+    it 'excludes Windows Zone.Identifier files' do
+      expect(s3_ops.send(:excluded_path?, 'video.mp4:Zone.Identifier')).to be true
+      expect(s3_ops.send(:excluded_path?, 'folder/file.txt:Zone.Identifier')).to be true
+    end
+
+    it 'excludes .DS_Store files' do
+      expect(s3_ops.send(:excluded_path?, '.DS_Store')).to be true
+      expect(s3_ops.send(:excluded_path?, 'folder/.DS_Store')).to be true
+    end
+
+    it 'excludes node_modules directories' do
+      expect(s3_ops.send(:excluded_path?, 'node_modules/package.json')).to be true
+      expect(s3_ops.send(:excluded_path?, 'folder/node_modules/index.js')).to be true
+    end
+
+    it 'excludes .git directories' do
+      expect(s3_ops.send(:excluded_path?, '.git/config')).to be true
+      expect(s3_ops.send(:excluded_path?, 'folder/.git/HEAD')).to be true
+    end
+
+    it 'excludes build artifact directories' do
+      expect(s3_ops.send(:excluded_path?, 'dist/bundle.js')).to be true
+      expect(s3_ops.send(:excluded_path?, 'build/output.js')).to be true
+      expect(s3_ops.send(:excluded_path?, '.next/static/page.js')).to be true
+    end
+
+    it 'does not exclude normal files' do
+      expect(s3_ops.send(:excluded_path?, 'video.mp4')).to be false
+      expect(s3_ops.send(:excluded_path?, 'subtitle.srt')).to be false
+      expect(s3_ops.send(:excluded_path?, 'folder/document.pdf')).to be false
     end
   end
 end
