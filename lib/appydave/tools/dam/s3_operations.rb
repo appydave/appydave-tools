@@ -402,7 +402,7 @@ module Appydave
           result
         rescue StandardError => e
           puts "  ⚠️  Warning: Failed to calculate MD5 for #{File.basename(file_path)}: #{e.message}"
-          puts "  → Will upload without MD5 comparison"
+          puts '  → Will upload without MD5 comparison'
           nil
         end
 
