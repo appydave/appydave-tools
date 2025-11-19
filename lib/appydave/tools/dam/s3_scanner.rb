@@ -87,15 +87,19 @@ module Appydave
         # Determine which AWS profile to use based on current user
         # Priority: current user's default_aws_profile > brand's aws.profile
         def determine_aws_profile(brand_info)
-          # Get current user from settings
-          current_user_key = Appydave::Tools::Configuration::Config.settings.current_user
+          # Get current user from settings (if available)
+          begin
+            current_user_key = Appydave::Tools::Configuration::Config.settings.current_user
 
-          if current_user_key
-            # Look up current user's default AWS profile
-            users = Appydave::Tools::Configuration::Config.brands.data['users']
-            user_info = users[current_user_key]
+            if current_user_key
+              # Look up current user's default AWS profile
+              users = Appydave::Tools::Configuration::Config.brands.data['users']
+              user_info = users[current_user_key]
 
-            return user_info['default_aws_profile'] if user_info && user_info['default_aws_profile']
+              return user_info['default_aws_profile'] if user_info && user_info['default_aws_profile']
+            end
+          rescue Appydave::Tools::Error
+            # Config not available (e.g., in test environment) - fall through to brand profile
           end
 
           # Fallback to brand's AWS profile

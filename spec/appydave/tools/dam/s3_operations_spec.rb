@@ -108,7 +108,7 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       expect do
         s3_ops = described_class.new('test', 'test-project', brand_info: bad_brand_info, brand_path: brand_path)
         s3_ops.s3_client # Trigger lazy loading to cause the error
-      end.to raise_error("AWS profile not configured for brand 'test'")
+      end.to raise_error("AWS profile not configured for current user or brand 'test'")
     end
   end
 
