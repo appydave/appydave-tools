@@ -1,3 +1,11 @@
+# [0.23.0](https://github.com/appydave/appydave-tools/compare/v0.22.0...v0.23.0) (2025-11-19)
+
+
+### Features
+
+* use current user's AWS profile for S3 operations ([3029aff](https://github.com/appydave/appydave-tools/commit/3029aff202ac8ee4a79e335ea7f3cbc246c7dd54))
+* use current user's AWS profile for S3 operations instead of brand-specific profiles ([8eea669](https://github.com/appydave/appydave-tools/commit/8eea669b43f6017470edfcac4632c8cc4cca408d))
+
 # [0.22.0](https://github.com/appydave/appydave-tools/compare/v0.21.2...v0.22.0) (2025-11-19)
 
 
