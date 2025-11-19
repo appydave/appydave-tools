@@ -62,7 +62,7 @@ module Appydave
           project_prefixes = list_s3_prefixes(bucket, prefix)
 
           if project_prefixes.empty?
-            puts "  📭 No projects found in S3"
+            puts '  📭 No projects found in S3'
             return {}
           end
 

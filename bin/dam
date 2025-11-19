@@ -1125,6 +1125,7 @@ class VatCLI
     exit 1
   end
 
+  # rubocop:disable Metrics/MethodLength
   def scan_single_brand_s3(brand_arg)
     puts "🔄 Scanning S3 for #{brand_arg}..."
     puts ''
@@ -1184,7 +1185,9 @@ class VatCLI
     puts "   Updated #{updated_count} projects in manifest"
     puts ''
   end
+  # rubocop:enable Metrics/MethodLength
 
+  # rubocop:disable Metrics/MethodLength
   def scan_all_brands_s3
     Appydave::Tools::Configuration::Config.configure
     brands_config = Appydave::Tools::Configuration::Config.brands
@@ -1225,6 +1228,7 @@ class VatCLI
     puts ''
     puts "Total brands scanned: #{successful.size}/#{results.size}"
   end
+  # rubocop:enable Metrics/MethodLength
 end
 
 # Run CLI
