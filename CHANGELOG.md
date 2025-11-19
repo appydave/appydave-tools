@@ -1,3 +1,10 @@
+# [0.25.0](https://github.com/appydave/appydave-tools/compare/v0.24.0...v0.25.0) (2025-11-19)
+
+
+### Features
+
+* add download timing using shared format_duration helper ([c729792](https://github.com/appydave/appydave-tools/commit/c729792c89507e16ce4c51de55c7a05173da97e7))
+
 # [0.24.0](https://github.com/appydave/appydave-tools/compare/v0.23.0...v0.24.0) (2025-11-19)
 
 
