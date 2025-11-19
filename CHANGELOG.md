@@ -1,3 +1,12 @@
+# [0.22.0](https://github.com/appydave/appydave-tools/compare/v0.21.2...v0.22.0) (2025-11-19)
+
+
+### Features
+
+* fix remaining rubocop string literal issue ([a28b9be](https://github.com/appydave/appydave-tools/commit/a28b9bedc31777bf382ebdc54b0abd4e27b7609a))
+* fix rubocop issues in S3 scanner implementation ([20e9d48](https://github.com/appydave/appydave-tools/commit/20e9d481843aa4ab622a3ce6e56ff1183e3bad27))
+* implement S3 scanning to query AWS for actual file data ([f452f95](https://github.com/appydave/appydave-tools/commit/f452f9587ed94f25f100ff36682f9b9c4312b975))
+
 ## [0.21.2](https://github.com/appydave/appydave-tools/compare/v0.21.1...v0.21.2) (2025-11-17)
 
 
