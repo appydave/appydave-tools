@@ -1,3 +1,10 @@
+# [0.26.0](https://github.com/appydave/appydave-tools/compare/v0.25.0...v0.26.0) (2025-11-19)
+
+
+### Features
+
+* exclude Windows Zone.Identifier files from upload and archive ([e018b6d](https://github.com/appydave/appydave-tools/commit/e018b6d9750394e38877421d49a9dd7d4319315c))
+
 # [0.25.0](https://github.com/appydave/appydave-tools/compare/v0.24.0...v0.25.0) (2025-11-19)
 
 
