@@ -551,13 +551,18 @@ module Appydave
 
           FileUtils.mkdir_p(File.dirname(local_file))
 
+          start_time = Time.now
+
           s3_client.get_object(
             bucket: brand_info.aws.s3_bucket,
             key: s3_key,
             response_target: local_file
           )
 
-          puts "  ✓ Downloaded: #{File.basename(local_file)} (#{file_size_human(File.size(local_file))})"
+          elapsed = Time.now - start_time
+          elapsed_str = format_duration(elapsed)
+          file_size = File.size(local_file)
+          puts "  ✓ Downloaded: #{File.basename(local_file)} (#{file_size_human(file_size)}) in #{elapsed_str}"
           true
         rescue Aws::S3::Errors::ServiceError => e
           puts "  ✗ Failed: #{File.basename(local_file)}"
