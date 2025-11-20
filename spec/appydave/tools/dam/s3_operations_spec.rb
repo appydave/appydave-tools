@@ -707,7 +707,7 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
       expect do
         s3_ops.status
-      end.to output(/test-subfolder\/test-project/).to_stdout
+      end.to output(%r{test-subfolder/test-project}).to_stdout
     end
 
     it 'creates project directory in subfolder when downloading to non-existent project' do
