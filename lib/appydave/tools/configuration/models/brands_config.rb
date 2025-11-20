@@ -215,15 +215,17 @@ module Appydave
 
           # Type-safe class to access brand settings
           class BrandSettings
-            attr_accessor :s3_cleanup_days
+            attr_accessor :s3_cleanup_days, :projects_subfolder
 
             def initialize(data)
               @s3_cleanup_days = data['s3_cleanup_days'] || 90
+              @projects_subfolder = data['projects_subfolder'] || ''
             end
 
             def to_h
               {
-                's3_cleanup_days' => @s3_cleanup_days
+                's3_cleanup_days' => @s3_cleanup_days,
+                'projects_subfolder' => @projects_subfolder
               }
             end
           end

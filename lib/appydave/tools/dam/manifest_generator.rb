@@ -76,6 +76,15 @@ module Appydave
           Appydave::Tools::Configuration::Config.brands.get_brand(brand)
         end
 
+        # Build project directory path respecting brand's projects_subfolder setting
+        def project_directory_path(project_id)
+          if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
+            File.join(brand_path, brand_info.settings.projects_subfolder, project_id)
+          else
+            File.join(brand_path, project_id)
+          end
+        end
+
         def collect_project_ids(ssd_backup, ssd_available)
           all_project_ids = []
 
@@ -98,13 +107,22 @@ module Appydave
           end
 
           # Scan local flat structure (active projects only)
-          Dir.glob(File.join(brand_path, '*/')).each do |path|
-            basename = File.basename(path)
-            # Skip hidden and special directories
-            next if basename.start_with?('.', '_')
-            next if %w[s3-staging archived final].include?(basename)
+          # Check both brand root and projects subfolder if configured
+          scan_paths = [brand_path]
+          if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
+            projects_folder = File.join(brand_path, brand_info.settings.projects_subfolder)
+            scan_paths << projects_folder if Dir.exist?(projects_folder)
+          end
 
-            all_project_ids << basename if valid_project_folder?(path)
+          scan_paths.each do |scan_path|
+            Dir.glob(File.join(scan_path, '*/')).each do |path|
+              basename = File.basename(path)
+              # Skip hidden and special directories
+              next if basename.start_with?('.', '_')
+              next if %w[s3-staging archived final].include?(basename)
+
+              all_project_ids << basename if valid_project_folder?(path)
+            end
           end
 
           # Scan archived structure (restored/archived projects)
@@ -129,7 +147,7 @@ module Appydave
 
         def build_project_entry(project_id, ssd_backup, ssd_available)
           # Check flat structure (active projects)
-          flat_path = File.join(brand_path, project_id)
+          flat_path = project_directory_path(project_id)
           flat_exists = Dir.exist?(flat_path)
 
           # Check archived structure (restored/archived projects)
@@ -197,7 +215,7 @@ module Appydave
           projects.each do |project|
             if project[:storage][:local][:exists]
               # Try flat structure first, then archived structure
-              flat_path = File.join(brand_path, project[:id])
+              flat_path = project_directory_path(project[:id])
               if Dir.exist?(flat_path)
                 local_bytes += calculate_directory_size(flat_path)
               else

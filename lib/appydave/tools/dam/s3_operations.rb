@@ -51,6 +51,15 @@ module Appydave
           Appydave::Tools::Configuration::Config.brands.get_brand(brand)
         end
 
+        # Build project directory path respecting brand's projects_subfolder setting
+        def project_directory_path
+          if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
+            File.join(brand_path, brand_info.settings.projects_subfolder, project_id)
+          else
+            File.join(brand_path, project_id)
+          end
+        end
+
         # Determine which AWS profile to use based on current user
         # Priority: current user's default_aws_profile > brand's aws.profile
         def determine_aws_profile(brand_info)
@@ -108,7 +117,7 @@ module Appydave
 
         # Upload files from s3-staging/ to S3
         def upload(dry_run: false)
-          project_dir = File.join(brand_path, project_id)
+          project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
 
           unless Dir.exist?(staging_dir)
@@ -163,7 +172,7 @@ module Appydave
 
         # Download files from S3 to s3-staging/
         def download(dry_run: false)
-          project_dir = File.join(brand_path, project_id)
+          project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
 
           # Ensure project directory exists before download
@@ -212,7 +221,7 @@ module Appydave
 
         # Show sync status
         def status
-          project_dir = File.join(brand_path, project_id)
+          project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
 
           s3_files = list_s3_files
@@ -316,7 +325,7 @@ module Appydave
 
         # Cleanup local s3-staging files
         def cleanup_local(force: false, dry_run: false)
-          project_dir = File.join(brand_path, project_id)
+          project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
 
           unless Dir.exist?(staging_dir)
@@ -384,7 +393,7 @@ module Appydave
             return
           end
 
-          project_dir = File.join(brand_path, project_id)
+          project_dir = project_directory_path
 
           unless Dir.exist?(project_dir)
             puts "❌ Project not found: #{project_dir}"
