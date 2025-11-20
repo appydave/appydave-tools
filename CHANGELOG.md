@@ -1,3 +1,10 @@
+# [0.28.0](https://github.com/appydave/appydave-tools/compare/v0.27.0...v0.28.0) (2025-11-20)
+
+
+### Features
+
+* add projects_subfolder setting to support organized brand structures - allows brands like SupportSignal to keep projects in a subfolder while AppyDave keeps them at root ([6e8ed69](https://github.com/appydave/appydave-tools/commit/6e8ed6951045b2d35c6d71c53ebcb32082704ade))
+
 # [0.27.0](https://github.com/appydave/appydave-tools/compare/v0.26.0...v0.27.0) (2025-11-19)
 
 
