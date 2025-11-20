@@ -1,3 +1,11 @@
+# [0.29.0](https://github.com/appydave/appydave-tools/compare/v0.28.0...v0.29.0) (2025-11-20)
+
+
+### Features
+
+* add comprehensive unit tests for recent S3 features - Zone.Identifier exclusion, download timing, project directory creation, and excluded_path helper ([2a2f35a](https://github.com/appydave/appydave-tools/commit/2a2f35acb1e3674c15860120f0cf60a3fe0fe6b2))
+* add unit tests for projects_subfolder feature in S3Operations ([7b47ee2](https://github.com/appydave/appydave-tools/commit/7b47ee20e1f4326446833ccd87fbb441cbabba45))
+
 # [0.28.0](https://github.com/appydave/appydave-tools/compare/v0.27.0...v0.28.0) (2025-11-20)
 
 
