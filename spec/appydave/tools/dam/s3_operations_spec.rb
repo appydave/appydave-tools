@@ -613,4 +613,128 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       expect(s3_ops.send(:excluded_path?, 'folder/document.pdf')).to be false
     end
   end
+
+  describe 'projects_subfolder support' do
+    let(:subfolder_brands_data) do
+      {
+        'brands' => {
+          'test-subfolder' => {
+            'name' => 'Test Subfolder Brand',
+            'shortcut' => 'tsf',
+            'type' => 'owned',
+            'youtube_channels' => [],
+            'team' => ['david'],
+            'locations' => {
+              'video_projects' => brand_path,
+              'ssd_backup' => '/tmp/ssd'
+            },
+            'aws' => {
+              'profile' => 'test-profile',
+              'region' => 'us-east-1',
+              's3_bucket' => 'test-bucket',
+              's3_prefix' => 'staging/v-test/'
+            },
+            'settings' => {
+              's3_cleanup_days' => 90,
+              'projects_subfolder' => 'projects'
+            }
+          }
+        },
+        'users' => {
+          'david' => {
+            'name' => 'David Test',
+            'email' => 'david@test.com',
+            'role' => 'owner',
+            'default_aws_profile' => 'test-profile'
+          }
+        }
+      }
+    end
+
+    let(:subfolder_brand_info) do
+      Appydave::Tools::Configuration::Models::BrandsConfig::BrandInfo.new(
+        'test-subfolder',
+        subfolder_brands_data['brands']['test-subfolder']
+      )
+    end
+
+    let(:subfolder_project_dir) { File.join(brand_path, 'projects', 'test-project') }
+    let(:subfolder_staging_dir) { File.join(subfolder_project_dir, 's3-staging') }
+
+    before do
+      FileUtils.mkdir_p(subfolder_staging_dir)
+      File.write(File.join(subfolder_staging_dir, 'subfolder-test.txt'), 'subfolder content')
+    end
+
+    def create_subfolder_s3_operations
+      described_class.new(
+        'test-subfolder',
+        'test-project',
+        brand_info: subfolder_brand_info,
+        brand_path: brand_path,
+        s3_client: mock_s3_client
+      )
+    end
+
+    it 'constructs correct path with projects_subfolder for upload' do
+      s3_ops = create_subfolder_s3_operations
+      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+
+      expect(mock_s3_client).to receive(:put_object) do |args|
+        expect(args[:key]).to eq('staging/v-test/test-project/subfolder-test.txt')
+      end
+
+      s3_ops.upload(dry_run: false)
+    end
+
+    it 'constructs correct path with projects_subfolder for download' do
+      s3_ops = create_subfolder_s3_operations
+      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
+      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+
+      expect(mock_s3_client).to receive(:get_object) do |args|
+        expect(args[:response_target]).to match(%r{projects/test-project/s3-staging/video\.mp4$})
+        FileUtils.mkdir_p(File.dirname(args[:response_target]))
+        File.write(args[:response_target], 'downloaded content')
+      end
+
+      s3_ops.download(dry_run: false)
+    end
+
+    it 'constructs correct path with projects_subfolder for status' do
+      s3_ops = create_subfolder_s3_operations
+      allow(s3_ops).to receive(:list_s3_files).and_return([])
+
+      expect do
+        s3_ops.status
+      end.to output(/test-subfolder\/test-project/).to_stdout
+    end
+
+    it 'creates project directory in subfolder when downloading to non-existent project' do
+      FileUtils.rm_rf(subfolder_project_dir)
+
+      s3_ops = create_subfolder_s3_operations
+      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
+      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+
+      expect(mock_s3_client).to receive(:get_object) do |args|
+        FileUtils.mkdir_p(File.dirname(args[:response_target]))
+        File.write(args[:response_target], 'downloaded content')
+      end
+
+      expect do
+        s3_ops.download(dry_run: false)
+      end.to output(/📁 Creating project directory: test-project/).to_stdout
+
+      expect(Dir.exist?(subfolder_project_dir)).to be true
+    end
+
+    it 'defaults to empty string when projects_subfolder not configured' do
+      expect(brand_info.settings.projects_subfolder).to eq('')
+    end
+
+    it 'returns configured projects_subfolder value' do
+      expect(subfolder_brand_info.settings.projects_subfolder).to eq('projects')
+    end
+  end
 end
