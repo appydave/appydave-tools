@@ -68,7 +68,7 @@ module Appydave
 
           # Gather project data
           project_data = projects.map do |project|
-            project_path = Config.project_path(brand, project)
+            project_path = Config.project_path(brand_arg, project)
             size = calculate_directory_size(project_path)
             modified = File.mtime(project_path)
 
@@ -112,7 +112,7 @@ module Appydave
 
           # Gather project data
           project_data = matches.map do |project|
-            project_path = Config.project_path(brand, project)
+            project_path = Config.project_path(brand_arg, project)
             size = calculate_directory_size(project_path)
             modified = File.mtime(project_path)
 
