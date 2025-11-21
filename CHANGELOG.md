@@ -1,3 +1,10 @@
+## [0.31.1](https://github.com/appydave/appydave-tools/compare/v0.31.0...v0.31.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* add git fetch to repo-status for accurate remote sync detection ([cdbf411](https://github.com/appydave/appydave-tools/commit/cdbf411d4978195c247656c0e443f390d60cdfe8))
+
 # [0.31.0](https://github.com/appydave/appydave-tools/compare/v0.30.0...v0.31.0) (2025-11-21)
 
 
