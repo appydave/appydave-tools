@@ -1,3 +1,10 @@
+# [0.31.0](https://github.com/appydave/appydave-tools/compare/v0.30.0...v0.31.0) (2025-11-21)
+
+
+### Features
+
+* fix ManifestGenerator to scan only projects subfolder when configured - prevents scanning brand root organizational folders (brand/, personas/, video-scripts/) as projects ([2c8d84c](https://github.com/appydave/appydave-tools/commit/2c8d84c70f783a0f87ff36cc1e79c00df668def5))
+
 # [0.30.0](https://github.com/appydave/appydave-tools/compare/v0.29.0...v0.30.0) (2025-11-21)
 
 
