@@ -1,3 +1,10 @@
+# [0.45.0](https://github.com/appydave/appydave-tools/compare/v0.44.0...v0.45.0) (2025-11-21)
+
+
+### Features
+
+* add footer summaries to project listings ([ace5419](https://github.com/appydave/appydave-tools/commit/ace54192e45d388a737aaa7d3aed271e071a1727))
+
 # [0.44.0](https://github.com/appydave/appydave-tools/compare/v0.43.0...v0.44.0) (2025-11-21)
 
 
