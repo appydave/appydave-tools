@@ -84,8 +84,14 @@ module Appydave
 
         def sync_status_text(ahead, behind)
           parts = []
-          parts << "#{ahead} ahead" if ahead.positive?
-          parts << "#{behind} behind" if behind.positive?
+          if ahead.positive?
+            commit_word = ahead == 1 ? 'commit' : 'commits'
+            parts << "#{ahead} #{commit_word} to push"
+          end
+          if behind.positive?
+            commit_word = behind == 1 ? 'commit' : 'commits'
+            parts << "#{behind} #{commit_word} to pull"
+          end
           parts.join(', ')
         end
 
