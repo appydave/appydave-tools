@@ -102,6 +102,13 @@ module Appydave
               shorten_path(data[:path])
             )
           end
+
+          # Print footer summary
+          total_size = project_data.sum { |d| d[:size] }
+          project_count = project_data.size
+
+          puts ''
+          puts "Total: #{project_count} project#{'s' if project_count != 1}, #{format_size(total_size)}"
         end
 
         # List with pattern matching (Mode 3b)
@@ -157,6 +164,16 @@ module Appydave
               shorten_path(data[:path])
             )
           end
+
+          # Print footer summary
+          total_size = project_data.sum { |d| d[:size] }
+          all_projects = ProjectResolver.list_projects(brand_arg)
+          brand_total_size = calculate_total_size(brand_arg, all_projects)
+          percentage = brand_total_size.positive? ? (total_size.to_f / brand_total_size * 100).round(1) : 0
+
+          puts ''
+          puts "Total: #{match_count} project#{'s' if match_count != 1}, #{format_size(total_size)} " \
+               "(#{percentage}% of #{brand})"
         end
 
         # Helper methods
