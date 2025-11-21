@@ -1,3 +1,10 @@
+# [0.42.0](https://github.com/appydave/appydave-tools/compare/v0.41.0...v0.42.0) (2025-11-21)
+
+
+### Features
+
+* enhance DAM CLI with version flag, improved help system, and better error messages ([086ee99](https://github.com/appydave/appydave-tools/commit/086ee99dca632c797a2783880b5eb038f7a2d6ed))
+
 # [0.41.0](https://github.com/appydave/appydave-tools/compare/v0.40.0...v0.41.0) (2025-11-21)
 
 
