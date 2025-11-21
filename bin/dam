@@ -1125,7 +1125,7 @@ class VatCLI
     exit 1
   end
 
-  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def scan_single_brand_s3(brand_arg)
     puts "🔄 Scanning S3 for #{brand_arg}..."
     puts ''
@@ -1161,7 +1161,12 @@ class VatCLI
 
     manifest = JSON.parse(File.read(manifest_path), symbolize_names: true)
 
-    # Merge S3 scan data into manifest
+    # Identify matched and orphaned S3 projects
+    local_project_ids = manifest[:projects].map { |p| p[:id] }
+    matched_s3_projects = results.keys.select { |project_id| local_project_ids.include?(project_id) }
+    orphaned_s3_projects = results.keys.reject { |project_id| local_project_ids.include?(project_id) }
+
+    # Merge S3 scan data into manifest for matched projects
     updated_count = 0
     manifest[:projects].each do |project|
       project_id = project[:id]
@@ -1186,10 +1191,24 @@ class VatCLI
     puts "   Projects in S3: #{results.size}"
     puts "   Projects in manifest: #{total_manifest_projects}"
     puts "   Updated #{updated_count} projects in manifest"
-    if results.size != total_manifest_projects
+
+    if orphaned_s3_projects.any?
       puts ''
-      puts "   ⚠️  Mismatch: #{results.size} S3 projects vs #{total_manifest_projects} local projects"
-      puts "   This may indicate projects exist locally but haven't been uploaded to S3 yet"
+      puts '   ⚠️  Orphaned S3 folders (no local project):'
+      orphaned_s3_projects.each do |project_id|
+        s3_data = results[project_id]
+        size = format_bytes(s3_data[:total_bytes])
+        puts "      - #{project_id} (#{s3_data[:file_count]} files, #{size})"
+      end
+      puts ''
+      puts '   These folders exist in S3 but have no corresponding local project.'
+      puts '   Consider cleaning them up with: dam s3-cleanup'
+    end
+
+    if matched_s3_projects.size < total_manifest_projects
+      missing_count = total_manifest_projects - matched_s3_projects.size
+      puts ''
+      puts "   ℹ️  #{missing_count} local project(s) not yet uploaded to S3"
     end
     puts ''
   end
@@ -1236,7 +1255,20 @@ class VatCLI
     puts ''
     puts "Total brands scanned: #{successful.size}/#{results.size}"
   end
-  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+  # Format bytes in human-readable format
+  # rubocop:disable Style/FormatStringToken
+  def format_bytes(bytes)
+    return '0 B' if bytes.zero?
+
+    units = %w[B KB MB GB TB]
+    exp = (Math.log(bytes) / Math.log(1024)).to_i
+    exp = [exp, units.length - 1].min
+
+    format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
+  end
+  # rubocop:enable Style/FormatStringToken
 end
 
 # Run CLI
