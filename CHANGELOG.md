@@ -1,3 +1,10 @@
+## [0.45.1](https://github.com/appydave/appydave-tools/compare/v0.45.0...v0.45.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* remove double error emoji from raised exceptions ([120bd5b](https://github.com/appydave/appydave-tools/commit/120bd5beba944f13e5fbdc2119bf517e92128b70))
+
 # [0.45.0](https://github.com/appydave/appydave-tools/compare/v0.44.0...v0.45.0) (2025-11-21)
 
 
