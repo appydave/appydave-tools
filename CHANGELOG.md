@@ -1,3 +1,15 @@
+# [0.34.0](https://github.com/appydave/appydave-tools/compare/v0.33.0...v0.34.0) (2025-11-21)
+
+
+### Bug Fixes
+
+* fix RuboCop Style/EmptyStringInsideInterpolation offense in orphaned folder message ([aa0890b](https://github.com/appydave/appydave-tools/commit/aa0890b9d06b09e02e78a4c69e666f9157c80660))
+
+
+### Features
+
+* improve s3-scan UX with table format and spinner - shows file counts for all projects, spinner progress indicator, valid/orphaned visual distinction, and clickable AWS Console URLs for cleanup ([6d8ac4e](https://github.com/appydave/appydave-tools/commit/6d8ac4e896f70c38927d44420bdbe9e722b17a4d))
+
 # [0.33.0](https://github.com/appydave/appydave-tools/compare/v0.32.5...v0.33.0) (2025-11-21)
 
 
