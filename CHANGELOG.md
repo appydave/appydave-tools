@@ -1,3 +1,17 @@
+# [0.38.0](https://github.com/appydave/appydave-tools/compare/v0.37.0...v0.38.0) (2025-11-21)
+
+
+### Bug Fixes
+
+* rename FileUtils to FileHelper to avoid Ruby stdlib conflict ([e441b43](https://github.com/appydave/appydave-tools/commit/e441b4356ec40a66f5562e9cf0ec74f562b449b2))
+
+
+### Features
+
+* add DAM exception hierarchy for consistent error handling ([c885590](https://github.com/appydave/appydave-tools/commit/c885590be721d2b2803fd6aaa7001afc8cdbd285))
+* extract FileUtils module to eliminate 40 lines of duplication ([643748e](https://github.com/appydave/appydave-tools/commit/643748ea583eba3605e1a6ce17e117db18f66c4c))
+* extract GitHelper module to eliminate ~90 lines of git operations duplication across status.rb, repo_status.rb, and repo_push.rb ([f32dc1d](https://github.com/appydave/appydave-tools/commit/f32dc1d54877a9a981878a6e7c203922e50004fe))
+
 # [0.37.0](https://github.com/appydave/appydave-tools/compare/v0.36.0...v0.37.0) (2025-11-21)
 
 
