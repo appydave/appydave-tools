@@ -1,3 +1,10 @@
+# [0.35.0](https://github.com/appydave/appydave-tools/compare/v0.34.1...v0.35.0) (2025-11-21)
+
+
+### Features
+
+* improve s3-discover UX with table format showing file sizes, last modified, total summary, and quick action commands for share/download/cleanup ([3aa5edc](https://github.com/appydave/appydave-tools/commit/3aa5edcd70ca238c084021e0ef264d46b74557dc))
+
 ## [0.34.1](https://github.com/appydave/appydave-tools/compare/v0.34.0...v0.34.1) (2025-11-21)
 
 
