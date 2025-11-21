@@ -241,40 +241,27 @@ module Appydave
         end
 
         def current_branch
-          `git -C "#{brand_path}" rev-parse --abbrev-ref HEAD 2>/dev/null`.strip
-        rescue StandardError
-          'unknown'
+          GitHelper.current_branch(brand_path)
         end
 
         def remote_url
-          result = `git -C "#{brand_path}" remote get-url origin 2>/dev/null`.strip
-          result.empty? ? nil : result
-        rescue StandardError
-          nil
+          GitHelper.remote_url(brand_path)
         end
 
         def modified_files_count
-          `git -C "#{brand_path}" status --porcelain 2>/dev/null | grep -E "^.M|^M" | wc -l`.strip.to_i
-        rescue StandardError
-          0
+          GitHelper.modified_files_count(brand_path)
         end
 
         def untracked_files_count
-          `git -C "#{brand_path}" status --porcelain 2>/dev/null | grep -E "^\\?\\?" | wc -l`.strip.to_i
-        rescue StandardError
-          0
+          GitHelper.untracked_files_count(brand_path)
         end
 
         def commits_ahead
-          `git -C "#{brand_path}" rev-list --count @{upstream}..HEAD 2>/dev/null`.strip.to_i
-        rescue StandardError
-          0
+          GitHelper.commits_ahead(brand_path)
         end
 
         def commits_behind
-          `git -C "#{brand_path}" rev-list --count HEAD..@{upstream} 2>/dev/null`.strip.to_i
-        rescue StandardError
-          0
+          GitHelper.commits_behind(brand_path)
         end
       end
     end

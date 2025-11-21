@@ -105,16 +105,11 @@ module Appydave
         end
 
         def uncommitted_changes?
-          output = `git -C "#{brand_path}" status --porcelain 2>/dev/null`.strip
-          !output.empty?
-        rescue StandardError
-          false
+          GitHelper.uncommitted_changes?(brand_path)
         end
 
         def commits_ahead
-          `git -C "#{brand_path}" rev-list --count @{upstream}..HEAD 2>/dev/null`.strip.to_i
-        rescue StandardError
-          0
+          GitHelper.commits_ahead(brand_path)
         end
 
         def show_push_summary(output)
