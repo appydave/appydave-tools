@@ -1,3 +1,10 @@
+# [0.43.0](https://github.com/appydave/appydave-tools/compare/v0.42.0...v0.43.0) (2025-11-21)
+
+
+### Features
+
+* improve DAM error messages with helpful hints and match counts ([bb4e71e](https://github.com/appydave/appydave-tools/commit/bb4e71ea064b131b7df05e61e98eefc858cbb610))
+
 # [0.42.0](https://github.com/appydave/appydave-tools/compare/v0.41.0...v0.42.0) (2025-11-21)
 
 
