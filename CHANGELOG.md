@@ -1,3 +1,10 @@
+## [0.32.2](https://github.com/appydave/appydave-tools/compare/v0.32.1...v0.32.2) (2025-11-21)
+
+
+### Bug Fixes
+
+* remove 'projects' from organizational folder exclusions - it should only be excluded when appearing at brand root, not when projects_subfolder properly configured ([4c72a11](https://github.com/appydave/appydave-tools/commit/4c72a116805573a3444dd977ed711e5f7538e190))
+
 ## [0.32.1](https://github.com/appydave/appydave-tools/compare/v0.32.0...v0.32.1) (2025-11-21)
 
 
