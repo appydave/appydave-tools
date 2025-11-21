@@ -517,4 +517,85 @@ RSpec.describe Appydave::Tools::Dam::ManifestGenerator do
       expect(timestamp).to match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)
     end
   end
+
+  context 'with projects_subfolder configured' do
+    let(:subfolder_brands_data) do
+      {
+        'brands' => {
+          'test-subfolder' => {
+            'name' => 'Test Subfolder Brand',
+            'shortcut' => 'test-subfolder',
+            'type' => 'owned',
+            'youtube_channels' => [],
+            'team' => ['david'],
+            'locations' => {
+              'video_projects' => brand_path,
+              'ssd_backup' => ssd_backup
+            },
+            'aws' => {
+              'profile' => 'test-profile',
+              'region' => 'us-east-1',
+              's3_bucket' => 'test-bucket',
+              's3_prefix' => 'staging/v-test/'
+            },
+            'settings' => {
+              's3_cleanup_days' => 90,
+              'projects_subfolder' => 'projects'
+            }
+          }
+        },
+        'users' => {
+          'david' => {
+            'name' => 'David Test',
+            'email' => 'david@test.com',
+            'role' => 'owner',
+            'default_aws_profile' => 'test-profile'
+          }
+        }
+      }
+    end
+
+    let(:subfolder_brand_info) do
+      Appydave::Tools::Configuration::Models::BrandsConfig::BrandInfo.new(
+        'test-subfolder',
+        subfolder_brands_data['brands']['test-subfolder']
+      )
+    end
+
+    before do
+      FileUtils.mkdir_p(brand_path)
+      FileUtils.mkdir_p(ssd_backup)
+
+      # Create organizational folders at brand root (should be ignored)
+      FileUtils.mkdir_p(File.join(brand_path, 'brand'))
+      FileUtils.mkdir_p(File.join(brand_path, 'personas'))
+      FileUtils.mkdir_p(File.join(brand_path, 'video-scripts'))
+
+      # Create projects subfolder with actual projects
+      projects_dir = File.join(brand_path, 'projects')
+      FileUtils.mkdir_p(File.join(projects_dir, 'a01-actual-project'))
+      FileUtils.mkdir_p(File.join(projects_dir, 'a02-another-project'))
+
+      # Create files in projects to make them valid
+      File.write(File.join(projects_dir, 'a01-actual-project', 'test.txt'), 'content')
+      File.write(File.join(projects_dir, 'a02-another-project', 'test.txt'), 'content')
+    end
+
+    it 'scans only the projects subfolder, not brand root organizational folders' do
+      generator = described_class.new('test-subfolder', brand_info: subfolder_brand_info, brand_path: brand_path)
+      generator.generate
+
+      output_file = File.join(brand_path, 'projects.json')
+      manifest = JSON.parse(File.read(output_file))
+
+      # Should find only the 2 projects in the subfolder
+      expect(manifest['projects'].size).to eq(2)
+
+      project_ids = manifest['projects'].map { |p| p['id'] }
+      expect(project_ids).to contain_exactly('a01-actual-project', 'a02-another-project')
+
+      # Should NOT include organizational folders
+      expect(project_ids).not_to include('brand', 'personas', 'video-scripts', 'projects')
+    end
+  end
 end

@@ -107,11 +107,13 @@ module Appydave
           end
 
           # Scan local flat structure (active projects only)
-          # Check both brand root and projects subfolder if configured
-          scan_paths = [brand_path]
+          # If projects_subfolder is configured, scan only that subfolder
+          # Otherwise, scan brand root (for flat structure like AppyDave)
           if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
             projects_folder = File.join(brand_path, brand_info.settings.projects_subfolder)
-            scan_paths << projects_folder if Dir.exist?(projects_folder)
+            scan_paths = Dir.exist?(projects_folder) ? [projects_folder] : []
+          else
+            scan_paths = [brand_path]
           end
 
           scan_paths.each do |scan_path|
