@@ -1,3 +1,10 @@
+# [0.30.0](https://github.com/appydave/appydave-tools/compare/v0.29.0...v0.30.0) (2025-11-21)
+
+
+### Features
+
+* add Config.project_path utility method for DRY principle - update all DAM files to use centralized path resolution ([acd9b9a](https://github.com/appydave/appydave-tools/commit/acd9b9afb0b03af0bb980ab1208aacf9ed422267))
+
 # [0.29.0](https://github.com/appydave/appydave-tools/compare/v0.28.0...v0.29.0) (2025-11-20)
 
 
