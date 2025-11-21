@@ -515,25 +515,68 @@ class VatCLI
     true
   end
 
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def display_s3_files(files, brand_key, project_id, shareable)
+    brand_display = Appydave::Tools::Dam::Config.expand_brand(brand_key)
+
     puts ''
-    puts "📁 Files in S3: #{brand_key}/#{project_id}"
+    puts "🔍 S3 Discovery: #{brand_display}/#{project_id}"
     puts ''
 
+    if shareable
+      # Legacy --shareable mode: just list share commands
+      files.each do |file_info|
+        s3_key = file_info['Key']
+        filename = File.basename(s3_key)
+        puts "dam s3-share #{brand_key} #{project_id} #{filename}"
+      end
+      puts ''
+      return
+    end
+
+    # Table format
+    puts 'FILES                                    SIZE        LAST MODIFIED'
+    puts '-' * 72
+
+    total_bytes = 0
     files.each do |file_info|
-      # list_s3_files returns array of hashes with 'Key', 'Size', 'ETag'
       s3_key = file_info['Key']
       filename = File.basename(s3_key)
+      size = file_info['Size']
+      last_modified = file_info['LastModified']
 
-      if shareable
-        puts "dam s3-share #{brand_key} #{project_id} #{filename}"
-      else
-        puts filename
-      end
+      total_bytes += size
+
+      # Format columns
+      file_col = filename.ljust(40)
+      size_col = format_bytes(size).rjust(10)
+      date_col = last_modified ? last_modified.strftime('%Y-%m-%d %H:%M') : 'N/A'.ljust(16)
+
+      puts "#{file_col} #{size_col}     #{date_col}"
     end
+
+    puts '-' * 72
+    puts "Total: #{files.size} #{files.size == 1 ? 'file' : 'files'}, #{format_bytes(total_bytes)}"
+
+    # Quick actions section
+    puts ''
+    puts '📋 Quick Actions:'
+
+    # Share first file (most likely the video)
+    if files.any?
+      first_file = File.basename(files.first['Key'])
+      puts "  dam s3-share #{brand_key} #{project_id} #{first_file}  # Share first file (7-day link)"
+    end
+
+    # Download all files
+    puts "  dam s3-down #{brand_key} #{project_id}       # Download all files"
+
+    # Cleanup preview
+    puts "  dam s3-cleanup-remote #{brand_key} #{project_id} --dry-run  # Preview cleanup"
 
     puts ''
   end
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
   # Help text methods
   # rubocop:disable Metrics/MethodLength
