@@ -1249,7 +1249,8 @@ class VatCLI
     end
 
     puts ''
-    puts "⚠️  #{orphaned_projects.size} orphaned folder#{orphaned_projects.size > 1 ? 's' : ''} found (no local project)"
+    folder_word = orphaned_projects.size > 1 ? 'folders' : 'folder'
+    puts "⚠️  #{orphaned_projects.size} orphaned #{folder_word} found (no local project)"
 
     orphaned_projects.sort.each do |project_id, _data|
       # Build AWS Console URL
