@@ -1,3 +1,10 @@
+## [0.32.1](https://github.com/appydave/appydave-tools/compare/v0.32.0...v0.32.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* exclude organizational folders (brand, personas, projects, video-scripts) from ProjectResolver.valid_project? to prevent them appearing in project lists ([c573edf](https://github.com/appydave/appydave-tools/commit/c573edf138daebcdbb2ece102e6f36db92453a70))
+
 # [0.32.0](https://github.com/appydave/appydave-tools/compare/v0.31.2...v0.32.0) (2025-11-21)
 
 
