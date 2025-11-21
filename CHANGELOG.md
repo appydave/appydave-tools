@@ -1,3 +1,10 @@
+# [0.39.0](https://github.com/appydave/appydave-tools/compare/v0.38.0...v0.39.0) (2025-11-21)
+
+
+### Features
+
+* create BrandResolver class to centralize brand name resolution and eliminate ~30 lines of duplication from Config.expand_brand, fixing case-sensitivity bugs ([d6cce4b](https://github.com/appydave/appydave-tools/commit/d6cce4b0c1df6d7efcd40db52e80534c4014fdb5))
+
 # [0.38.0](https://github.com/appydave/appydave-tools/compare/v0.37.0...v0.38.0) (2025-11-21)
 
 
