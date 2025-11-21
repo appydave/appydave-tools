@@ -24,8 +24,8 @@ module Appydave
           brand_data = brands.map do |brand|
             brand_path = Config.brand_path(brand)
             projects = ProjectResolver.list_projects(brand)
-            total_size = calculate_total_size(brand, brand_path, projects)
-            last_modified = find_last_modified(brand, brand_path, projects)
+            total_size = calculate_total_size(brand, projects)
+            last_modified = find_last_modified(brand, projects)
 
             {
               name: brand,
@@ -62,8 +62,6 @@ module Appydave
             puts "⚠️  No projects found for brand: #{brand}"
             return
           end
-
-          brand_path = Config.brand_path(brand)
 
           # Gather project data
           project_data = projects.map do |project|
@@ -141,7 +139,7 @@ module Appydave
         # Helper methods
 
         # Calculate total size of all projects in a brand
-        def self.calculate_total_size(brand, brand_path, projects)
+        def self.calculate_total_size(brand, projects)
           projects.sum do |project|
             calculate_directory_size(Config.project_path(brand, project))
           end
@@ -161,7 +159,7 @@ module Appydave
         end
 
         # Find the most recent modification time across all projects
-        def self.find_last_modified(brand, brand_path, projects)
+        def self.find_last_modified(brand, projects)
           return Time.at(0) if projects.empty?
 
           projects.map do |project|

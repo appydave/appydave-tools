@@ -16,8 +16,6 @@ module Appydave
           # @param project_hint [String] Project name or pattern (e.g., 'b65', 'boy-baker', 'b6*')
           # @return [String, Array<String>] Full project name or array of names for patterns
           def resolve(brand, project_hint)
-            brand_path = Config.brand_path(brand)
-
             # Check for pattern (wildcard)
             return resolve_pattern(brand, project_hint) if project_hint.include?('*')
 
