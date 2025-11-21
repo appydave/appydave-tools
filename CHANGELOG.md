@@ -1,3 +1,10 @@
+# [0.46.0](https://github.com/appydave/appydave-tools/compare/v0.45.1...v0.46.0) (2025-11-21)
+
+
+### Features
+
+* enhance help documentation - brands, workflows, config sections ([293ed4d](https://github.com/appydave/appydave-tools/commit/293ed4d61b6d85b1b169b9473df09826f931dde7))
+
 ## [0.45.1](https://github.com/appydave/appydave-tools/compare/v0.45.0...v0.45.1) (2025-11-21)
 
 
