@@ -430,10 +430,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'lists files with correct prefix' do
+      timestamp = Time.now
       file1 = instance_double(Aws::S3::Types::Object, key: 'staging/v-test/test-project/file1.mp4', size: 1024,
-                                                      etag: '"abc123"')
+                                                      etag: '"abc123"', last_modified: timestamp)
       file2 = instance_double(Aws::S3::Types::Object, key: 'staging/v-test/test-project/file2.srt', size: 512,
-                                                      etag: '"def456"')
+                                                      etag: '"def456"', last_modified: timestamp)
 
       response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [file1, file2])
 
@@ -446,7 +447,9 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
       expect(files.size).to eq(2)
       expect(files[0]['Key']).to eq('staging/v-test/test-project/file1.mp4')
+      expect(files[0]['LastModified']).to eq(timestamp)
       expect(files[1]['Key']).to eq('staging/v-test/test-project/file2.srt')
+      expect(files[1]['LastModified']).to eq(timestamp)
     end
   end
 

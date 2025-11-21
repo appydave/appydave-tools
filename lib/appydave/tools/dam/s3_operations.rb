@@ -140,6 +140,7 @@ module Appydave
           skipped = 0
           failed = 0
 
+          # rubocop:disable Metrics/BlockLength
           files.each do |file|
             relative_path = file.sub("#{staging_dir}/", '')
 
@@ -158,12 +159,31 @@ module Appydave
             if local_md5 == s3_md5
               puts "  ⏭️  Skipped: #{relative_path} (unchanged)"
               skipped += 1
-            elsif upload_file(file, s3_path, dry_run: dry_run)
-              uploaded += 1
             else
-              failed += 1
+              # Warn if we're about to overwrite an existing S3 file
+              if s3_md5 && s3_md5 != local_md5
+                puts "  ⚠️  Warning: #{relative_path} exists in S3 with different content"
+
+                # Try to get S3 timestamp for comparison
+                s3_file_info = get_s3_file_info(s3_path)
+                if s3_file_info && s3_file_info['LastModified']
+                  s3_time = s3_file_info['LastModified']
+                  local_time = File.mtime(file)
+                  puts "     S3: #{s3_time.strftime('%Y-%m-%d %H:%M')} | Local: #{local_time.strftime('%Y-%m-%d %H:%M')}"
+
+                  puts '     ⚠️  S3 file is NEWER than local - you may be overwriting recent changes!' if s3_time > local_time
+                end
+                puts '     Uploading will overwrite S3 version...'
+              end
+
+              if upload_file(file, s3_path, dry_run: dry_run)
+                uploaded += 1
+              else
+                failed += 1
+              end
             end
           end
+          # rubocop:enable Metrics/BlockLength
 
           puts ''
           puts '✅ Upload complete!'
@@ -207,13 +227,29 @@ module Appydave
             if local_md5 == s3_md5
               puts "  ⏭️  Skipped: #{relative_path} (unchanged)"
               skipped += 1
-            elsif download_file(key, local_file, dry_run: dry_run)
-              downloaded += 1
             else
-              failed += 1
+              # Warn if we're about to overwrite an existing local file
+              if local_md5 && local_md5 != s3_md5
+                puts "  ⚠️  Warning: #{relative_path} exists locally with different content"
+
+                # Compare timestamps
+                if s3_file['LastModified'] && File.exist?(local_file)
+                  s3_time = s3_file['LastModified']
+                  local_time = File.mtime(local_file)
+                  puts "     S3: #{s3_time.strftime('%Y-%m-%d %H:%M')} | Local: #{local_time.strftime('%Y-%m-%d %H:%M')}"
+
+                  puts '     ⚠️  Local file is NEWER than S3 - you may be overwriting recent changes!' if local_time > s3_time
+                end
+                puts '     Downloading will overwrite local version...'
+              end
+
+              if download_file(key, local_file, dry_run: dry_run)
+                downloaded += 1
+              else
+                failed += 1
+              end
             end
           end
-
           puts ''
           puts '✅ Download complete!'
           puts "   Downloaded: #{downloaded}, Skipped: #{skipped}, Failed: #{failed}"
@@ -634,11 +670,29 @@ module Appydave
             {
               'Key' => obj.key,
               'Size' => obj.size,
-              'ETag' => obj.etag
+              'ETag' => obj.etag,
+              'LastModified' => obj.last_modified
             }
           end
         rescue Aws::S3::Errors::ServiceError
           []
+        end
+
+        # Get full S3 file info including timestamp
+        def get_s3_file_info(s3_key)
+          response = s3_client.head_object(
+            bucket: brand_info.aws.s3_bucket,
+            key: s3_key
+          )
+
+          {
+            'Key' => s3_key,
+            'Size' => response.content_length,
+            'ETag' => response.etag,
+            'LastModified' => response.last_modified
+          }
+        rescue Aws::S3::Errors::NotFound, Aws::S3::Errors::ServiceError
+          nil
         end
 
         # List local files in staging directory
