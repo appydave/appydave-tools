@@ -175,4 +175,76 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
       expect(described_class.format_date(nil)).to eq('N/A')
     end
   end
+
+  describe 'projects_subfolder support' do
+    let(:ss_brand_path) { File.join(temp_root, 'v-supportsignal') }
+    let(:ss_projects_path) { File.join(ss_brand_path, 'projects') }
+
+    before do
+      FileUtils.mkdir_p(ss_brand_path)
+      FileUtils.mkdir_p(ss_projects_path)
+
+      # Create organizational folders at brand root (should be ignored)
+      FileUtils.mkdir_p(File.join(ss_brand_path, 'brand'))
+      FileUtils.mkdir_p(File.join(ss_brand_path, 'personas'))
+
+      # Create actual projects in subfolder
+      FileUtils.mkdir_p(File.join(ss_projects_path, 'a01-first-project'))
+      FileUtils.mkdir_p(File.join(ss_projects_path, 'a02-second-project'))
+      File.write(File.join(ss_projects_path, 'a01-first-project', 'test.txt'), 'content')
+      File.write(File.join(ss_projects_path, 'a02-second-project', 'test.txt'), 'content')
+
+      # Mock Config for SupportSignal brand
+      allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('supportsignal').and_return(ss_brand_path)
+      allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('v-supportsignal').and_return(ss_brand_path)
+      allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with('supportsignal').and_return('v-supportsignal')
+
+      # Mock project_path to return paths in subfolder
+      allow(Appydave::Tools::Dam::Config).to receive(:project_path) do |_brand, project|
+        File.join(ss_projects_path, project)
+      end
+
+      # Mock ProjectResolver to return projects from subfolder
+      allow(Appydave::Tools::Dam::ProjectResolver).to receive(:list_projects).with('v-supportsignal')
+                                                                             .and_return(%w[a01-first-project a02-second-project])
+    end
+
+    describe '.list_brand_projects' do
+      it 'lists projects from subfolder, not brand root' do
+        output = capture_stdout { described_class.list_brand_projects('supportsignal') }
+
+        expect(output).to match(/Projects in v-supportsignal:/)
+        expect(output).to match(/a01-first-project/)
+        expect(output).to match(/a02-second-project/)
+        expect(output).not_to match(/brand/)
+        expect(output).not_to match(/personas/)
+      end
+
+      it 'calculates sizes correctly for subfolder projects' do
+        output = capture_stdout { described_class.list_brand_projects('supportsignal') }
+
+        # Should show file sizes (both files have "content" = 7 bytes each)
+        expect(output).to match(/7\.0 B/)
+      end
+    end
+
+    describe '.calculate_total_size' do
+      it 'calculates total size from projects in subfolder' do
+        total_size = described_class.calculate_total_size('v-supportsignal', %w[a01-first-project a02-second-project])
+
+        # Two files with "content" = 7 bytes each = 14 bytes total
+        expect(total_size).to eq(14)
+      end
+    end
+  end
+
+  # Helper method to capture stdout
+  def capture_stdout
+    original_stdout = $stdout
+    $stdout = StringIO.new
+    yield
+    $stdout.string
+  ensure
+    $stdout = original_stdout
+  end
 end

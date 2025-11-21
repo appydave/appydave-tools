@@ -228,4 +228,102 @@ RSpec.describe Appydave::Tools::Dam::ProjectResolver do
       expect(result).to be(false)
     end
   end
+
+  describe 'projects_subfolder support' do
+    include_context 'with dam filesystem'
+
+    let(:ss_brand_path) { File.join(projects_root, 'v-supportsignal') }
+    let(:ss_projects_path) { File.join(ss_brand_path, 'projects') }
+
+    let(:subfolder_brands_data) do
+      {
+        'brands' => {
+          'supportsignal' => {
+            'key' => 'supportsignal',
+            'shortcuts' => ['ss'],
+            'name' => 'SupportSignal',
+            'locations' => {
+              'video_projects' => ss_brand_path
+            },
+            'settings' => {
+              's3_cleanup_days' => 90,
+              'projects_subfolder' => 'projects'
+            }
+          }
+        }
+      }
+    end
+
+    before do
+      FileUtils.mkdir_p(ss_brand_path)
+      FileUtils.mkdir_p(ss_projects_path)
+
+      # Create organizational folders at brand root (should be ignored)
+      FileUtils.mkdir_p(File.join(ss_brand_path, 'brand'))
+      FileUtils.mkdir_p(File.join(ss_brand_path, 'personas'))
+
+      # Create actual projects in subfolder
+      FileUtils.mkdir_p(File.join(ss_projects_path, 'a01-first-project'))
+      FileUtils.mkdir_p(File.join(ss_projects_path, 'a02-second-project'))
+      FileUtils.mkdir_p(File.join(ss_projects_path, 'a10-test-project'))
+
+      # Mock BrandsConfig to return our test brand
+      # rubocop:disable RSpec/VerifiedDoubleReference
+      brands_config = instance_double('BrandsConfig')
+      # rubocop:enable RSpec/VerifiedDoubleReference
+      brand_info = Appydave::Tools::Configuration::Models::BrandsConfig::BrandInfo.new(
+        'supportsignal',
+        subfolder_brands_data['brands']['supportsignal']
+      )
+
+      allow(Appydave::Tools::Configuration::Config).to receive(:configure)
+      allow(Appydave::Tools::Configuration::Config).to receive(:brands).and_return(brands_config)
+      allow(brands_config).to receive(:get_brand).with('supportsignal').and_return(brand_info)
+      allow(brands_config).to receive(:get_brand).with('ss').and_return(brand_info)
+    end
+
+    describe '.list_projects' do
+      it 'finds projects in subfolder, not brand root' do
+        result = described_class.list_projects('supportsignal')
+        expect(result).to contain_exactly('a01-first-project', 'a02-second-project', 'a10-test-project')
+        expect(result).not_to include('brand', 'personas', 'projects')
+      end
+
+      it 'works with pattern filter' do
+        result = described_class.list_projects('supportsignal', 'a0*')
+        expect(result).to contain_exactly('a01-first-project', 'a02-second-project')
+      end
+    end
+
+    describe '.resolve' do
+      it 'resolves short name from subfolder' do
+        result = described_class.resolve('supportsignal', 'a01')
+        expect(result).to eq('a01-first-project')
+      end
+
+      it 'resolves exact match from subfolder' do
+        result = described_class.resolve('supportsignal', 'a10-test-project')
+        expect(result).to eq('a10-test-project')
+      end
+    end
+
+    describe '.resolve_pattern' do
+      it 'resolves pattern from subfolder' do
+        result = described_class.resolve_pattern('supportsignal', 'a*')
+        expect(result).to contain_exactly('a01-first-project', 'a02-second-project', 'a10-test-project')
+      end
+
+      it 'resolves specific pattern from subfolder' do
+        result = described_class.resolve_pattern('supportsignal', 'a0*')
+        expect(result).to eq(%w[a01-first-project a02-second-project])
+      end
+    end
+
+    describe '.project_exists?' do
+      it 'checks project existence in subfolder' do
+        expect(described_class.project_exists?('supportsignal', 'a01-first-project')).to be(true)
+        expect(described_class.project_exists?('supportsignal', 'a99-missing')).to be(false)
+      end
+    end
+  end
 end
