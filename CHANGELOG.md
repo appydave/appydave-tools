@@ -1,3 +1,10 @@
+# [0.41.0](https://github.com/appydave/appydave-tools/compare/v0.40.0...v0.41.0) (2025-11-21)
+
+
+### Features
+
+* improve DAM UX - better error messages, timestamps, and status display ([cba0cc7](https://github.com/appydave/appydave-tools/commit/cba0cc70851005a57331956df6b648c173bc0846))
+
 # [0.40.0](https://github.com/appydave/appydave-tools/compare/v0.39.0...v0.40.0) (2025-11-21)
 
 
