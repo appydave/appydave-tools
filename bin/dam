@@ -34,12 +34,29 @@ class VatCLI
     }
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def run
     command, *args = ARGV
 
+    # Handle --version and -v flags
+    if ['--version', '-v'].include?(command)
+      puts "DAM (Digital Asset Management) v#{Appydave::Tools::VERSION}"
+      puts 'Part of appydave-tools gem'
+      exit
+    end
+
     if command.nil?
       puts 'DAM - Video Asset Tools'
+      puts "Version: #{Appydave::Tools::VERSION}"
+      puts ''
       puts 'Usage: dam [command] [options]'
+      puts ''
+      puts 'Common commands:'
+      puts '  dam list                    # List all brands'
+      puts '  dam list <brand>            # List projects for a brand'
+      puts '  dam status <brand>          # Show brand status'
+      puts '  dam s3-up <brand> <project> # Upload to S3'
+      puts ''
       puts "Run 'dam help' for more information."
       exit
     end
@@ -47,20 +64,31 @@ class VatCLI
     if @commands.key?(command)
       @commands[command].call(args)
     else
-      puts "Unknown command: #{command}"
-      puts "Run 'dam help' for available commands."
+      puts "❌ Unknown command: #{command}"
+      puts ''
+      puts 'Available commands:'
+      puts '  list, status, manifest'
+      puts '  s3-up, s3-down, s3-status, s3-cleanup-remote, s3-cleanup-local'
+      puts '  archive, sync-ssd'
+      puts '  repo-status, repo-sync, repo-push'
+      puts '  s3-share, s3-discover, s3-scan'
+      puts ''
+      puts "Run 'dam help' for detailed information."
       exit 1
     end
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   private
 
   # Show help information
-  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
   def help_command(args)
     topic = args[0]
 
     case topic
+    when 'help'
+      show_help_about_help
     when 'brands'
       show_brands_help
     when 'workflows'
@@ -80,11 +108,24 @@ class VatCLI
       puts "⚠️  '#{topic}' is deprecated. Use the new command name instead:\n\n"
       new_name = topic == 's3-cleanup' ? 's3-cleanup-remote' : 's3-cleanup-local'
       show_s3_help(new_name)
-    else
+    when nil
       show_main_help
+    else
+      puts "❌ Unknown help topic: #{topic}"
+      puts ''
+      puts 'Available help topics:'
+      puts '  dam help brands      # Brand shortcuts and configuration'
+      puts '  dam help workflows   # FliVideo and Storyline workflows'
+      puts '  dam help config      # Configuration setup'
+      puts '  dam help list        # List command usage'
+      puts '  dam help s3-up       # S3 upload command'
+      puts '  dam help s3-down     # S3 download command'
+      puts '  dam help s3-status   # S3 status command'
+      puts ''
+      puts "Run 'dam help' for general help."
     end
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
 
   # List brands and projects
   def list_command(args)
@@ -726,6 +767,39 @@ class VatCLI
         dam s3-cleanup-remote appydave b65 --force
 
       For more information: https://github.com/appydave/appydave-tools
+    HELP
+  end
+
+  def show_help_about_help
+    puts <<~HELP
+      DAM Help System
+
+      The DAM CLI provides contextual help for all commands and concepts.
+
+      Usage:
+        dam help                Show general help (all commands)
+        dam help <topic>        Show help for specific topic
+
+      Available Help Topics:
+        brands     Brand shortcuts and naming (appydave, voz, aitldr, etc.)
+        workflows  FliVideo vs Storyline workflows explained
+        config     Configuration file setup and paths
+        list       List command usage and pattern matching
+        s3-up      S3 upload command details
+        s3-down    S3 download command details
+        s3-status  S3 sync status command details
+
+      Tips:
+        - Most commands support --dry-run to preview actions
+        - Brand shortcuts are case-insensitive (ad, AD, Ad all work)
+        - Use patterns like 'b6*' to match multiple projects
+        - Run 'dam --version' to check your installed version
+
+      Examples:
+        dam help brands          # Learn about brand configuration
+        dam help workflows       # Understand video workflows
+        dam help config          # Setup configuration files
+        dam help s3-up           # S3 upload command help
     HELP
   end
 
