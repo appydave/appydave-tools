@@ -1,3 +1,10 @@
+# [0.47.0](https://github.com/appydave/appydave-tools/compare/v0.46.0...v0.47.0) (2025-11-21)
+
+
+### Features
+
+* add manifest timestamp and next steps guidance ([33c0e2f](https://github.com/appydave/appydave-tools/commit/33c0e2f85961fbbc63dd4ccfa3c103dfb2c4fdee))
+
 # [0.46.0](https://github.com/appydave/appydave-tools/compare/v0.45.1...v0.46.0) (2025-11-21)
 
 
