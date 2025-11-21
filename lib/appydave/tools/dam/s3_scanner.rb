@@ -17,12 +17,13 @@ module Appydave
 
         # Scan S3 for a specific project
         # @param project_id [String] Project ID (e.g., "b65-guy-monroe-marketing-plan")
+        # @param show_progress [Boolean] Whether to show progress output (default: true)
         # @return [Hash] S3 file data with :file_count, :total_bytes, :last_modified
-        def scan_project(project_id)
+        def scan_project(project_id, show_progress: true)
           bucket = @brand_info.aws.s3_bucket
           prefix = File.join(@brand_info.aws.s3_prefix, project_id, '')
 
-          puts "  🔍 Scanning #{project_id}..."
+          puts "  🔍 Scanning #{project_id}..." if show_progress
 
           files = list_s3_objects(bucket, prefix)
 
@@ -50,28 +51,23 @@ module Appydave
         end
 
         # Scan all projects in brand's S3 bucket
+        # @param show_progress [Boolean] Whether to show detailed progress (default: true)
         # @return [Hash] Map of project_id => scan result
-        def scan_all_projects
+        def scan_all_projects(show_progress: true, &progress_callback)
           bucket = @brand_info.aws.s3_bucket
           prefix = @brand_info.aws.s3_prefix
-
-          puts "🔍 Scanning all projects in S3: s3://#{bucket}/#{prefix}"
-          puts ''
 
           # List all "directories" (prefixes) under brand prefix
           project_prefixes = list_s3_prefixes(bucket, prefix)
 
-          if project_prefixes.empty?
-            puts '  📭 No projects found in S3'
-            return {}
-          end
-
-          puts "  Found #{project_prefixes.size} projects in S3"
-          puts ''
+          return {} if project_prefixes.empty?
 
           results = {}
-          project_prefixes.each do |project_id|
-            results[project_id] = scan_project(project_id)
+          project_prefixes.each_with_index do |project_id, index|
+            # Call progress callback if provided (for spinner)
+            progress_callback&.call(index + 1, project_prefixes.size)
+
+            results[project_id] = scan_project(project_id, show_progress: show_progress)
           end
 
           results

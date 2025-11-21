@@ -1125,7 +1125,7 @@ class VatCLI
     exit 1
   end
 
-  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
   def scan_single_brand_s3(brand_arg)
     puts "🔄 Scanning S3 for #{brand_arg}..."
     puts ''
@@ -1133,11 +1133,30 @@ class VatCLI
     brand_key = brand_arg
     scanner = Appydave::Tools::Dam::S3Scanner.new(brand_key)
 
-    # Scan all projects
-    results = scanner.scan_all_projects
+    # Get brand info for S3 path
+    Appydave::Tools::Configuration::Config.configure
+    brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_key)
+    bucket = brand_info.aws.s3_bucket
+    prefix = brand_info.aws.s3_prefix
+    region = brand_info.aws.region
+
+    # Spinner characters for progress
+    spinner_chars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+    spinner_index = 0
+
+    print "🔍 Scanning s3://#{bucket}/#{prefix}\n"
+    print '    Scanning projects... '
+
+    # Scan all projects with progress callback
+    results = scanner.scan_all_projects(show_progress: false) do |current, total|
+      print "\r    Scanning projects... #{spinner_chars[spinner_index]} (#{current}/#{total})"
+      spinner_index = (spinner_index + 1) % spinner_chars.length
+    end
+
+    print "\r    Scanning projects... ✓ (#{results.size} found)\n"
+    puts ''
 
     if results.empty?
-      puts ''
       puts "⚠️  No projects found in S3 for #{brand_key}"
       puts '   This may indicate:'
       puts '   - No files uploaded to S3 yet'
@@ -1147,12 +1166,10 @@ class VatCLI
     end
 
     # Load existing manifest
-    Appydave::Tools::Configuration::Config.configure
     brand_path = Appydave::Tools::Dam::Config.brand_path(brand_key)
     manifest_path = File.join(brand_path, 'projects.json')
 
     unless File.exist?(manifest_path)
-      puts ''
       puts "❌ Manifest not found: #{manifest_path}"
       puts "   Run: dam manifest #{brand_key}"
       puts "   Then retry: dam s3-scan #{brand_key}"
@@ -1163,8 +1180,8 @@ class VatCLI
 
     # Identify matched and orphaned S3 projects
     local_project_ids = manifest[:projects].map { |p| p[:id] }
-    matched_s3_projects = results.keys.select { |project_id| local_project_ids.include?(project_id) }
-    orphaned_s3_projects = results.keys.reject { |project_id| local_project_ids.include?(project_id) }
+    matched_projects = results.slice(*local_project_ids)
+    orphaned_projects = results.reject { |project_id, _| local_project_ids.include?(project_id) }
 
     # Merge S3 scan data into manifest for matched projects
     updated_count = 0
@@ -1184,37 +1201,67 @@ class VatCLI
     # Write updated manifest
     File.write(manifest_path, JSON.pretty_generate(manifest))
 
+    # Display table
+    display_s3_scan_table(matched_projects, orphaned_projects, bucket, prefix, region)
+
+    # Summary
     total_manifest_projects = manifest[:projects].size
+    missing_count = total_manifest_projects - matched_projects.size
 
     puts ''
-    puts "✅ Updated manifest with S3 data: #{manifest_path}"
-    puts "   Projects in S3: #{results.size}"
-    puts "   Projects in manifest: #{total_manifest_projects}"
-    puts "   Updated #{updated_count} projects in manifest"
-
-    if orphaned_s3_projects.any?
-      puts ''
-      puts '   ⚠️  Orphaned S3 folders (no local project):'
-      orphaned_s3_projects.each do |project_id|
-        s3_data = results[project_id]
-        size = format_bytes(s3_data[:total_bytes])
-        puts "      - #{project_id} (#{s3_data[:file_count]} files, #{size})"
-      end
-      puts ''
-      puts '   These folders exist in S3 but have no corresponding local project.'
-      puts '   Consider cleaning them up with: dam s3-cleanup'
-    end
-
-    if matched_s3_projects.size < total_manifest_projects
-      missing_count = total_manifest_projects - matched_s3_projects.size
-      puts ''
-      puts "   ℹ️  #{missing_count} local project(s) not yet uploaded to S3"
-    end
+    puts 'ℹ️  Summary:'
+    puts "   • Updated #{updated_count} projects in manifest"
+    puts "   • #{missing_count} local project(s) not yet uploaded to S3" if missing_count.positive?
+    puts "   • Manifest: #{manifest_path}"
     puts ''
   end
-  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
-  # rubocop:disable Metrics/MethodLength
+  # Display S3 scan results in table format
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Style/FormatStringToken
+  def display_s3_scan_table(matched_projects, orphaned_projects, bucket, prefix, region)
+    puts '✅ S3 Projects Report'
+    puts ''
+    puts 'PROJECT                    FILES    SIZE        STATUS    LAST MODIFIED'
+    puts '-' * 80
+
+    # Display matched projects first (sorted alphabetically)
+    matched_projects.sort.each do |project_id, data|
+      files = data[:file_count].to_s.rjust(5)
+      size = format_bytes(data[:total_bytes]).rjust(10)
+      status = '✓'
+      modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
+
+      puts format('%-26s %5s %10s       %s       %s', project_id, files, size, status, modified)
+    end
+
+    # Display orphaned projects (sorted alphabetically)
+    return if orphaned_projects.empty?
+
+    puts '-' * 80
+    orphaned_projects.sort.each do |project_id, data|
+      files = data[:file_count].to_s.rjust(5)
+      size = format_bytes(data[:total_bytes]).rjust(10)
+      status = '❌'
+      modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
+
+      puts format('%-26s %5s %10s       %s       %s', project_id, files, size, status, modified)
+    end
+
+    puts ''
+    puts "⚠️  #{orphaned_projects.size} orphaned folder#{orphaned_projects.size > 1 ? 's' : ''} found (no local project)"
+
+    orphaned_projects.sort.each do |project_id, _data|
+      # Build AWS Console URL
+      project_prefix = "#{prefix}#{project_id}/"
+      console_url = "https://#{region}.console.aws.amazon.com/s3/buckets/#{bucket}?prefix=#{project_prefix}&region=#{region}"
+      puts "   → #{project_id}"
+      puts "     #{console_url}"
+    end
+  end
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Style/FormatStringToken
+
+  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def scan_all_brands_s3
     Appydave::Tools::Configuration::Config.configure
     brands_config = Appydave::Tools::Configuration::Config.brands
@@ -1255,7 +1302,7 @@ class VatCLI
     puts ''
     puts "Total brands scanned: #{successful.size}/#{results.size}"
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
   # Format bytes in human-readable format
   # rubocop:disable Style/FormatStringToken
