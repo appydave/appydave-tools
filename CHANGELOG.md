@@ -1,3 +1,10 @@
+# [0.49.0](https://github.com/appydave/appydave-tools/compare/v0.48.0...v0.49.0) (2025-11-21)
+
+
+### Features
+
+* improve project status display with size, file counts, and remove git section ([0cc6e15](https://github.com/appydave/appydave-tools/commit/0cc6e155902c25dcd2a551508a91fd3715f94bff))
+
 # [0.48.0](https://github.com/appydave/appydave-tools/compare/v0.47.0...v0.48.0) (2025-11-21)
 
 
