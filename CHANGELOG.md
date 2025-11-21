@@ -1,3 +1,10 @@
+# [0.33.0](https://github.com/appydave/appydave-tools/compare/v0.32.5...v0.33.0) (2025-11-21)
+
+
+### Features
+
+* add orphaned S3 folder detection in s3-scan command - separates matched projects from orphaned folders with file count and size info for easier cleanup identification ([3aa03aa](https://github.com/appydave/appydave-tools/commit/3aa03aab5e57ca55015d226b39fcb4f3203d4ca4))
+
 ## [0.32.5](https://github.com/appydave/appydave-tools/compare/v0.32.4...v0.32.5) (2025-11-21)
 
 
