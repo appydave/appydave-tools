@@ -1,3 +1,10 @@
+## [0.31.2](https://github.com/appydave/appydave-tools/compare/v0.31.1...v0.31.2) (2025-11-21)
+
+
+### Bug Fixes
+
+* improve repo-status messages to be more human-readable - change 'ahead/behind' to 'commits to push/pull' ([936ed2e](https://github.com/appydave/appydave-tools/commit/936ed2e28039c03ef8e73d36e0b241337ed08c20))
+
 ## [0.31.1](https://github.com/appydave/appydave-tools/compare/v0.31.0...v0.31.1) (2025-11-21)
 
 
