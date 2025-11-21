@@ -189,7 +189,24 @@ module Appydave
 
         def show_manifest_summary(manifest)
           puts '📋 Manifest Summary:'
-          puts "   Total projects: #{manifest[:projects].size}"
+
+          # Show manifest age
+          if manifest[:config] && manifest[:config][:last_updated]
+            age = calculate_manifest_age(manifest[:config][:last_updated])
+            age_indicator = manifest_age_indicator(age)
+            puts "   Last updated: #{format_manifest_age(age)} #{age_indicator}"
+          end
+
+          # Count active (flat/local) vs archived projects
+          active_count = manifest[:projects].count do |p|
+            p[:storage][:local][:exists] && p[:storage][:local][:structure] == 'flat'
+          end
+          archived_count = manifest[:projects].count do |p|
+            p[:storage][:local][:exists] && p[:storage][:local][:structure] == 'archived'
+          end
+          total = manifest[:projects].size
+
+          puts "   Total: #{total} (Active: #{active_count}, Archived: #{archived_count})"
 
           local_count = manifest[:projects].count { |p| p[:storage][:local][:exists] }
           s3_count = manifest[:projects].count { |p| p[:storage][:s3][:exists] }
@@ -299,6 +316,38 @@ module Appydave
 
         def format_size(bytes)
           FileHelper.format_size(bytes)
+        end
+
+        def calculate_manifest_age(last_updated_str)
+          last_updated = Time.parse(last_updated_str)
+          Time.now - last_updated
+        rescue ArgumentError
+          nil
+        end
+
+        def format_manifest_age(age_seconds)
+          return 'Unknown' if age_seconds.nil?
+
+          days = age_seconds / 86_400
+          if days < 1
+            hours = age_seconds / 3600
+            "#{hours.round}h ago"
+          else
+            "#{days.round}d ago"
+          end
+        end
+
+        def manifest_age_indicator(age_seconds)
+          return '' if age_seconds.nil?
+
+          days = age_seconds / 86_400
+          if days < 3
+            '✓ Fresh'
+          elsif days < 7
+            'ℹ️ Aging'
+          else
+            '⚠️ Stale'
+          end
         end
       end
     end
