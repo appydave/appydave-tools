@@ -1179,10 +1179,18 @@ class VatCLI
     # Write updated manifest
     File.write(manifest_path, JSON.pretty_generate(manifest))
 
+    total_manifest_projects = manifest[:projects].size
+
     puts ''
     puts "✅ Updated manifest with S3 data: #{manifest_path}"
-    puts "   Scanned #{results.size} projects in S3"
+    puts "   Projects in S3: #{results.size}"
+    puts "   Projects in manifest: #{total_manifest_projects}"
     puts "   Updated #{updated_count} projects in manifest"
+    if results.size != total_manifest_projects
+      puts ''
+      puts "   ⚠️  Mismatch: #{results.size} S3 projects vs #{total_manifest_projects} local projects"
+      puts "   This may indicate projects exist locally but haven't been uploaded to S3 yet"
+    end
     puts ''
   end
   # rubocop:enable Metrics/MethodLength

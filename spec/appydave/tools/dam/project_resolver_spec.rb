@@ -103,18 +103,18 @@ RSpec.describe Appydave::Tools::Dam::ProjectResolver do
     end
 
     it 'returns matching projects sorted' do
-      result = described_class.resolve_pattern(appydave_path, 'b6*')
+      result = described_class.resolve_pattern('appydave', 'b6*')
       expect(result).to eq(%w[b60-alpha b61-beta b65-gamma])
     end
 
     it 'returns all projects for * pattern' do
-      result = described_class.resolve_pattern(appydave_path, '*')
+      result = described_class.resolve_pattern('appydave', '*')
       expect(result).to eq(%w[b60-alpha b61-beta b65-gamma c10-delta])
     end
 
     it 'raises error when no matches' do
       expect do
-        described_class.resolve_pattern(appydave_path, 'z*')
+        described_class.resolve_pattern('appydave', 'z*')
       end.to raise_error(/No projects found matching pattern 'z\*'/)
     end
   end

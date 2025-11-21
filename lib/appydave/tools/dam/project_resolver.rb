@@ -19,15 +19,16 @@ module Appydave
             brand_path = Config.brand_path(brand)
 
             # Check for pattern (wildcard)
-            return resolve_pattern(brand_path, project_hint) if project_hint.include?('*')
+            return resolve_pattern(brand, project_hint) if project_hint.include?('*')
 
-            # Exact match first
-            full_path = File.join(brand_path, project_hint)
+            # Exact match first - use Config.project_path to respect projects_subfolder
+            full_path = Config.project_path(brand, project_hint)
             return project_hint if Dir.exist?(full_path)
 
             # FliVideo pattern: b65 → b65-*
             if project_hint =~ /^[a-z]\d+$/
-              matches = Dir.glob("#{brand_path}/#{project_hint}-*")
+              projects_dir = projects_directory(brand)
+              matches = Dir.glob("#{projects_dir}/#{project_hint}-*")
                            .select { |path| File.directory?(path) }
                            .map { |path| File.basename(path) }
 
@@ -55,17 +56,18 @@ module Appydave
           end
 
           # Resolve pattern to list of matching projects
-          # @param brand_path [String] Full path to brand directory
+          # @param brand [String] Brand shortcut or full name
           # @param pattern [String] Pattern with wildcards (e.g., 'b6*')
           # @return [Array<String>] List of matching project names
-          def resolve_pattern(brand_path, pattern)
-            matches = Dir.glob("#{brand_path}/#{pattern}")
+          def resolve_pattern(brand, pattern)
+            projects_dir = projects_directory(brand)
+            matches = Dir.glob("#{projects_dir}/#{pattern}")
                          .select { |path| File.directory?(path) }
                          .select { |path| valid_project?(path) }
                          .map { |path| File.basename(path) }
                          .sort
 
-            raise "❌ No projects found matching pattern '#{pattern}' in #{brand_path}" if matches.empty?
+            raise "❌ No projects found matching pattern '#{pattern}' in #{projects_dir}" if matches.empty?
 
             matches
           end
@@ -75,10 +77,10 @@ module Appydave
           # @param pattern [String, nil] Optional filter pattern
           # @return [Array<String>] List of project names
           def list_projects(brand, pattern = nil)
-            brand_path = Config.brand_path(brand)
+            projects_dir = projects_directory(brand)
 
             glob_pattern = pattern || '*'
-            Dir.glob("#{brand_path}/#{glob_pattern}")
+            Dir.glob("#{projects_dir}/#{glob_pattern}")
                .select { |path| File.directory?(path) }
                .select { |path| valid_project?(path) }
                .map { |path| File.basename(path) }
@@ -121,9 +123,26 @@ module Appydave
           # @param project [String] Project name
           # @return [Boolean] true if project directory exists
           def project_exists?(brand, project)
-            projects_root = Config.projects_root
-            project_path = File.join(projects_root, brand, project)
+            project_path = Config.project_path(brand, project)
             Dir.exist?(project_path)
+          end
+
+          private
+
+          # Get the directory where projects are stored for a brand
+          # Respects projects_subfolder setting
+          # @param brand [String] Brand shortcut or full name
+          # @return [String] Path to directory containing projects
+          def projects_directory(brand)
+            Appydave::Tools::Configuration::Config.configure
+            brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
+            brand_path = Config.brand_path(brand)
+
+            if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
+              File.join(brand_path, brand_info.settings.projects_subfolder)
+            else
+              brand_path
+            end
           end
         end
       end

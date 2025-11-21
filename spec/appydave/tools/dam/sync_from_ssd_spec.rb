@@ -31,6 +31,11 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
   before do
     FileUtils.mkdir_p(brand_path)
     FileUtils.mkdir_p(ssd_backup)
+
+    # Stub Config.project_path to return paths under brand_path
+    allow(Appydave::Tools::Dam::Config).to receive(:project_path) do |brand_key, project_id|
+      File.join(brand_path, project_id)
+    end
   end
 
   after do

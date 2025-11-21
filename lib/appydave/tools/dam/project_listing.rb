@@ -24,8 +24,8 @@ module Appydave
           brand_data = brands.map do |brand|
             brand_path = Config.brand_path(brand)
             projects = ProjectResolver.list_projects(brand)
-            total_size = calculate_total_size(brand_path, projects)
-            last_modified = find_last_modified(brand_path, projects)
+            total_size = calculate_total_size(brand, brand_path, projects)
+            last_modified = find_last_modified(brand, brand_path, projects)
 
             {
               name: brand,
@@ -67,7 +67,7 @@ module Appydave
 
           # Gather project data
           project_data = projects.map do |project|
-            project_path = File.join(brand_path, project)
+            project_path = Config.project_path(brand, project)
             size = calculate_directory_size(project_path)
             modified = File.mtime(project_path)
 
@@ -109,7 +109,7 @@ module Appydave
 
           # Gather project data
           project_data = matches.map do |project|
-            project_path = File.join(brand_path, project)
+            project_path = Config.project_path(brand, project)
             size = calculate_directory_size(project_path)
             modified = File.mtime(project_path)
 
@@ -141,9 +141,9 @@ module Appydave
         # Helper methods
 
         # Calculate total size of all projects in a brand
-        def self.calculate_total_size(brand_path, projects)
+        def self.calculate_total_size(brand, brand_path, projects)
           projects.sum do |project|
-            calculate_directory_size(File.join(brand_path, project))
+            calculate_directory_size(Config.project_path(brand, project))
           end
         end
 
@@ -161,11 +161,11 @@ module Appydave
         end
 
         # Find the most recent modification time across all projects
-        def self.find_last_modified(brand_path, projects)
+        def self.find_last_modified(brand, brand_path, projects)
           return Time.at(0) if projects.empty?
 
           projects.map do |project|
-            File.mtime(File.join(brand_path, project))
+            File.mtime(Config.project_path(brand, project))
           end.max
         end
 

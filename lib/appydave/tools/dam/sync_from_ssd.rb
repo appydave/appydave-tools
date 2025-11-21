@@ -165,8 +165,8 @@ module Appydave
 
           return { skipped: 1, files: 0, bytes: 0, reason: 'SSD path not found' } unless Dir.exist?(ssd_path)
 
-          # Check for flat folder conflict (stale manifest)
-          flat_path = File.join(brand_path, project_id)
+          # Check for flat folder conflict (stale manifest) - use Config.project_path to respect projects_subfolder
+          flat_path = Config.project_path(brand, project_id)
           return { skipped: 1, files: 0, bytes: 0, reason: 'Flat folder exists (stale manifest?)' } if Dir.exist?(flat_path)
 
           # Determine local destination path (archived structure)

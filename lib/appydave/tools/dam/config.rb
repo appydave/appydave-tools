@@ -43,6 +43,22 @@ module Appydave
             path
           end
 
+          # Get the full path to a project directory, respecting brand's projects_subfolder setting
+          # @param brand_key [String] Brand key (e.g., 'appydave', 'supportsignal')
+          # @param project_id [String] Project ID (e.g., 'b64-bmad-claude-sdk', 'a01-shocking-stat-v1')
+          # @return [String] Absolute path to project directory
+          def project_path(brand_key, project_id)
+            Appydave::Tools::Configuration::Config.configure
+            brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_key)
+            brand_dir = brand_path(brand_key)
+
+            if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
+              File.join(brand_dir, brand_info.settings.projects_subfolder, project_id)
+            else
+              File.join(brand_dir, project_id)
+            end
+          end
+
           # Get git remote URL for a brand (with self-healing)
           # @param brand_key [String] Brand key (e.g., 'appydave', 'voz')
           # @return [String, nil] Git remote URL or nil if not a git repo
