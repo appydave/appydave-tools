@@ -1,3 +1,10 @@
+# [0.40.0](https://github.com/appydave/appydave-tools/compare/v0.39.0...v0.40.0) (2025-11-21)
+
+
+### Features
+
+* add S3 overwrite warnings with timestamp comparison to prevent data loss ([e922891](https://github.com/appydave/appydave-tools/commit/e922891d9ae87328f5a7cffe5e827f08232c90cc))
+
 # [0.39.0](https://github.com/appydave/appydave-tools/compare/v0.38.0...v0.39.0) (2025-11-21)
 
 
