@@ -315,7 +315,7 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       FileUtils.rm_rf(Dir.glob("#{staging_dir}/*"))
       allow(s3_ops).to receive(:list_s3_files).and_return([])
 
-      expect { s3_ops.status }.to output(/❌ No files found in S3 or locally/).to_stdout
+      expect { s3_ops.status }.to output(%r{ℹ️  No files in S3 or s3-staging/}).to_stdout
     end
 
     it 'shows in-sync files' do

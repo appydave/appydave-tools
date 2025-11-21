@@ -260,6 +260,19 @@ module Appydave
           project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
 
+          # Check if project directory exists
+          unless Dir.exist?(project_dir)
+            puts "❌ Project not found: #{brand}/#{project_id}"
+            puts ''
+            puts '   This project does not exist locally.'
+            puts '   Possible causes:'
+            puts '     - Project name might be misspelled'
+            puts '     - Project may not exist in this brand'
+            puts ''
+            puts "   Try: dam list #{brand}   # See all projects for this brand"
+            return
+          end
+
           s3_files = list_s3_files
           local_files = list_local_files(staging_dir)
 
@@ -270,9 +283,13 @@ module Appydave
           end
 
           if s3_files.empty? && local_files.empty?
-            puts "❌ No files found in S3 or locally for #{brand}/#{project_id}"
-            puts '   This project has no heavy files in s3-staging/ or S3.'
-            puts "   Tip: Add files to #{File.basename(staging_dir)}/ folder, then run: dam s3-up"
+            puts "ℹ️  No files in S3 or s3-staging/ for #{brand}/#{project_id}"
+            puts ''
+            puts '   This project exists but has no heavy files ready for S3 sync.'
+            puts ''
+            puts '   Next steps:'
+            puts "     1. Add video files to: #{staging_dir}/"
+            puts "     2. Upload to S3: dam s3-up #{brand} #{project_id}"
             return
           end
 
