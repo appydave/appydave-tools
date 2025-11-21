@@ -88,18 +88,20 @@ module Appydave
 
           # Print table header
           puts "Projects in #{brand}:"
-          puts 'PROJECT                                               SIZE             AGE    PATH'
-          puts '-' * 120
+          puts ''
+          puts 'ℹ️  Note: Lists only projects with files, not empty directories'
+          puts ''
+          puts 'PROJECT                                               SIZE             AGE'
+          puts '-' * 100
 
           # Print table rows
           project_data.each do |data|
             age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
             puts format(
-              '%-45s %12s %15s    %s',
+              '%-45s %12s %15s',
               data[:name],
               format_size(data[:size]),
-              age_display,
-              shorten_path(data[:path])
+              age_display
             )
           end
 
@@ -150,18 +152,17 @@ module Appydave
           # Print table header
           match_count = matches.size
           puts "#{match_count} project#{'s' if match_count != 1} matching '#{pattern}' in #{brand}:"
-          puts 'PROJECT                                               SIZE             AGE    PATH'
-          puts '-' * 120
+          puts 'PROJECT                                               SIZE             AGE'
+          puts '-' * 100
 
           # Print table rows
           project_data.each do |data|
             age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
             puts format(
-              '%-45s %12s %15s    %s',
+              '%-45s %12s %15s',
               data[:name],
               format_size(data[:size]),
-              age_display,
-              shorten_path(data[:path])
+              age_display
             )
           end
 

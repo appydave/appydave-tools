@@ -46,10 +46,11 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brand_projects' do
-    it 'displays projects in tabular format with sizes, ages, and paths' do
+    it 'displays projects in tabular format with sizes and ages' do
       expect { described_class.list_brand_projects('appydave') }.to output(
         a_string_matching(/Projects in v-appydave:/)
-          .and(matching(/PROJECT\s+SIZE\s+AGE\s+PATH/))
+          .and(matching(/PROJECT\s+SIZE\s+AGE/))
+          .and(matching(/Note: Lists only projects with files/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))
           .and(matching(/b65-project/))
@@ -64,10 +65,9 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
       ).to_stdout
     end
 
-    it 'includes full paths with tilde shortening' do
-      expect { described_class.list_brand_projects('appydave') }.to output(
-        a_string_matching(%r{v-appydave/b60-project})
-      ).to_stdout
+    it 'does not include PATH column in default view' do
+      output = capture_stdout { described_class.list_brand_projects('appydave') }
+      expect(output).not_to match(/PATH/)
     end
   end
 
@@ -82,7 +82,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
     it 'displays matching projects in tabular format' do
       expect { described_class.list_with_pattern('appydave', 'b6*') }.to output(
         a_string_matching(/\d+ projects? matching 'b6\*' in v-appydave:/)
-          .and(matching(/PROJECT\s+SIZE\s+AGE\s+PATH/))
+          .and(matching(/PROJECT\s+SIZE\s+AGE/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))
           .and(matching(/b65-project/))
@@ -99,10 +99,9 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
       ).to_stdout
     end
 
-    it 'includes paths in output' do
-      expect { described_class.list_with_pattern('appydave', 'b6*') }.to output(
-        a_string_matching(%r{v-appydave/b60-project})
-      ).to_stdout
+    it 'does not include PATH column in default view' do
+      output = capture_stdout { described_class.list_with_pattern('appydave', 'b6*') }
+      expect(output).not_to match(/PATH/)
     end
   end
 
