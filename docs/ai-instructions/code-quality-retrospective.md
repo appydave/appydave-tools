@@ -282,6 +282,100 @@ duplication, pattern drift, missing abstractions. Focus on lib/appydave/tools/
 and corresponding specs.
 ```
 
+### Phase 6: Testing Anti-Patterns ⚠️
+
+**CRITICAL: Don't Hide Bugs With Mocks**
+
+The most dangerous testing anti-pattern is **using mocks to hide real bugs instead of fixing them**.
+
+#### Red Flags in Tests:
+
+1. **Over-mocking that masks bugs:**
+   - Mocking away the exact behavior that contains the bug
+   - Tests pass but production code still fails
+   - "Fix" involves adding mocks instead of fixing logic
+
+   **Example (BAD):**
+   ```ruby
+   # Bug: Regexp.last_match gets reset by .sub() call
+   # "Fix": Mock the entire method instead of fixing the bug
+   allow(resolver).to receive(:detect_from_pwd).and_return(['brand', 'project'])
+   ```
+
+   **Better approach:**
+   ```ruby
+   # Fix the actual bug: capture regex match BEFORE .sub() call
+   project = Regexp.last_match(2)  # Capture BEFORE
+   brand_key = brand_with_prefix.sub(/^v-/, '')  # Then modify
+   ```
+
+2. **Mixed mock/test data systems:**
+   - Real file system + mocked configuration
+   - Real objects + stubbed methods on same objects
+   - Partial mocking that creates impossible states
+   - Tests use different data sources than production
+
+   **Example (BAD):**
+   ```ruby
+   # Mix of real filesystem and stubbed config
+   let(:real_path) { File.expand_path('../fixtures', __dir__) }
+   before do
+     allow(config).to receive(:video_projects_root).and_return(real_path)
+     allow(File).to receive(:exist?).and_return(true)  # But checking different paths!
+   end
+   ```
+
+   **Better approach:**
+   ```ruby
+   # Consistent test data system: Either all real or all mocked
+   let(:temp_dir) { Dir.mktmpdir }
+   before do
+     FileUtils.mkdir_p("#{temp_dir}/v-appydave/b65")
+     config.video_projects_root = temp_dir
+   end
+   after { FileUtils.rm_rf(temp_dir) }
+   ```
+
+3. **Complex mock setups that don't reflect reality:**
+   - Mocks that configure behavior that never happens in production
+   - Chained stubs that create impossible scenarios
+   - Mock expectations that don't match actual method signatures
+
+4. **Tests that mock what they should be testing:**
+   - Mocking the primary behavior under test
+   - Stubbing return values instead of testing logic
+   - Mocking away all collaborators (unit test tunnel vision)
+
+#### When Mocking Is Appropriate:
+
+- **External services** (API calls, network requests)
+- **Slow operations** (database queries in unit tests)
+- **Non-deterministic behavior** (timestamps, random values)
+- **Expensive resources** (file I/O in focused unit tests)
+
+#### When to Use Real Objects:
+
+- **Testing integration** between components
+- **Debugging failures** - Reproduce with real objects first
+- **Configuration resolution** - Real config objects, real paths
+- **Business logic** - Real domain objects, real calculations
+
+#### How to Spot This Problem:
+
+```bash
+# Search for excessive mocking in specs
+grep -rn "allow.*to receive" spec/ | wc -l
+grep -rn "double\|instance_double" spec/ | wc -l
+
+# Find specs with high mock-to-assertion ratios
+# Red flag: 5+ mocks, 1-2 expectations
+```
+
+**Remember:** If you're adding mocks to make a test pass, stop and ask:
+1. Is there a real bug I'm hiding?
+2. Am I testing integration but using unit test mocks?
+3. Would real objects expose the actual problem?
+
 ## Tips for Effective Analysis
 
 1. **Start with git stats** - Let the data guide you to hot spots
@@ -291,6 +385,7 @@ and corresponding specs.
 5. **Consider context** - Some "duplication" is intentional (tests, CLI commands)
 6. **Be specific** - Don't just say "improve X", show exactly what and where
 7. **Suggest solutions** - Include specific refactoring recommendations with file/method names
+8. **Watch for mock overuse** - Tests with more mocks than assertions are a red flag
 
 ## Notes for AI Assistants
 
