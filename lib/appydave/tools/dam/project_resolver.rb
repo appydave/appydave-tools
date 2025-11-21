@@ -96,10 +96,8 @@ module Appydave
             return false if excluded.include?(basename)
 
             # Exclude organizational folders (for brands using projects_subfolder)
-            # Note: 'projects' is NOT excluded here because when projects_subfolder is configured,
-            # we scan INSIDE the projects folder, so 'projects' never appears as a basename.
-            # If projects_subfolder is NOT configured, users may legitimately have a project named 'projects'.
-            organizational = %w[brand personas video-scripts]
+            # Including 'projects' because if it appears, it means projects_directory isn't working correctly
+            organizational = %w[brand personas projects video-scripts]
             return false if organizational.include?(basename)
 
             # Exclude hidden and underscore-prefixed
@@ -143,9 +141,15 @@ module Appydave
             brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
             brand_path = Config.brand_path(brand)
 
-            if brand_info.settings.projects_subfolder && !brand_info.settings.projects_subfolder.empty?
-              File.join(brand_path, brand_info.settings.projects_subfolder)
+            subfolder = brand_info.settings.projects_subfolder
+            puts "DEBUG projects_directory: brand=#{brand}, brand_info.key=#{brand_info.key}, subfolder='#{subfolder}'" if ENV['DEBUG']
+
+            if subfolder && !subfolder.empty?
+              result = File.join(brand_path, subfolder)
+              puts "DEBUG projects_directory: returning #{result}" if ENV['DEBUG']
+              result
             else
+              puts "DEBUG projects_directory: returning brand_path #{brand_path}" if ENV['DEBUG']
               brand_path
             end
           end

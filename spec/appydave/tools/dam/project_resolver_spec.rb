@@ -177,7 +177,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectResolver do
     end
 
     it 'returns false for organizational folders' do
-      %w[brand personas video-scripts].each do |organizational|
+      %w[brand personas projects video-scripts].each do |organizational|
         project_path = File.join(brand_path, organizational)
         FileUtils.mkdir_p(project_path)
         expect(described_class.valid_project?(project_path)).to be(false)
