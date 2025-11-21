@@ -48,7 +48,11 @@ module Appydave
 
           unless project_entry
             puts '❌ Project not found in manifest'
-            puts "   Run: dam manifest #{brand}"
+            puts ''
+            puts '   This project exists locally but is not in the manifest.'
+            puts ''
+            puts "   Try: dam manifest #{brand}  # Regenerate manifest"
+            puts "   Or:  dam list #{brand}      # See tracked projects"
             return
           end
 

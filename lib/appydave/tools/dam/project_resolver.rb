@@ -67,7 +67,10 @@ module Appydave
                          .map { |path| File.basename(path) }
                          .sort
 
-            raise "❌ No projects found matching pattern '#{pattern}' in #{projects_dir}" if matches.empty?
+            if matches.empty?
+              raise "❌ No projects found matching pattern '#{pattern}'\n   " \
+                    "Try: dam list #{brand}  # See all available projects"
+            end
 
             matches
           end

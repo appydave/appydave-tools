@@ -81,7 +81,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'displays matching projects in tabular format' do
       expect { described_class.list_with_pattern('appydave', 'b6*') }.to output(
-        a_string_matching(/Projects matching 'b6\*' in v-appydave:/)
+        a_string_matching(/\d+ projects? matching 'b6\*' in v-appydave:/)
           .and(matching(/PROJECT\s+SIZE\s+LAST MODIFIED\s+PATH/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))

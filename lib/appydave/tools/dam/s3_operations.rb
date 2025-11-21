@@ -444,6 +444,8 @@ module Appydave
 
           unless Dir.exist?(project_dir)
             puts "❌ Project not found: #{project_dir}"
+            puts ''
+            puts "   Try: dam list #{brand}  # See available projects"
             return
           end
 

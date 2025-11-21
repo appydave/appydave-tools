@@ -61,6 +61,12 @@ module Appydave
 
           if projects.empty?
             puts "⚠️  No projects found for brand: #{brand}"
+            puts ''
+            puts '   This could mean:'
+            puts '   - The brand exists but has no project directories'
+            puts '   - The manifest needs updating'
+            puts ''
+            puts "   Try: dam manifest #{brand_arg}"
             return
           end
 
@@ -105,6 +111,13 @@ module Appydave
 
           if matches.empty?
             puts "⚠️  No projects found matching pattern: #{pattern}"
+            puts ''
+            puts '   Pattern tips:'
+            puts '   - Use * for wildcards: b6* matches b60-b69'
+            puts '   - Use ? for single character: b6? matches b60-b69'
+            puts '   - Patterns are case-insensitive'
+            puts ''
+            puts "   Try: dam list #{brand_arg}  # See all projects"
             return
           end
 
@@ -123,7 +136,8 @@ module Appydave
           end
 
           # Print table header
-          puts "Projects matching '#{pattern}' in #{brand}:"
+          match_count = matches.size
+          puts "#{match_count} project#{'s' if match_count != 1} matching '#{pattern}' in #{brand}:"
           puts 'PROJECT                                               SIZE        LAST MODIFIED    PATH'
           puts '-' * 120
 
