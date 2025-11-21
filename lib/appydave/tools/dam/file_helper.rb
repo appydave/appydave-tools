@@ -35,7 +35,7 @@ module Appydave
           exp = (Math.log(bytes) / Math.log(1024)).to_i
           exp = [exp, units.length - 1].min
 
-          format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
+          format('%<size>.1f %<unit>s', size: bytes.to_f / (1024**exp), unit: units[exp])
         end
       end
     end

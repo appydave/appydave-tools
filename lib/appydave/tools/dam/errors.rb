@@ -10,9 +10,7 @@ module Appydave
       class BrandNotFoundError < DamError
         def initialize(brand, available_brands = nil)
           message = "Brand directory not found: #{brand}"
-          if available_brands && !available_brands.empty?
-            message += "\n\nAvailable brands:\n#{available_brands}"
-          end
+          message += "\n\nAvailable brands:\n#{available_brands}" if available_brands && !available_brands.empty?
           super(message)
         end
       end
