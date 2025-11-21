@@ -1,3 +1,10 @@
+# [0.53.0](https://github.com/appydave/appydave-tools/compare/v0.52.0...v0.53.0) (2025-11-21)
+
+
+### Features
+
+* improve s3-status error messages to distinguish non-existent projects from empty projects ([6c9db58](https://github.com/appydave/appydave-tools/commit/6c9db586f78b143c7bd71c86be34de95069d21b4))
+
 # [0.52.0](https://github.com/appydave/appydave-tools/compare/v0.51.0...v0.52.0) (2025-11-21)
 
 
