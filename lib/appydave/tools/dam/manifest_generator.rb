@@ -56,7 +56,8 @@ module Appydave
           # Write to file
           File.write(output_file, JSON.pretty_generate(manifest))
 
-          puts "✅ Generated #{output_file}"
+          timestamp = Time.now.strftime('%Y-%m-%d %H:%M:%S')
+          puts "✅ Generated #{output_file} (#{timestamp})"
           puts "   Found #{projects.size} unique projects"
           puts ''
 
@@ -65,6 +66,14 @@ module Appydave
 
           # Validations
           run_validations(projects)
+
+          # Next steps
+          puts ''
+          puts '💡 Next Steps:'
+          puts "   dam list #{brand}              # View all projects"
+          puts "   dam status #{brand}            # Check sync status"
+          puts "   dam s3-up #{brand} <project>   # Upload project to S3"
+          puts ''
 
           { success: true, brand: brand, path: output_file }
         end
