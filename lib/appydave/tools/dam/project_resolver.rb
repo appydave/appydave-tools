@@ -34,7 +34,7 @@ module Appydave
 
               case matches.size
               when 0
-                raise "❌ No project found matching '#{project_hint}' in #{Config.expand_brand(brand)}"
+                raise "No project found matching '#{project_hint}' in #{Config.expand_brand(brand)}"
               when 1
                 return matches.first
               else
@@ -68,7 +68,7 @@ module Appydave
                          .sort
 
             if matches.empty?
-              raise "❌ No projects found matching pattern '#{pattern}'\n   " \
+              raise "No projects found matching pattern '#{pattern}'\n   " \
                     "Try: dam list #{brand}  # See all available projects"
             end
 
