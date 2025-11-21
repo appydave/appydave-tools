@@ -768,7 +768,7 @@ module Appydave
 
         # Calculate total size of a directory
         def calculate_directory_size(dir_path)
-          FileUtils.calculate_directory_size(dir_path)
+          FileHelper.calculate_directory_size(dir_path)
         end
       end
     end

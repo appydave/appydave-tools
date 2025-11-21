@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Appydave::Tools::Dam::FileUtils do
+RSpec.describe Appydave::Tools::Dam::FileHelper do
   describe '.calculate_directory_size' do
     let(:temp_dir) { Dir.mktmpdir }
 

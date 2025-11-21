@@ -268,7 +268,7 @@ module Appydave
 
         # Format bytes into human-readable format
         def format_bytes(bytes)
-          FileUtils.format_size(bytes)
+          FileHelper.format_size(bytes)
         end
       end
     end

@@ -209,7 +209,7 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
 
             # Should show 0 files synced (all skipped) in summary
             expect(output).to include('Files copied: 0')
-            expect(output).to include('Total size: 0B')
+            expect(output).to include('Total size: 0 B')
           end
         end
       end

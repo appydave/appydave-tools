@@ -67,7 +67,7 @@ module Appydave
           # Gather project data
           project_data = projects.map do |project|
             project_path = Config.project_path(brand_arg, project)
-            size = calculate_directory_size(project_path)
+            size = FileHelper.calculate_directory_size(project_path)
             modified = File.mtime(project_path)
 
             {
@@ -111,7 +111,7 @@ module Appydave
           # Gather project data
           project_data = matches.map do |project|
             project_path = Config.project_path(brand_arg, project)
-            size = calculate_directory_size(project_path)
+            size = FileHelper.calculate_directory_size(project_path)
             modified = File.mtime(project_path)
 
             {
@@ -144,7 +144,7 @@ module Appydave
         # Calculate total size of all projects in a brand
         def self.calculate_total_size(brand, projects)
           projects.sum do |project|
-            FileUtils.calculate_directory_size(Config.project_path(brand, project))
+            FileHelper.calculate_directory_size(Config.project_path(brand, project))
           end
         end
 
@@ -159,7 +159,7 @@ module Appydave
 
         # Format size in human-readable format
         def self.format_size(bytes)
-          FileUtils.format_size(bytes)
+          FileHelper.format_size(bytes)
         end
 
         # Format date/time in readable format

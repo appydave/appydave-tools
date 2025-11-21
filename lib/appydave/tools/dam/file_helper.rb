@@ -7,7 +7,7 @@ module Appydave
     module Dam
       # File utility methods for DAM operations
       # Provides reusable file and directory helpers
-      module FileUtils
+      module FileHelper
         module_function
 
         # Calculate total size of directory in bytes

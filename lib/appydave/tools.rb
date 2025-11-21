@@ -53,7 +53,7 @@ require 'appydave/tools/subtitle_processor/clean'
 require 'appydave/tools/subtitle_processor/join'
 
 require 'appydave/tools/dam/errors'
-require 'appydave/tools/dam/file_utils'
+require 'appydave/tools/dam/file_helper'
 require 'appydave/tools/dam/config'
 require 'appydave/tools/dam/project_resolver'
 require 'appydave/tools/dam/config_loader'
