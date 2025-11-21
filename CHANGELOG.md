@@ -1,3 +1,10 @@
+# [0.50.0](https://github.com/appydave/appydave-tools/compare/v0.49.0...v0.50.0) (2025-11-21)
+
+
+### Features
+
+* add manifest age indicators and active vs archived project counts to brand status ([a5b0f0a](https://github.com/appydave/appydave-tools/commit/a5b0f0a3f8c7f4b7670acb65adb41f5c8b92b4d0))
+
 # [0.49.0](https://github.com/appydave/appydave-tools/compare/v0.48.0...v0.49.0) (2025-11-21)
 
 
