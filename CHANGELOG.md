@@ -1,3 +1,10 @@
+# [0.52.0](https://github.com/appydave/appydave-tools/compare/v0.51.0...v0.52.0) (2025-11-21)
+
+
+### Features
+
+* add --verbose flag to manifest command to show detailed validation warnings ([00ed288](https://github.com/appydave/appydave-tools/commit/00ed288ae36462d87c16568c4f9ee73ad8b6fd2c))
+
 # [0.51.0](https://github.com/appydave/appydave-tools/compare/v0.50.0...v0.51.0) (2025-11-21)
 
 
