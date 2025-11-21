@@ -18,7 +18,7 @@ module Appydave
 
         # Generate manifest for this brand
         # @return [Hash] Result with :success, :path, and :brand keys
-        def generate(output_file: nil)
+        def generate(output_file: nil, verbose: false)
           output_file ||= File.join(brand_path, 'projects.json')
           ssd_backup = brand_info.locations.ssd_backup
 
@@ -65,7 +65,7 @@ module Appydave
           show_summary(projects, disk_usage)
 
           # Validations
-          run_validations(projects)
+          run_validations(projects, verbose: verbose)
 
           # Next steps
           puts ''
@@ -267,7 +267,7 @@ module Appydave
           puts ''
         end
 
-        def run_validations(projects)
+        def run_validations(projects, verbose: false)
           puts '🔍 Running validations...'
           warnings = []
 
@@ -279,9 +279,12 @@ module Appydave
 
           if warnings.empty?
             puts '✅ All validations passed!'
-          else
+          elsif verbose
             puts "#{warnings.size} warning(s) found:"
             warnings.each { |w| puts "   #{w}" }
+          else
+            puts "⚠️  #{warnings.size} validation warning#{'s' if warnings.size != 1} found"
+            puts "   Run 'dam manifest #{brand} --verbose' to see details"
           end
         end
 

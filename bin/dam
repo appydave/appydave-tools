@@ -236,13 +236,14 @@ class VatCLI
   # Generate manifest
   def manifest_command(args)
     all_brands = args.include?('--all')
+    verbose = args.include?('--verbose')
     args = args.reject { |arg| arg.start_with?('--') }
     brand_arg = args[0]
 
     if all_brands
-      generate_all_manifests
+      generate_all_manifests(verbose: verbose)
     elsif brand_arg
-      generate_single_manifest(brand_arg)
+      generate_single_manifest(brand_arg, verbose: verbose)
     else
       show_manifest_usage
     end
@@ -251,7 +252,7 @@ class VatCLI
     exit 1
   end
 
-  def generate_all_manifests
+  def generate_all_manifests(verbose: false)
     Appydave::Tools::Configuration::Config.configure
     brands_config = Appydave::Tools::Configuration::Config.brands
 
@@ -262,26 +263,27 @@ class VatCLI
       puts '=' * 60
 
       generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_key)
-      result = generator.generate
+      result = generator.generate(verbose: verbose)
       results << result if result
     end
 
     display_manifest_summary(results)
   end
 
-  def generate_single_manifest(brand_arg)
+  def generate_single_manifest(brand_arg, verbose: false)
     Appydave::Tools::Dam::Config.expand_brand(brand_arg)
     ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand_arg)
 
     generator = Appydave::Tools::Dam::ManifestGenerator.new(brand_arg)
-    generator.generate
+    generator.generate(verbose: verbose)
   end
 
   def show_manifest_usage
-    puts 'Usage: dam manifest <brand> [--all]'
+    puts 'Usage: dam manifest <brand> [--all] [--verbose]'
     puts ''
     puts 'Examples:'
     puts '  dam manifest appydave        # Generate manifest for AppyDave brand'
+    puts '  dam manifest appydave --verbose  # Show detailed validation warnings'
     puts '  dam manifest --all           # Generate manifests for all brands'
     exit 1
   end
