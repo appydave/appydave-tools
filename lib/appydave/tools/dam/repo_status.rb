@@ -62,6 +62,9 @@ module Appydave
         end
 
         def show_git_info(indent: '')
+          # Fetch latest from remote to ensure accurate status
+          fetch_from_remote
+
           status = git_status_info
 
           puts "#{indent}🌿 Branch: #{status[:branch]}"
@@ -155,6 +158,13 @@ module Appydave
           end
         rescue StandardError
           # Silently fail if git status fails
+        end
+
+        # Fetch latest changes from remote to ensure accurate sync status
+        def fetch_from_remote
+          `git -C "#{brand_path}" fetch origin 2>/dev/null`
+        rescue StandardError
+          # Silently fail if fetch fails (e.g., no network, no remote)
         end
       end
     end
