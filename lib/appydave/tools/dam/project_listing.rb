@@ -49,6 +49,15 @@ module Appydave
               shorten_path(data[:path])
             )
           end
+
+          # Print footer summary
+          total_projects = brand_data.sum { |d| d[:count] }
+          total_size = brand_data.sum { |d| d[:size] }
+
+          puts ''
+          puts "Total: #{brand_data.size} brand#{'s' if brand_data.size != 1}, " \
+               "#{total_projects} project#{'s' if total_projects != 1}, " \
+               "#{format_size(total_size)}"
         end
 
         # List all projects for a specific brand (Mode 3)
