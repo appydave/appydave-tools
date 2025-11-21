@@ -96,7 +96,10 @@ module Appydave
             return false if excluded.include?(basename)
 
             # Exclude organizational folders (for brands using projects_subfolder)
-            organizational = %w[brand personas projects video-scripts]
+            # Note: 'projects' is NOT excluded here because when projects_subfolder is configured,
+            # we scan INSIDE the projects folder, so 'projects' never appears as a basename.
+            # If projects_subfolder is NOT configured, users may legitimately have a project named 'projects'.
+            organizational = %w[brand personas video-scripts]
             return false if organizational.include?(basename)
 
             # Exclude hidden and underscore-prefixed
