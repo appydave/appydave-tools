@@ -817,6 +817,16 @@ class VatCLI
         joy       → v-beauty-and-joy   (Beauty & Joy brand)
         ss        → v-supportsignal    (SupportSignal client)
 
+      Brand Input Formats:
+        You can use any of these equivalent formats:
+        - Shortcut:  appydave, ad, AD, Ad     (case-insensitive)
+        - Key:       appydave                 (from brands.json)
+        - Full name: v-appydave              (directory name with v- prefix)
+
+      Configuration:
+        Location: ~/.config/appydave/brands.json
+        Purpose:  Define brand shortcuts, paths, and settings
+
       Usage:
         dam list                       # Show all brands with counts
         dam list appydave              # List all AppyDave projects
@@ -831,17 +841,19 @@ class VatCLI
 
       DAM supports two primary video content workflows:
 
-      1. FliVideo Workflow (AppyDave)
+      1. FliVideo Workflow
+         Used by: AppyDave
          - Sequential chapter-based recording
-         - Projects follow pattern: [letter][number]-[name]
-         - Example: b65-guy-monroe-marketing-plan
+         - Projects follow pattern: [letter][2-digit-number]-[name]
+         - Examples: b65-guy-monroe-marketing-plan, a12-intro-video
          - Short name support: b65 → b65-guy-monroe-marketing-plan
          - Pattern matching: b6* → all projects b60-b69
 
-      2. Storyline Workflow (VOZ, AITLDR)
+      2. Storyline Workflow
+         Used by: VOZ, AITLDR, other clients
          - Script-first content creation
          - Projects use full descriptive names
-         - Example: boy-baker, the-point
+         - Examples: boy-baker, the-point
          - No short name expansion (exact match required)
 
       Project Organization:
@@ -856,6 +868,11 @@ class VatCLI
 
       Storage Strategy:
         Local → S3 (90-day collaboration) → SSD (long-term archive)
+
+        S3 Staging (90-day retention):
+          - Purpose: Team collaboration and active editing
+          - After 90 days: Files archived to SSD or deleted
+          - Use 'dam archive' to move completed projects to SSD
     HELP
   end
 
@@ -863,7 +880,7 @@ class VatCLI
     puts <<~HELP
       Configuration
 
-      DAM uses two configuration levels:
+      DAM uses multiple configuration levels:
 
       1. System Configuration (settings.json)
          Location: ~/.config/appydave/settings.json
@@ -873,11 +890,30 @@ class VatCLI
              "video-projects-root": "/Users/yourname/dev/video-projects"
            }
 
+         Windows Path Format:
+           Use forward slashes or double backslashes:
+           - "video-projects-root": "C:/Users/yourname/dev/video-projects"
+           - "video-projects-root": "C:\\\\Users\\\\yourname\\\\dev\\\\video-projects"
+
          Setup:
            ad_config -c                # Create configuration
            ad_config -e                # Edit configuration
 
-      2. Brand Configuration (.video-tools.env)
+      2. Brand Configuration (brands.json)
+         Location: ~/.config/appydave/brands.json
+         Purpose: Define brand shortcuts, paths, and settings
+         Format:
+           {
+             "brands": {
+               "appydave": {
+                 "shortcut": "ad",
+                 "name": "AppyDave",
+                 "youtube_handle": "@appydave"
+               }
+             }
+           }
+
+      3. Brand Configuration (.video-tools.env)
          Location: <brand-dir>/.video-tools.env
          Purpose: AWS credentials and S3 settings per brand
          Required Keys:
@@ -885,7 +921,10 @@ class VatCLI
            AWS_SECRET_ACCESS_KEY=xxx
            AWS_REGION=us-east-1
            S3_BUCKET=your-bucket-name
-           SSD_BASE=/path/to/external/drive
+
+         Optional Keys:
+           S3_BUCKET_PREFIX=staging/    # Optional prefix for S3 paths
+           SSD_BASE=/path/to/ssd        # Optional, for long-term archives
 
          Example:
            v-appydave/.video-tools.env
@@ -893,7 +932,8 @@ class VatCLI
 
       Directory Structure:
         ~/.config/appydave/
-        └── settings.json              # System config
+        ├── settings.json              # System config
+        └── brands.json                # Brand shortcuts
 
         /Users/yourname/dev/video-projects/
         ├── v-appydave/
@@ -902,6 +942,10 @@ class VatCLI
         └── v-voz/
             ├── .video-tools.env
             └── boy-baker/
+
+      Verification:
+        dam list                       # Verify configuration works
+        dam list appydave              # Test brand-specific access
     HELP
   end
 
