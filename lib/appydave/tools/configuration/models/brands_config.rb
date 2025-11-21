@@ -10,10 +10,27 @@ module Appydave
           def get_brand(brand_key)
             brand_key_str = brand_key.to_s
 
+            log.info "Looking up brand: '#{brand_key_str}'" if debug_mode?
+
+            # Validate data structure
+            unless data.is_a?(Hash)
+              log.error "Config data is not a Hash: #{data.class}"
+              raise "Invalid brands config: data is #{data.class}, expected Hash"
+            end
+
+            unless data['brands'].is_a?(Hash)
+              log.error "Config data['brands'] is #{data['brands'].class}, expected Hash"
+              log.error "Available keys in data: #{data.keys.inspect}"
+              raise "Invalid brands config: 'brands' key is #{data['brands'].class}, expected Hash"
+            end
+
+            log.info "Available brands: #{data['brands'].keys.inspect}" if debug_mode?
+
             # Try direct key lookup first (case-insensitive)
             brand_entry = data['brands'].find { |key, _info| key.downcase == brand_key_str.downcase }
             if brand_entry
               actual_key = brand_entry[0]
+              log.info "Found brand by key: '#{actual_key}'" if debug_mode?
               return BrandInfo.new(actual_key, brand_entry[1])
             end
 
@@ -21,10 +38,12 @@ module Appydave
             brand_entry = data['brands'].find { |_key, info| info['shortcut']&.downcase == brand_key_str.downcase }
             if brand_entry
               actual_key = brand_entry[0]
+              log.info "Found brand by shortcut: '#{actual_key}'" if debug_mode?
               return BrandInfo.new(actual_key, brand_entry[1])
             end
 
             # Return default if not found (use normalized lowercase key)
+            log.warn "Brand not found: '#{brand_key_str}', returning default" if debug_mode?
             BrandInfo.new(brand_key_str.downcase, default_brand_info)
           end
 
