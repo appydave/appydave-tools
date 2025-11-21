@@ -4,8 +4,6 @@ require 'rspec'
 require 'tmpdir'
 
 RSpec.describe Appydave::Tools::Configuration::Configurable do
-  Appydave::Tools::Configuration::Config.configure
-
   let(:temp_folder) { Dir.mktmpdir }
   let(:test_class) do
     Class.new do
@@ -37,6 +35,15 @@ RSpec.describe Appydave::Tools::Configuration::Configurable do
 
   describe '#config' do
     context 'when default configurations are available' do
+      before do
+        Appydave::Tools::Configuration::Config.reset
+        Appydave::Tools::Configuration::Config.configure do |config|
+          config.config_path = config_path
+          config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
+          config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
+        end
+      end
+
       it 'returns the settings configuration' do
         expect(test_configurable.settings).to be_an_instance_of(Appydave::Tools::Configuration::Models::SettingsConfig)
       end

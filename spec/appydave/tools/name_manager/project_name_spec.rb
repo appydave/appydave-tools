@@ -19,6 +19,8 @@ RSpec.describe Appydave::Tools::NameManager::ProjectName do
 
   before do
     File.write(config_file, channels_data.to_json)
+    # Reset config to prevent pollution from spec_helper default
+    Appydave::Tools::Configuration::Config.reset
     Appydave::Tools::Configuration::Config.configure do |config|
       config.config_path = temp_folder
       config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)

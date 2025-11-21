@@ -1349,8 +1349,8 @@ class VatCLI
   def display_s3_scan_table(matched_projects, orphaned_projects, bucket, prefix, region)
     puts '✅ S3 Projects Report'
     puts ''
-    puts 'PROJECT                    FILES    SIZE        LOCAL      S3 MODIFIED'
-    puts '-' * 84
+    puts 'PROJECT                              FILES    SIZE        LOCAL      S3 MODIFIED'
+    puts '-' * 92
 
     # Display matched projects first (sorted alphabetically)
     matched_projects.sort.each do |project_id, data|
@@ -1359,20 +1359,20 @@ class VatCLI
       local_status = format_local_status(data[:local_status], data[:local_file_count], data[:file_count])
       modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
 
-      puts format('%-26s %5s %10s  %-9s  %s', project_id, files, size, local_status, modified)
+      puts format('%-36s %5s %10s  %-9s  %s', project_id, files, size, local_status, modified)
     end
 
     # Display orphaned projects (sorted alphabetically)
     return if orphaned_projects.empty?
 
-    puts '-' * 84
+    puts '-' * 92
     orphaned_projects.sort.each do |project_id, data|
       files = data[:file_count].to_s.rjust(5)
       size = format_bytes(data[:total_bytes]).rjust(10)
       local_status = 'N/A'
       modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
 
-      puts format('%-26s %5s %10s  %-9s  %s', project_id, files, size, local_status, modified)
+      puts format('%-36s %5s %10s  %-9s  %s', project_id, files, size, local_status, modified)
     end
 
     puts ''

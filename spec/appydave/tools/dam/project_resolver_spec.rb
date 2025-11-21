@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
+require 'ostruct'
 
 RSpec.describe Appydave::Tools::Dam::ProjectResolver do
   include_context 'with vat filesystem and brands', brands: %w[appydave voz]
@@ -199,15 +200,31 @@ RSpec.describe Appydave::Tools::Dam::ProjectResolver do
 
   describe '.detect_from_pwd' do
     context 'when in valid project directory' do
-      before do
-        FileUtils.mkdir_p(File.join(appydave_path, 'b65-test'))
-      end
-
       it 'detects brand and project from path' do
-        allow(Dir).to receive(:pwd).and_return(File.join(appydave_path, 'b65-test'))
-        brand, project = described_class.detect_from_pwd
-        expect(brand).to eq('appydave') # Returns brand key, not v- prefixed name
-        expect(project).to eq('b65-test')
+        FileUtils.mkdir_p(File.join(appydave_path, 'b65-test'))
+        test_path = File.join(appydave_path, 'b65-test')
+
+        # ACTUALLY change directory instead of stubbing Dir.pwd
+        original_dir = Dir.pwd
+        Dir.chdir(test_path)
+
+        begin
+          # Stub Config.project_path to avoid needing full brands config
+          allow(Appydave::Tools::Dam::Config).to receive(:project_path) do |brand_key, project_id|
+            if brand_key == 'appydave' && project_id == 'b65-test'
+              File.join(appydave_path, 'b65-test')
+            else
+              '/nonexistent'
+            end
+          end
+
+          brand, project = described_class.detect_from_pwd
+
+          expect(brand).to eq('appydave') # Returns brand key, not v- prefixed name
+          expect(project).to eq('b65-test')
+        ensure
+          Dir.chdir(original_dir)
+        end
       end
     end
 

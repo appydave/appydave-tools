@@ -29,6 +29,7 @@ RSpec.describe Appydave::Tools::Configuration::Config do
 
   describe '.edit' do
     before do
+      described_class.reset
       described_class.configure do |config|
         config.config_path = config_base_path
       end
@@ -45,6 +46,7 @@ RSpec.describe Appydave::Tools::Configuration::Config do
 
   context 'when configuring a new component' do
     before do
+      described_class.reset
       described_class.configure do |config|
         config.config_path = config_base_path
         config.register(:component1, Appydave::Tools::Configuration::Models::ConfigBase)
@@ -67,6 +69,7 @@ RSpec.describe Appydave::Tools::Configuration::Config do
   context 'when configuring child components' do
     context 'with settings component' do
       before do
+        described_class.reset
         described_class.configure do |config|
           config.config_path = config_base_path
           config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
@@ -115,6 +118,7 @@ RSpec.describe Appydave::Tools::Configuration::Config do
 
     context 'with channels component' do
       before do
+        described_class.reset
         described_class.configure do |config|
           config.config_path = config_base_path
           config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
