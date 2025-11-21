@@ -95,6 +95,10 @@ module Appydave
             excluded = %w[archived docs node_modules .git .github]
             return false if excluded.include?(basename)
 
+            # Exclude organizational folders (for brands using projects_subfolder)
+            organizational = %w[brand personas projects video-scripts]
+            return false if organizational.include?(basename)
+
             # Exclude hidden and underscore-prefixed
             return false if basename.start_with?('.', '_')
 
