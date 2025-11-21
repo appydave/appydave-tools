@@ -40,7 +40,8 @@ module Appydave
         end
 
         def show_project_status
-          puts "📊 Status: v-#{brand}/#{File.basename(project_path)}"
+          project_size = calculate_project_size
+          puts "📊 Status: v-#{brand}/#{File.basename(project_path)} (#{format_size(project_size)})"
           puts ''
 
           manifest = load_manifest
@@ -57,7 +58,6 @@ module Appydave
           end
 
           show_storage_status(project_entry)
-          show_git_status if git_repo?
         end
 
         def show_brand_status
@@ -104,8 +104,22 @@ module Appydave
 
           if local[:exists]
             puts '  📁 Local: ✓ exists'
-            puts "     Heavy files: #{local[:has_heavy_files] ? 'yes' : 'no'}"
-            puts "     Light files: #{local[:has_light_files] ? 'yes' : 'no'}"
+
+            # Show heavy files with count and size
+            if local[:has_heavy_files]
+              heavy_info = count_and_size_heavy_files
+              puts "     Heavy files: #{heavy_info[:count]} (#{format_size(heavy_info[:size])})"
+            else
+              puts '     Heavy files: none'
+            end
+
+            # Show light files with count and size
+            if local[:has_light_files]
+              light_info = count_and_size_light_files
+              puts "     Light files: #{light_info[:count]} (#{format_size(light_info[:size])})"
+            else
+              puts '     Light files: none'
+            end
           else
             puts '  📁 Local: ✗ does not exist'
           end
@@ -257,6 +271,34 @@ module Appydave
 
         def commits_behind
           GitHelper.commits_behind(brand_path)
+        end
+
+        def calculate_project_size
+          FileHelper.calculate_directory_size(project_path)
+        end
+
+        def count_and_size_heavy_files
+          count = 0
+          size = 0
+          Dir.glob(File.join(project_path, '*.{mp4,mov,avi,mkv,webm}')).each do |file|
+            count += 1
+            size += File.size(file)
+          end
+          { count: count, size: size }
+        end
+
+        def count_and_size_light_files
+          count = 0
+          size = 0
+          Dir.glob(File.join(project_path, '**/*.{srt,vtt,jpg,png,md,txt,json,yml}')).each do |file|
+            count += 1
+            size += File.size(file)
+          end
+          { count: count, size: size }
+        end
+
+        def format_size(bytes)
+          FileHelper.format_size(bytes)
         end
       end
     end
