@@ -1,36 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe Appydave::Tools::Dam::ProjectListing do
-  let(:temp_root) { Dir.mktmpdir }
-  let(:brand1_path) { File.join(temp_root, 'v-appydave') }
-  let(:brand2_path) { File.join(temp_root, 'v-voz') }
+  include_context 'with vat filesystem and brands', brands: %w[appydave voz]
 
   before do
-    # Setup temp directory structure
-    FileUtils.mkdir_p(brand1_path)
-    FileUtils.mkdir_p(brand2_path)
+    # Create projects for appydave brand
+    FileUtils.mkdir_p(File.join(appydave_path, 'b60-project'))
+    FileUtils.mkdir_p(File.join(appydave_path, 'b61-project'))
+    FileUtils.mkdir_p(File.join(appydave_path, 'b65-project'))
 
-    # Create projects for brand1
-    FileUtils.mkdir_p(File.join(brand1_path, 'b60-project'))
-    FileUtils.mkdir_p(File.join(brand1_path, 'b61-project'))
-    FileUtils.mkdir_p(File.join(brand1_path, 'b65-project'))
-
-    # Create projects for brand2
-    FileUtils.mkdir_p(File.join(brand2_path, 'boy-baker'))
-    FileUtils.mkdir_p(File.join(brand2_path, 'the-point'))
-
-    # Mock Config
-    allow(Appydave::Tools::Dam::Config).to receive_messages(projects_root: temp_root, available_brands: %w[appydave voz])
-    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('appydave').and_return(brand1_path)
-    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('v-appydave').and_return(brand1_path)
-    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('voz').and_return(brand2_path)
-    allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('v-voz').and_return(brand2_path)
-    allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with('appydave').and_return('v-appydave')
-    allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with('voz').and_return('v-voz')
-  end
-
-  after do
-    FileUtils.remove_entry(temp_root)
+    # Create projects for voz brand
+    FileUtils.mkdir_p(File.join(voz_path, 'boy-baker'))
+    FileUtils.mkdir_p(File.join(voz_path, 'the-point'))
   end
 
   describe '.list_brands_with_counts' do
@@ -54,6 +35,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'uses shortened paths with tilde' do
       allow(Dir).to receive(:home).and_return('/Users/testuser')
+      allow(Appydave::Tools::Dam::Config).to receive(:brand_path).and_call_original
       allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('appydave')
                                                                  .and_return('/Users/testuser/dev/video-projects/v-appydave')
 
@@ -178,7 +160,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe 'projects_subfolder support' do
-    let(:ss_brand_path) { File.join(temp_root, 'v-supportsignal') }
+    let(:ss_brand_path) { File.join(projects_root, 'v-supportsignal') }
     let(:ss_projects_path) { File.join(ss_brand_path, 'projects') }
 
     before do
