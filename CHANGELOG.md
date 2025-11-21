@@ -1,3 +1,10 @@
+## [0.34.1](https://github.com/appydave/appydave-tools/compare/v0.34.0...v0.34.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* add nil project validation to prevent cryptic include? error when project argument is missing ([a205319](https://github.com/appydave/appydave-tools/commit/a2053192fb1533f96db4e990945836f71ceb7c9e))
+
 # [0.34.0](https://github.com/appydave/appydave-tools/compare/v0.33.0...v0.34.0) (2025-11-21)
 
 
