@@ -1,3 +1,10 @@
+## [0.32.4](https://github.com/appydave/appydave-tools/compare/v0.32.3...v0.32.4) (2025-11-21)
+
+
+### Bug Fixes
+
+* resolve brand key mismatch in ProjectListing causing projects_subfolder lookup to fail - passes original brand key to ProjectResolver instead of expanded v-* version ([771a20f](https://github.com/appydave/appydave-tools/commit/771a20f3d93a19152e6c1fe52a9581287b2b80c8))
+
 ## [0.32.3](https://github.com/appydave/appydave-tools/compare/v0.32.2...v0.32.3) (2025-11-21)
 
 
