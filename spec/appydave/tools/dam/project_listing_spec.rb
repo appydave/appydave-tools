@@ -46,10 +46,10 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brand_projects' do
-    it 'displays projects in tabular format with sizes, dates, and paths' do
+    it 'displays projects in tabular format with sizes, ages, and paths' do
       expect { described_class.list_brand_projects('appydave') }.to output(
         a_string_matching(/Projects in v-appydave:/)
-          .and(matching(/PROJECT\s+SIZE\s+LAST MODIFIED\s+PATH/))
+          .and(matching(/PROJECT\s+SIZE\s+AGE\s+PATH/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))
           .and(matching(/b65-project/))
@@ -82,7 +82,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
     it 'displays matching projects in tabular format' do
       expect { described_class.list_with_pattern('appydave', 'b6*') }.to output(
         a_string_matching(/\d+ projects? matching 'b6\*' in v-appydave:/)
-          .and(matching(/PROJECT\s+SIZE\s+LAST MODIFIED\s+PATH/))
+          .and(matching(/PROJECT\s+SIZE\s+AGE\s+PATH/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))
           .and(matching(/b65-project/))
@@ -156,6 +156,63 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'returns N/A for nil' do
       expect(described_class.format_date(nil)).to eq('N/A')
+    end
+  end
+
+  describe '.format_age' do
+    it 'formats recent time as "just now"' do
+      time = Time.now - 30
+      expect(described_class.format_age(time)).to eq('just now')
+    end
+
+    it 'formats minutes' do
+      time = Time.now - (5 * 60)
+      expect(described_class.format_age(time)).to eq('5m')
+    end
+
+    it 'formats hours' do
+      time = Time.now - (3 * 3600)
+      expect(described_class.format_age(time)).to eq('3h')
+    end
+
+    it 'formats days' do
+      time = Time.now - (5 * 86_400)
+      expect(described_class.format_age(time)).to eq('5d')
+    end
+
+    it 'formats weeks' do
+      time = Time.now - (2 * 7 * 86_400)
+      expect(described_class.format_age(time)).to eq('2w')
+    end
+
+    it 'formats months' do
+      time = Time.now - (2 * 30 * 86_400)
+      expect(described_class.format_age(time)).to eq('2mo')
+    end
+
+    it 'formats years' do
+      time = Time.now - (2 * 365 * 86_400)
+      expect(described_class.format_age(time)).to eq('2y')
+    end
+
+    it 'returns N/A for nil' do
+      expect(described_class.format_age(nil)).to eq('N/A')
+    end
+  end
+
+  describe '.stale?' do
+    it 'returns false for recent projects (<90 days)' do
+      time = Time.now - (30 * 86_400) # 30 days ago
+      expect(described_class.stale?(time)).to be false
+    end
+
+    it 'returns true for old projects (>90 days)' do
+      time = Time.now - (100 * 86_400) # 100 days ago
+      expect(described_class.stale?(time)).to be true
+    end
+
+    it 'returns false for nil' do
+      expect(described_class.stale?(nil)).to be false
     end
   end
 

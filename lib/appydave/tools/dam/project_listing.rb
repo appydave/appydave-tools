@@ -80,22 +80,25 @@ module Appydave
               name: project,
               path: project_path,
               size: size,
-              modified: modified
+              modified: modified,
+              age: format_age(modified),
+              stale: stale?(modified)
             }
           end
 
           # Print table header
           puts "Projects in #{brand}:"
-          puts 'PROJECT                                               SIZE        LAST MODIFIED    PATH'
+          puts 'PROJECT                                               SIZE             AGE    PATH'
           puts '-' * 120
 
           # Print table rows
           project_data.each do |data|
+            age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
             puts format(
-              '%-45s %12s %20s    %s',
+              '%-45s %12s %15s    %s',
               data[:name],
               format_size(data[:size]),
-              format_date(data[:modified]),
+              age_display,
               shorten_path(data[:path])
             )
           end
@@ -131,23 +134,26 @@ module Appydave
               name: project,
               path: project_path,
               size: size,
-              modified: modified
+              modified: modified,
+              age: format_age(modified),
+              stale: stale?(modified)
             }
           end
 
           # Print table header
           match_count = matches.size
           puts "#{match_count} project#{'s' if match_count != 1} matching '#{pattern}' in #{brand}:"
-          puts 'PROJECT                                               SIZE        LAST MODIFIED    PATH'
+          puts 'PROJECT                                               SIZE             AGE    PATH'
           puts '-' * 120
 
           # Print table rows
           project_data.each do |data|
+            age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
             puts format(
-              '%-45s %12s %20s    %s',
+              '%-45s %12s %15s    %s',
               data[:name],
               format_size(data[:size]),
-              format_date(data[:modified]),
+              age_display,
               shorten_path(data[:path])
             )
           end
@@ -181,6 +187,40 @@ module Appydave
           return 'N/A' if time.nil?
 
           time.strftime('%Y-%m-%d %H:%M')
+        end
+
+        # Format age as relative time (e.g., "3 days", "2 weeks")
+        def self.format_age(time)
+          return 'N/A' if time.nil?
+
+          seconds = Time.now - time
+          return 'just now' if seconds < 60
+
+          minutes = seconds / 60
+          return "#{minutes.round}m" if minutes < 60
+
+          hours = minutes / 60
+          return "#{hours.round}h" if hours < 24
+
+          days = hours / 24
+          return "#{days.round}d" if days < 7
+
+          weeks = days / 7
+          return "#{weeks.round}w" if weeks < 4
+
+          months = days / 30
+          return "#{months.round}mo" if months < 12
+
+          years = days / 365
+          "#{years.round}y"
+        end
+
+        # Check if project is stale (>90 days old)
+        def self.stale?(time)
+          return false if time.nil?
+
+          days = (Time.now - time) / 86_400 # seconds in a day
+          days > 90
         end
 
         # Shorten path by replacing home directory with ~
