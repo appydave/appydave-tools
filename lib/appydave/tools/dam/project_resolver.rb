@@ -116,9 +116,9 @@ module Appydave
             # Check if we're inside a v-* directory
             if current =~ %r{/(v-[^/]+)/([^/]+)/?}
               brand_with_prefix = ::Regexp.last_match(1)
-              project = ::Regexp.last_match(2) # Capture BEFORE .sub() which resets Regexp.last_match
+              project = ::Regexp.last_match(2) # Capture BEFORE normalize() which resets Regexp.last_match
               # Strip 'v-' prefix to get brand key (e.g., 'v-supportsignal' → 'supportsignal')
-              brand_key = brand_with_prefix.sub(/^v-/, '')
+              brand_key = BrandResolver.normalize(brand_with_prefix)
               return [brand_key, project] if project_exists?(brand_key, project)
             end
 

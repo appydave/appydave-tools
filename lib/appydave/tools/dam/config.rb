@@ -85,34 +85,11 @@ module Appydave
           end
 
           # Expand brand shortcut to full brand name
-          # Reads from brands.json if available, falls back to hardcoded shortcuts
+          # Delegates to BrandResolver for centralized brand resolution
           # @param shortcut [String] Brand shortcut (e.g., 'appydave', 'ad', 'APPYDAVE')
           # @return [String] Full brand name (e.g., 'v-appydave')
           def expand_brand(shortcut)
-            shortcut_str = shortcut.to_s
-
-            return shortcut_str if shortcut_str.start_with?('v-')
-
-            # Try to read from brands.json
-            Appydave::Tools::Configuration::Config.configure
-            brands_config = Appydave::Tools::Configuration::Config.brands
-
-            # Check if input matches a brand key (case-insensitive)
-            brand = brands_config.brands.find { |b| b.key.downcase == shortcut_str.downcase }
-            return "v-#{brand.key}" if brand
-
-            # Check if input matches a brand shortcut (case-insensitive)
-            brand = brands_config.brands.find { |b| b.shortcut.downcase == shortcut_str.downcase }
-            return "v-#{brand.key}" if brand
-
-            # Fall back to hardcoded shortcuts for backwards compatibility
-            normalized = shortcut_str.downcase
-            case normalized
-            when 'joy' then 'v-beauty-and-joy'
-            when 'ss' then 'v-supportsignal'
-            else
-              "v-#{normalized}"
-            end
+            BrandResolver.expand(shortcut)
           end
 
           # Get list of available brands
