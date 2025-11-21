@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'find'
-
 # rubocop:disable Style/FormatStringToken
 # Disabled: Using simple unannotated tokens (%s) for straightforward string formatting
 # Annotated tokens (%<foo>s) add unnecessary complexity for simple table formatting
@@ -146,21 +144,8 @@ module Appydave
         # Calculate total size of all projects in a brand
         def self.calculate_total_size(brand, projects)
           projects.sum do |project|
-            calculate_directory_size(Config.project_path(brand, project))
+            FileUtils.calculate_directory_size(Config.project_path(brand, project))
           end
-        end
-
-        # Calculate size of a directory in bytes
-        def self.calculate_directory_size(path)
-          return 0 unless Dir.exist?(path)
-
-          total = 0
-          Find.find(path) do |file_path|
-            total += File.size(file_path) if File.file?(file_path)
-          rescue StandardError
-            # Skip files we can't read
-          end
-          total
         end
 
         # Find the most recent modification time across all projects
@@ -174,13 +159,7 @@ module Appydave
 
         # Format size in human-readable format
         def self.format_size(bytes)
-          return '0 B' if bytes.zero?
-
-          units = %w[B KB MB GB TB]
-          exp = (Math.log(bytes) / Math.log(1024)).to_i
-          exp = [exp, units.length - 1].min
-
-          format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
+          FileUtils.format_size(bytes)
         end
 
         # Format date/time in readable format

@@ -409,15 +409,15 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
 
   describe '#format_bytes' do
     it 'formats bytes' do
-      expect(sync_from_ssd.send(:format_bytes, 500)).to eq('500B')
+      expect(sync_from_ssd.send(:format_bytes, 500)).to eq('500.0 B')
     end
 
     it 'formats kilobytes' do
-      expect(sync_from_ssd.send(:format_bytes, 2048)).to eq('2.0KB')
+      expect(sync_from_ssd.send(:format_bytes, 2048)).to eq('2.0 KB')
     end
 
     it 'formats megabytes' do
-      expect(sync_from_ssd.send(:format_bytes, 2_097_152)).to eq('2.0MB')
+      expect(sync_from_ssd.send(:format_bytes, 2_097_152)).to eq('2.0 MB')
     end
   end
 

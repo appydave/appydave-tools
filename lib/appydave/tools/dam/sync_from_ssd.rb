@@ -268,13 +268,7 @@ module Appydave
 
         # Format bytes into human-readable format
         def format_bytes(bytes)
-          if bytes < 1024
-            "#{bytes}B"
-          elsif bytes < 1024 * 1024
-            "#{(bytes / 1024.0).round(1)}KB"
-          else
-            "#{(bytes / 1024.0 / 1024.0).round(1)}MB"
-          end
+          FileUtils.format_size(bytes)
         end
       end
     end

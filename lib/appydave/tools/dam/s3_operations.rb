@@ -768,11 +768,7 @@ module Appydave
 
         # Calculate total size of a directory
         def calculate_directory_size(dir_path)
-          total = 0
-          Dir.glob(File.join(dir_path, '**', '*'), File::FNM_DOTMATCH).each do |file|
-            total += File.size(file) if File.file?(file)
-          end
-          total
+          FileUtils.calculate_directory_size(dir_path)
         end
       end
     end
