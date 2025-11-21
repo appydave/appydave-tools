@@ -1,3 +1,16 @@
+# [0.37.0](https://github.com/appydave/appydave-tools/compare/v0.36.0...v0.37.0) (2025-11-21)
+
+
+### Bug Fixes
+
+* resolve regex capture group issue in project resolver and improve S3 display ([9e49668](https://github.com/appydave/appydave-tools/commit/9e4966842ba117da4b794ee0698c1c96960763c3))
+
+
+### Features
+
+* fix config loading 7x and brand resolution with v- prefix ([94d3ea0](https://github.com/appydave/appydave-tools/commit/94d3ea0d4137167e977979f896c531d3af0a19f9))
+* improve DAM CLI usability - brand validation and S3 sync status ([822636a](https://github.com/appydave/appydave-tools/commit/822636a517951085ef8505006b0315dfb0545572))
+
 # [0.36.0](https://github.com/appydave/appydave-tools/compare/v0.35.0...v0.36.0) (2025-11-21)
 
 
