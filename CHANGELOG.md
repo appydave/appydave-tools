@@ -1,3 +1,10 @@
+# [0.44.0](https://github.com/appydave/appydave-tools/compare/v0.43.0...v0.44.0) (2025-11-21)
+
+
+### Features
+
+* add AGE column to project listing with stale indicator ([31ab044](https://github.com/appydave/appydave-tools/commit/31ab044f750c9fc4472365252205a356ff607b7e))
+
 # [0.43.0](https://github.com/appydave/appydave-tools/compare/v0.42.0...v0.43.0) (2025-11-21)
 
 
