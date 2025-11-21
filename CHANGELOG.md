@@ -1,3 +1,10 @@
+# [0.48.0](https://github.com/appydave/appydave-tools/compare/v0.47.0...v0.48.0) (2025-11-21)
+
+
+### Features
+
+* remove PATH column from project lists and add note about file-only listing ([4cd3c67](https://github.com/appydave/appydave-tools/commit/4cd3c67196c08998fdbc172ff262a94abcfa8beb))
+
 # [0.47.0](https://github.com/appydave/appydave-tools/compare/v0.46.0...v0.47.0) (2025-11-21)
 
 
