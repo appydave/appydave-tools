@@ -60,15 +60,6 @@ module Appydave
           puts "📊 Brand Status: v-#{brand}"
           puts ''
 
-          # Show git remote (with self-healing)
-          remote = Config.git_remote(brand)
-          if remote
-            puts "📡 Git Remote: #{remote}"
-          else
-            puts '📡 Git Remote: Not configured (not a git repository)'
-          end
-          puts ''
-
           # Show git status
           if git_repo?
             show_brand_git_status
@@ -108,7 +99,7 @@ module Appydave
           local = project_entry[:storage][:local]
 
           if local[:exists]
-            puts "  📁 Local: ✓ exists (#{local[:structure]} structure)"
+            puts '  📁 Local: ✓ exists'
             puts "     Heavy files: #{local[:has_heavy_files] ? 'yes' : 'no'}"
             puts "     Light files: #{local[:has_light_files] ? 'yes' : 'no'}"
           else

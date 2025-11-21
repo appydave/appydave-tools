@@ -271,10 +271,21 @@ module Appydave
 
           if s3_files.empty? && local_files.empty?
             puts "❌ No files found in S3 or locally for #{brand}/#{project_id}"
+            puts '   This project has no heavy files in s3-staging/ or S3.'
+            puts "   Tip: Add files to #{File.basename(staging_dir)}/ folder, then run: dam s3-up"
             return
           end
 
           puts "📊 S3 Sync Status for #{brand}/#{project_id}"
+
+          # Show last sync time
+          if s3_files.any?
+            most_recent = s3_files.map { |f| f['LastModified'] }.compact.max
+            if most_recent
+              time_ago = format_time_ago(Time.now - most_recent)
+              puts "   Last synced: #{time_ago} ago (#{most_recent.strftime('%Y-%m-%d %H:%M')})"
+            end
+          end
           puts ''
 
           # Combine all file paths (S3 + local)
@@ -561,6 +572,28 @@ module Appydave
             minutes = ((seconds % 3600) / 60).floor
             "#{hours}h #{minutes}m"
           end
+        end
+
+        def format_time_ago(seconds)
+          return 'just now' if seconds < 60
+
+          minutes = seconds / 60
+          return "#{minutes.round} minute#{'s' if minutes > 1}" if minutes < 60
+
+          hours = minutes / 60
+          return "#{hours.round} hour#{'s' if hours > 1}" if hours < 24
+
+          days = hours / 24
+          return "#{days.round} day#{'s' if days > 1}" if days < 7
+
+          weeks = days / 7
+          return "#{weeks.round} week#{'s' if weeks > 1}" if weeks < 4
+
+          months = days / 30
+          return "#{months.round} month#{'s' if months > 1}" if months < 12
+
+          years = days / 365
+          "#{years.round} year#{'s' if years > 1}"
         end
 
         def detect_content_type(filename)

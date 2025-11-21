@@ -150,7 +150,7 @@ module Appydave
 
         # Find the most recent modification time across all projects
         def self.find_last_modified(brand, projects)
-          return Time.at(0) if projects.empty?
+          return nil if projects.empty?
 
           projects.map do |project|
             File.mtime(Config.project_path(brand, project))
