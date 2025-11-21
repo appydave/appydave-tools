@@ -1,3 +1,10 @@
+# [0.36.0](https://github.com/appydave/appydave-tools/compare/v0.35.0...v0.36.0) (2025-11-21)
+
+
+### Features
+
+* add debug logging for config loading with DAM_DEBUG env var for remote debugging ([8844aa9](https://github.com/appydave/appydave-tools/commit/8844aa9ae891ff22b36e824feff64f103565cec8))
+
 # [0.35.0](https://github.com/appydave/appydave-tools/compare/v0.34.1...v0.35.0) (2025-11-21)
 
 
