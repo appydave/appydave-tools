@@ -1,3 +1,10 @@
+## [0.32.5](https://github.com/appydave/appydave-tools/compare/v0.32.4...v0.32.5) (2025-11-21)
+
+
+### Bug Fixes
+
+* use original brand key in Config.project_path calls for projects_subfolder support - ensures correct path construction for brands with subfolder setting ([3966f16](https://github.com/appydave/appydave-tools/commit/3966f16a0465b9508bf899fa77a619ae6c0ea94a))
+
 ## [0.32.4](https://github.com/appydave/appydave-tools/compare/v0.32.3...v0.32.4) (2025-11-21)
 
 
