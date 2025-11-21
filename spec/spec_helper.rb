@@ -44,6 +44,11 @@ RSpec.configure do |config|
   end
 
   config.before do
+    # Reset configuration cache before each test to prevent test pollution
+    Appydave::Tools::Configuration::Config.reset
+    # Re-register configurations after reset
+    Appydave::Tools::Configuration::Config.configure
+
     if ENV['TOOLS_ENABLED'] == 'true'
       # Can turn on if tools enabled flag is active, this is a manual flag that you can set in RSpec context/describe block
       WebMock.allow_net_connect!

@@ -206,7 +206,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectResolver do
       it 'detects brand and project from path' do
         allow(Dir).to receive(:pwd).and_return(File.join(appydave_path, 'b65-test'))
         brand, project = described_class.detect_from_pwd
-        expect(brand).to eq('v-appydave')
+        expect(brand).to eq('appydave') # Returns brand key, not v- prefixed name
         expect(project).to eq('b65-test')
       end
     end

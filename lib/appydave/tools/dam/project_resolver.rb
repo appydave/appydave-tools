@@ -109,22 +109,24 @@ module Appydave
           end
 
           # Detect brand and project from current directory
-          # @return [Array<String, String>] [brand, project] or [nil, nil]
+          # @return [Array<String, String>] [brand_key, project] or [nil, nil]
           def detect_from_pwd
             current = Dir.pwd
 
             # Check if we're inside a v-* directory
             if current =~ %r{/(v-[^/]+)/([^/]+)/?}
-              brand = ::Regexp.last_match(1)
+              brand_with_prefix = ::Regexp.last_match(1)
+              # Strip 'v-' prefix to get brand key (e.g., 'v-supportsignal' → 'supportsignal')
+              brand_key = brand_with_prefix.sub(/^v-/, '')
               project = ::Regexp.last_match(2)
-              return [brand, project] if project_exists?(brand, project)
+              return [brand_key, project] if project_exists?(brand_key, project)
             end
 
             [nil, nil]
           end
 
           # Check if project exists in brand directory
-          # @param brand [String] Brand name (v-appydave format)
+          # @param brand [String] Brand key (e.g., 'appydave', 'supportsignal')
           # @param project [String] Project name
           # @return [Boolean] true if project directory exists
           def project_exists?(brand, project)

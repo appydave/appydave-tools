@@ -25,7 +25,13 @@ module Appydave
 
           def register(key, klass)
             @configurations ||= {}
-            @configurations[key] = klass.new
+            # Only create new instance if not already registered (prevents multiple reloads)
+            @configurations[key] ||= klass.new
+          end
+
+          # Reset all configurations (primarily for testing)
+          def reset
+            @configurations = nil
           end
 
           def method_missing(method_name, *_args)
