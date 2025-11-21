@@ -1,3 +1,10 @@
+## [0.32.3](https://github.com/appydave/appydave-tools/compare/v0.32.2...v0.32.3) (2025-11-21)
+
+
+### Bug Fixes
+
+* add debug logging to projects_directory and re-add 'projects' to organizational folder exclusions to diagnose configuration issue ([0dc34d7](https://github.com/appydave/appydave-tools/commit/0dc34d765d3ec89400304eebf4a0718a4485580d))
+
 ## [0.32.2](https://github.com/appydave/appydave-tools/compare/v0.32.1...v0.32.2) (2025-11-21)
 
 
