@@ -55,8 +55,11 @@ module Appydave
 
         # List all projects for a specific brand (Mode 3)
         def self.list_brand_projects(brand_arg)
+          # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
+          projects = ProjectResolver.list_projects(brand_arg)
+
+          # Only expand brand for display purposes
           brand = Config.expand_brand(brand_arg)
-          projects = ProjectResolver.list_projects(brand)
 
           if projects.empty?
             puts "⚠️  No projects found for brand: #{brand}"
@@ -96,9 +99,11 @@ module Appydave
 
         # List with pattern matching (Mode 3b)
         def self.list_with_pattern(brand_arg, pattern)
+          # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
+          matches = ProjectResolver.resolve_pattern(brand_arg, pattern)
+
+          # Only expand brand for display purposes
           brand = Config.expand_brand(brand_arg)
-          brand_path = Config.brand_path(brand)
-          matches = ProjectResolver.resolve_pattern(brand_path, pattern)
 
           if matches.empty?
             puts "⚠️  No projects found matching pattern: #{pattern}"

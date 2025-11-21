@@ -91,8 +91,9 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
   describe '.list_with_pattern' do
     before do
+      # ProjectResolver.resolve_pattern now expects brand shortcut, not brand_path
       allow(Appydave::Tools::Dam::ProjectResolver).to receive(:resolve_pattern)
-        .with(brand1_path, 'b6*')
+        .with('appydave', 'b6*')
         .and_return(%w[b60-project b61-project b65-project])
     end
 
@@ -108,7 +109,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'shows message when no matches found' do
       allow(Appydave::Tools::Dam::ProjectResolver).to receive(:resolve_pattern)
-        .with(brand1_path, 'b9*')
+        .with('appydave', 'b9*')
         .and_return([])
 
       expect { described_class.list_with_pattern('appydave', 'b9*') }.to output(
@@ -205,7 +206,8 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
       end
 
       # Mock ProjectResolver to return projects from subfolder
-      allow(Appydave::Tools::Dam::ProjectResolver).to receive(:list_projects).with('v-supportsignal')
+      # ProjectResolver now expects the original brand key, not the expanded v-* version
+      allow(Appydave::Tools::Dam::ProjectResolver).to receive(:list_projects).with('supportsignal')
                                                                              .and_return(%w[a01-first-project a02-second-project])
     end
 
