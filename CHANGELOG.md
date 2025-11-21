@@ -1,3 +1,10 @@
+# [0.32.0](https://github.com/appydave/appydave-tools/compare/v0.31.2...v0.32.0) (2025-11-21)
+
+
+### Features
+
+* add comprehensive unit tests for projects_subfolder feature in ProjectResolver and ProjectListing ([d815be9](https://github.com/appydave/appydave-tools/commit/d815be931ed7dea3b7f048f3fb3f850861626300))
+
 ## [0.31.2](https://github.com/appydave/appydave-tools/compare/v0.31.1...v0.31.2) (2025-11-21)
 
 
