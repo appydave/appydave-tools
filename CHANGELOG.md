@@ -1,3 +1,10 @@
+# [0.51.0](https://github.com/appydave/appydave-tools/compare/v0.50.0...v0.51.0) (2025-11-21)
+
+
+### Features
+
+* add total summary footer to brand list showing total brands, projects, and disk usage ([83e4189](https://github.com/appydave/appydave-tools/commit/83e418992146029d55c2d8cdcbd1daa6cb6fb34f))
+
 # [0.50.0](https://github.com/appydave/appydave-tools/compare/v0.49.0...v0.50.0) (2025-11-21)
 
 
