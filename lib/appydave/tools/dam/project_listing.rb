@@ -20,13 +20,24 @@ module Appydave
 
           # Gather brand data
           brand_data = brands.map do |brand|
+            Appydave::Tools::Configuration::Config.configure
+            brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
             brand_path = Config.brand_path(brand)
             projects = ProjectResolver.list_projects(brand)
             total_size = calculate_total_size(brand, projects)
             last_modified = find_last_modified(brand, projects)
 
+            # Get shortcut, key, and name with fallbacks
+            shortcut = brand_info.shortcut&.strip
+            shortcut = nil if shortcut&.empty?
+            key = brand_info.key
+            name = brand_info.name&.strip
+            name = nil if name&.empty?
+
             {
-              name: brand,
+              shortcut: shortcut || key,
+              key: key,
+              name: name || key.capitalize,
               path: brand_path,
               count: projects.size,
               size: total_size,
@@ -35,14 +46,22 @@ module Appydave
           end
 
           # Print table header
-          puts 'BRAND                  PROJECTS         SIZE        LAST MODIFIED    PATH'
+          puts 'BRAND                                      PROJECTS         SIZE        LAST MODIFIED    PATH'
           puts '-' * 120
 
           # Print table rows
           brand_data.each do |data|
+            # Format: "shortcut (key) - Name"
+            # If shortcut == key, just show "key - Name" to avoid redundancy
+            brand_display = if data[:shortcut] == data[:key]
+                              "#{data[:key]} - #{data[:name]}"
+                            else
+                              "#{data[:shortcut]} (#{data[:key]}) - #{data[:name]}"
+                            end
+
             puts format(
-              '%-20s %10d %12s %20s    %s',
-              data[:name],
+              '%-40s %10d %12s %20s    %s',
+              brand_display,
               data[:count],
               format_size(data[:size]),
               format_date(data[:modified]),

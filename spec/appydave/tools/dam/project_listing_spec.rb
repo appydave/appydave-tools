@@ -18,8 +18,8 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
     it 'displays brands in tabular format with counts, sizes, and paths' do
       expect { described_class.list_brands_with_counts }.to output(
         a_string_matching(/BRAND\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+PATH/)
-          .and(matching(/appydave\s+3/))
-          .and(matching(/voz\s+2/))
+          .and(matching(/appydave - Appydave\s+3/))
+          .and(matching(/voz - Voz\s+2/))
           .and(matching(/v-appydave/))
           .and(matching(/v-voz/))
       ).to_stdout
