@@ -1,3 +1,10 @@
+# [0.66.0](https://github.com/appydave/appydave-tools/compare/v0.65.0...v0.66.0) (2025-11-22)
+
+
+### Features
+
+* add --detailed flag to brand list showing PATH, SSD BACKUP, WORKFLOW, and ACTIVE PROJECTS ([e336e58](https://github.com/appydave/appydave-tools/commit/e336e585270305f01295c91c0543075a0e0438ad))
+
 # [0.65.0](https://github.com/appydave/appydave-tools/compare/v0.64.0...v0.65.0) (2025-11-22)
 
 
