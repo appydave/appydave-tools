@@ -232,6 +232,10 @@ module Appydave
 
           puts "   Local: #{local_count}"
           puts "   S3 staging: #{s3_count}"
+
+          # Show last S3 sync time if S3 is configured
+          show_last_s3_sync_time if s3_configured?
+
           puts "   SSD backup: #{ssd_count}"
 
           # Project types
@@ -435,6 +439,37 @@ module Appydave
 
           puts '💡 Suggestions:'
           suggestions.each { |s| puts "   #{s}" }
+        end
+
+        # Check if S3 is configured for this brand
+        def s3_configured?
+          s3_bucket = brand_info.aws.s3_bucket
+          s3_bucket && !s3_bucket.empty? && s3_bucket != 'NOT-SET'
+        end
+
+        # Show last S3 sync time for the brand
+        def show_last_s3_sync_time
+          # Find most recent S3 file across all projects with s3-staging
+          projects = ProjectResolver.list_projects(brand)
+          latest_sync = nil
+
+          projects.each do |project|
+            project_path = Config.project_path(brand, project)
+            staging_dir = File.join(project_path, 's3-staging')
+            next unless Dir.exist?(staging_dir)
+
+            # Get most recent file modification time in s3-staging
+            files = Dir.glob(File.join(staging_dir, '*')).select { |f| File.file?(f) }
+            next if files.empty?
+
+            project_latest = files.map { |f| File.mtime(f) }.max
+            latest_sync = project_latest if latest_sync.nil? || project_latest > latest_sync
+          end
+
+          return unless latest_sync
+
+          age = format_age(latest_sync)
+          puts "   Last S3 sync: #{age} ago"
         end
       end
     end
