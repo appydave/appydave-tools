@@ -1,3 +1,10 @@
+# [0.58.0](https://github.com/appydave/appydave-tools/compare/v0.57.0...v0.58.0) (2025-11-22)
+
+
+### Features
+
+* implement compact brand list format showing 'shortcut (key) - Name' ([8e38a77](https://github.com/appydave/appydave-tools/commit/8e38a775a60e3e06b14c793293f4046552a5eaf4)), closes [#34](https://github.com/appydave/appydave-tools/issues/34)
+
 # [0.57.0](https://github.com/appydave/appydave-tools/compare/v0.56.0...v0.57.0) (2025-11-22)
 
 
