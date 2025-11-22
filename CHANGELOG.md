@@ -1,3 +1,10 @@
+# [0.59.0](https://github.com/appydave/appydave-tools/compare/v0.58.0...v0.59.0) (2025-11-22)
+
+
+### Features
+
+* add KEY column to brand list table showing brand identifier between name and project count ([ed3c2f7](https://github.com/appydave/appydave-tools/commit/ed3c2f74fbf47050ac33f051bc96afe5d467bcdb))
+
 # [0.58.0](https://github.com/appydave/appydave-tools/compare/v0.57.0...v0.58.0) (2025-11-22)
 
 
