@@ -554,6 +554,35 @@ module Appydave
           end
         end
 
+        # Calculate S3 sync timestamps (last upload/download times)
+        # @return [Hash] { last_upload: Time|nil, last_download: Time|nil }
+        def sync_timestamps
+          project_dir = project_directory_path
+          staging_dir = File.join(project_dir, 's3-staging')
+
+          # No s3-staging directory means no S3 intent
+          return { last_upload: nil, last_download: nil } unless Dir.exist?(staging_dir)
+
+          # Get S3 files (if S3 configured)
+          begin
+            s3_files = list_s3_files
+          rescue StandardError
+            # S3 not configured or not accessible
+            return { last_upload: nil, last_download: nil }
+          end
+
+          # Last upload time = most recent S3 file LastModified
+          last_upload = s3_files.map { |f| f['LastModified'] }.compact.max if s3_files.any?
+
+          # Last download time = most recent local file mtime (in s3-staging)
+          last_download = if Dir.exist?(staging_dir)
+                            local_files = Dir.glob(File.join(staging_dir, '**/*')).select { |f| File.file?(f) }
+                            local_files.map { |f| File.mtime(f) }.max if local_files.any?
+                          end
+
+          { last_upload: last_upload, last_download: last_download }
+        end
+
         # Build S3 key for a file
         def build_s3_key(relative_path)
           "#{brand_info.aws.s3_prefix}#{project_id}/#{relative_path}"

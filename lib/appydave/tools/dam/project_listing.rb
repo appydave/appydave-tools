@@ -121,14 +121,18 @@ module Appydave
           if detailed
             # Detailed view with additional columns
             header = 'PROJECT                                               SIZE             AGE              GIT              S3           ' \
-                     'PATH                                      HEAVY FILES         LIGHT FILES         SSD BACKUP'
+                     'PATH                                      HEAVY FILES         LIGHT FILES         SSD BACKUP                      ' \
+                     'S3 ↑ UPLOAD      S3 ↓ DOWNLOAD'
             puts header
-            puts '-' * 200
+            puts '-' * 250
 
             project_data.each do |data|
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
+              s3_upload = data[:s3_last_upload] ? format_age(data[:s3_last_upload]) : 'N/A'
+              s3_download = data[:s3_last_download] ? format_age(data[:s3_last_download]) : 'N/A'
+
               puts format(
-                '%-45s %12s %15s  %-15s  %-12s  %-35s  %-18s  %-18s  %-30s',
+                '%-45s %12s %15s  %-15s  %-12s  %-35s  %-18s  %-18s  %-30s  %-15s  %-15s',
                 data[:name],
                 format_size(data[:size]),
                 age_display,
@@ -137,7 +141,9 @@ module Appydave
                 shorten_path(data[:path]),
                 data[:heavy_files] || 'N/A',
                 data[:light_files] || 'N/A',
-                data[:ssd_backup] || 'N/A'
+                data[:ssd_backup] || 'N/A',
+                s3_upload,
+                s3_download
               )
             end
           else
@@ -393,6 +399,22 @@ module Appydave
           end
         end
 
+        # Calculate S3 sync timestamps for a project
+        def self.calculate_s3_timestamps(brand_arg, brand_info, project)
+          # Check if S3 is configured
+          s3_bucket = brand_info.aws.s3_bucket
+          return { last_upload: nil, last_download: nil } if s3_bucket.nil? || s3_bucket.empty? || s3_bucket == 'NOT-SET'
+
+          # Use S3Operations to get timestamps
+          begin
+            s3_ops = S3Operations.new(brand_arg, project, brand_info: brand_info)
+            s3_ops.sync_timestamps
+          rescue StandardError
+            # S3 not accessible or other error
+            { last_upload: nil, last_download: nil }
+          end
+        end
+
         # Collect project data for display
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
         def self.collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: false)
@@ -446,10 +468,15 @@ module Appydave
                          File.exist?(ssd_project_path) ? shorten_path(ssd_project_path) : nil
                        end
 
+            # S3 timestamps (last upload/download)
+            s3_timestamps = calculate_s3_timestamps(brand_arg, brand_info, project)
+
             result.merge!(
               heavy_files: "#{heavy_count} (#{format_size(heavy_size)})",
               light_files: "#{light_count} (#{format_size(light_size)})",
-              ssd_backup: ssd_path
+              ssd_backup: ssd_path,
+              s3_last_upload: s3_timestamps[:last_upload],
+              s3_last_download: s3_timestamps[:last_download]
             )
           end
 
