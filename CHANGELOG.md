@@ -1,3 +1,10 @@
+# [0.65.0](https://github.com/appydave/appydave-tools/compare/v0.64.0...v0.65.0) (2025-11-22)
+
+
+### Features
+
+* add last S3 sync time to brand status showing most recent file in s3-staging folders ([d373b66](https://github.com/appydave/appydave-tools/commit/d373b66e6323521be3d750a9330769fa33b4fed2))
+
 # [0.64.0](https://github.com/appydave/appydave-tools/compare/v0.63.0...v0.64.0) (2025-11-22)
 
 
