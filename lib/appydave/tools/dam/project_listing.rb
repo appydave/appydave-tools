@@ -68,6 +68,9 @@ module Appydave
           # Only expand brand for display purposes
           brand = Config.expand_brand(brand_arg)
 
+          # Show brand context header
+          show_brand_header(brand_arg, brand)
+
           if projects.empty?
             puts "⚠️  No projects found for brand: #{brand}"
             puts ''
@@ -187,6 +190,42 @@ module Appydave
         end
 
         # Helper methods
+
+        # Show brand context header with git, S3, and SSD info
+        def self.show_brand_header(brand_arg, brand)
+          Appydave::Tools::Configuration::Config.configure
+          brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_arg)
+          brand_path = Config.brand_path(brand_arg)
+
+          puts "📂 Brand: #{brand}"
+          puts ''
+
+          # Git status
+          if Dir.exist?(File.join(brand_path, '.git'))
+            branch = GitHelper.current_branch(brand_path)
+            puts "   Git: #{branch} branch"
+          else
+            puts '   Git: Not a git repository'
+          end
+
+          # S3 configuration
+          s3_bucket = brand_info.aws.s3_bucket
+          if s3_bucket && !s3_bucket.empty? && s3_bucket != 'NOT-SET'
+            puts "   S3: Configured (#{s3_bucket})"
+          else
+            puts '   S3: Not configured'
+          end
+
+          # SSD backup path
+          ssd_backup = brand_info.locations.ssd_backup
+          if ssd_backup && !ssd_backup.empty? && ssd_backup != 'NOT-SET'
+            puts "   SSD: #{shorten_path(ssd_backup)}"
+          else
+            puts '   SSD: Not configured'
+          end
+
+          puts ''
+        end
 
         # Calculate total size of all projects in a brand
         def self.calculate_total_size(brand, projects)
