@@ -1,3 +1,10 @@
+# [0.62.0](https://github.com/appydave/appydave-tools/compare/v0.61.0...v0.62.0) (2025-11-22)
+
+
+### Features
+
+* add S3 SYNC column to brand list showing count of projects with s3-staging folders ([23ceff2](https://github.com/appydave/appydave-tools/commit/23ceff2feda3d2f792c85b7af6a2b04f71d9ccdf))
+
 # [0.61.0](https://github.com/appydave/appydave-tools/compare/v0.60.0...v0.61.0) (2025-11-22)
 
 
