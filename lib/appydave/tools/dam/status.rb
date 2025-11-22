@@ -41,7 +41,11 @@ module Appydave
 
         def show_project_status
           project_size = calculate_project_size
+          last_modified = File.mtime(project_path)
+          age = format_age(last_modified)
+
           puts "📊 Status: v-#{brand}/#{File.basename(project_path)} (#{format_size(project_size)})"
+          puts "   Last modified: #{age} ago"
           puts ''
 
           manifest = load_manifest
