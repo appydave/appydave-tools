@@ -1,3 +1,10 @@
+# [0.57.0](https://github.com/appydave/appydave-tools/compare/v0.56.0...v0.57.0) (2025-11-22)
+
+
+### Features
+
+* add last modified timestamp to project status header ([805484d](https://github.com/appydave/appydave-tools/commit/805484d6f34e1fcc47fe7113480dd5c982b2471c)), closes [#49](https://github.com/appydave/appydave-tools/issues/49)
+
 # [0.56.0](https://github.com/appydave/appydave-tools/compare/v0.55.0...v0.56.0) (2025-11-22)
 
 
