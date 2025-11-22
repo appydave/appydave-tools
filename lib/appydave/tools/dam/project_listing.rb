@@ -46,22 +46,18 @@ module Appydave
           end
 
           # Print table header
-          puts 'BRAND                                      PROJECTS         SIZE        LAST MODIFIED    PATH'
-          puts '-' * 120
+          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    PATH'
+          puts '-' * 130
 
           # Print table rows
           brand_data.each do |data|
-            # Format: "shortcut (key) - Name"
-            # If shortcut == key, just show "key - Name" to avoid redundancy
-            brand_display = if data[:shortcut] == data[:key]
-                              "#{data[:key]} - #{data[:name]}"
-                            else
-                              "#{data[:shortcut]} (#{data[:key]}) - #{data[:name]}"
-                            end
+            # Format: "shortcut - Name" (simplified display)
+            brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
             puts format(
-              '%-40s %10d %12s %20s    %s',
+              '%-30s %-12s %10d %12s %20s    %s',
               brand_display,
+              data[:key],
               data[:count],
               format_size(data[:size]),
               format_date(data[:modified]),
