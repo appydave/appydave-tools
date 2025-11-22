@@ -143,7 +143,19 @@ module Appydave
 
         def show_ssd_status(project_entry)
           puts '  💾 SSD Backup: ✓ exists'
-          puts "     Path: #{project_entry[:storage][:ssd][:path]}"
+
+          ssd_path = project_entry[:storage][:ssd][:path]
+          if ssd_path
+            ssd_full_path = File.join(brand_info.locations.ssd_backup, ssd_path)
+            puts "     Path: #{ssd_path}"
+
+            if Dir.exist?(ssd_full_path)
+              last_modified = File.mtime(ssd_full_path)
+              age = format_age(last_modified)
+              puts "     Last synced: #{age} ago"
+            end
+          end
+
           puts ''
         end
 
@@ -318,6 +330,31 @@ module Appydave
 
         def format_size(bytes)
           FileHelper.format_size(bytes)
+        end
+
+        def format_age(time)
+          return 'N/A' if time.nil?
+
+          seconds = Time.now - time
+          return 'just now' if seconds < 60
+
+          minutes = seconds / 60
+          return "#{minutes.round}m" if minutes < 60
+
+          hours = minutes / 60
+          return "#{hours.round}h" if hours < 24
+
+          days = hours / 24
+          return "#{days.round}d" if days < 7
+
+          weeks = days / 7
+          return "#{weeks.round}w" if weeks < 4
+
+          months = days / 30
+          return "#{months.round}mo" if months < 12
+
+          years = days / 365
+          "#{years.round}y"
         end
 
         def calculate_manifest_age(last_updated_str)
