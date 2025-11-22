@@ -91,8 +91,14 @@ module Appydave
             end
 
             unless Dir.exist?(brand_path)
+              # Get available brands for error message
               available = Config.available_brands_display
-              raise BrandNotFoundError.new(brand, available)
+
+              # Use fuzzy matching to suggest similar brands
+              available_list = Config.available_brands
+              suggestions = FuzzyMatcher.find_matches(brand, available_list, threshold: 3)
+
+              raise BrandNotFoundError.new(brand, available, suggestions)
             end
 
             key

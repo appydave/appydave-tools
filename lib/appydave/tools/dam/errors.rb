@@ -8,8 +8,16 @@ module Appydave
 
       # Raised when brand directory not found
       class BrandNotFoundError < DamError
-        def initialize(brand, available_brands = nil)
+        def initialize(brand, available_brands = nil, suggestions = nil)
           message = "Brand directory not found: #{brand}"
+
+          # Add fuzzy match suggestions if provided
+          if suggestions && !suggestions.empty?
+            message += "\n\nDid you mean?"
+            suggestions.each { |s| message += "\n  - #{s}" }
+          end
+
+          # Add full list of available brands
           message += "\n\nAvailable brands:\n#{available_brands}" if available_brands && !available_brands.empty?
           super(message)
         end
