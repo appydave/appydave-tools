@@ -46,8 +46,8 @@ module Appydave
           end
 
           # Print table header
-          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    PATH'
-          puts '-' * 130
+          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED'
+          puts '-' * 100
 
           # Print table rows
           brand_data.each do |data|
@@ -55,13 +55,12 @@ module Appydave
             brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
             puts format(
-              '%-30s %-12s %10d %12s %20s    %s',
+              '%-30s %-12s %10d %12s %20s',
               brand_display,
               data[:key],
               data[:count],
               format_size(data[:size]),
-              format_date(data[:modified]),
-              shorten_path(data[:path])
+              format_date(data[:modified])
             )
           end
 

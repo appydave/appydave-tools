@@ -15,13 +15,11 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brands_with_counts' do
-    it 'displays brands in tabular format with counts, sizes, and paths' do
+    it 'displays brands in tabular format with counts, sizes, and last modified' do
       expect { described_class.list_brands_with_counts }.to output(
-        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+PATH/)
+        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED/)
           .and(matching(/appydave - Appydave\s+appydave\s+3/))
           .and(matching(/voz - Voz\s+voz\s+2/))
-          .and(matching(/v-appydave/))
-          .and(matching(/v-voz/))
       ).to_stdout
     end
 
@@ -33,15 +31,9 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
       ).to_stdout
     end
 
-    it 'uses shortened paths with tilde' do
-      allow(Dir).to receive(:home).and_return('/Users/testuser')
-      allow(Appydave::Tools::Dam::Config).to receive(:brand_path).and_call_original
-      allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with('appydave')
-                                                                 .and_return('/Users/testuser/dev/video-projects/v-appydave')
-
-      expect { described_class.list_brands_with_counts }.to output(
-        a_string_matching(%r{~/dev/video-projects/v-appydave})
-      ).to_stdout
+    it 'does not include PATH column in default view' do
+      output = capture_stdout { described_class.list_brands_with_counts }
+      expect(output).not_to match(/PATH/)
     end
   end
 
