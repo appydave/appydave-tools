@@ -1,3 +1,10 @@
+# [0.60.0](https://github.com/appydave/appydave-tools/compare/v0.59.0...v0.60.0) (2025-11-22)
+
+
+### Features
+
+* remove PATH column from brand list default view to focus on key metadata ([2920537](https://github.com/appydave/appydave-tools/commit/2920537e8fcf93f6472b50a7a6b3d8ae23426489))
+
 # [0.59.0](https://github.com/appydave/appydave-tools/compare/v0.58.0...v0.59.0) (2025-11-22)
 
 
