@@ -1,3 +1,10 @@
+# [0.54.0](https://github.com/appydave/appydave-tools/compare/v0.53.0...v0.54.0) (2025-11-22)
+
+
+### Features
+
+* add brand context header to project list showing git branch, S3 config, and SSD path ([48d9523](https://github.com/appydave/appydave-tools/commit/48d9523793501c933fb78e8b68b56e18206c3d61))
+
 # [0.53.0](https://github.com/appydave/appydave-tools/compare/v0.52.0...v0.53.0) (2025-11-21)
 
 
