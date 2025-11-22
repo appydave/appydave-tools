@@ -1,3 +1,15 @@
+# [0.63.0](https://github.com/appydave/appydave-tools/compare/v0.62.0...v0.63.0) (2025-11-22)
+
+
+### Bug Fixes
+
+* rename project_has_changes? to calculate_project_git_status to follow rubocop naming convention ([f8f63fc](https://github.com/appydave/appydave-tools/commit/f8f63fc2c54e7a4b1d15ff418e038ee3a6a3b3c0))
+
+
+### Features
+
+* add GIT column to project list showing uncommitted changes status per project ([3da9b8d](https://github.com/appydave/appydave-tools/commit/3da9b8df089548fbc71248fabc061ad47f9ee83f))
+
 # [0.62.0](https://github.com/appydave/appydave-tools/compare/v0.61.0...v0.62.0) (2025-11-22)
 
 
