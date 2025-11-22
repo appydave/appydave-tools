@@ -1,3 +1,10 @@
+# [0.64.0](https://github.com/appydave/appydave-tools/compare/v0.63.0...v0.64.0) (2025-11-22)
+
+
+### Features
+
+* add S3 SYNC column to project list showing if project has s3-staging folder ([03c8780](https://github.com/appydave/appydave-tools/commit/03c8780070df1cee3ec432cf2798c10d30bb1890))
+
 # [0.63.0](https://github.com/appydave/appydave-tools/compare/v0.62.0...v0.63.0) (2025-11-22)
 
 
