@@ -90,6 +90,13 @@ module Appydave
                            'N/A'
                          end
 
+            # Check if project has s3-staging folder
+            s3_sync = if Dir.exist?(File.join(project_path, 's3-staging'))
+                        '✓ staged'
+                      else
+                        'none'
+                      end
+
             {
               name: project,
               path: project_path,
@@ -97,7 +104,8 @@ module Appydave
               modified: modified,
               age: format_age(modified),
               stale: stale?(modified),
-              git_status: git_status
+              git_status: git_status,
+              s3_sync: s3_sync
             }
           end
 
@@ -106,18 +114,19 @@ module Appydave
           puts ''
           puts 'ℹ️  Note: Lists only projects with files, not empty directories'
           puts ''
-          puts 'PROJECT                                               SIZE             AGE              GIT'
-          puts '-' * 115
+          puts 'PROJECT                                               SIZE             AGE              GIT              S3'
+          puts '-' * 130
 
           # Print table rows
           project_data.each do |data|
             age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
             puts format(
-              '%-45s %12s %15s  %-15s',
+              '%-45s %12s %15s  %-15s  %-10s',
               data[:name],
               format_size(data[:size]),
               age_display,
-              data[:git_status]
+              data[:git_status],
+              data[:s3_sync]
             )
           end
 
