@@ -1,3 +1,10 @@
+# [0.56.0](https://github.com/appydave/appydave-tools/compare/v0.55.0...v0.56.0) (2025-11-22)
+
+
+### Features
+
+* add last sync time to SSD backup section in project status ([cebe0f4](https://github.com/appydave/appydave-tools/commit/cebe0f4965729674b9ec7feb024c9d3718a65a87)), closes [#47](https://github.com/appydave/appydave-tools/issues/47)
+
 # [0.55.0](https://github.com/appydave/appydave-tools/compare/v0.54.0...v0.55.0) (2025-11-22)
 
 
