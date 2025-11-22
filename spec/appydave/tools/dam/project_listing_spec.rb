@@ -38,10 +38,10 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brand_projects' do
-    it 'displays projects in tabular format with sizes and ages' do
+    it 'displays projects in tabular format with sizes, ages, and git status' do
       expect { described_class.list_brand_projects('appydave') }.to output(
         a_string_matching(/Projects in v-appydave:/)
-          .and(matching(/PROJECT\s+SIZE\s+AGE/))
+          .and(matching(/PROJECT\s+SIZE\s+AGE\s+GIT/))
           .and(matching(/Note: Lists only projects with files/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))

@@ -75,10 +75,20 @@ module Appydave
           end
 
           # Gather project data
+          brand_path = Config.brand_path(brand_arg)
+          is_git_repo = Dir.exist?(File.join(brand_path, '.git'))
+
           project_data = projects.map do |project|
             project_path = Config.project_path(brand_arg, project)
             size = FileHelper.calculate_directory_size(project_path)
             modified = File.mtime(project_path)
+
+            # Check if project has uncommitted changes (if brand is git repo)
+            git_status = if is_git_repo
+                           project_has_changes?(brand_path, project)
+                         else
+                           'N/A'
+                         end
 
             {
               name: project,
@@ -86,7 +96,8 @@ module Appydave
               size: size,
               modified: modified,
               age: format_age(modified),
-              stale: stale?(modified)
+              stale: stale?(modified),
+              git_status: git_status
             }
           end
 
@@ -95,17 +106,18 @@ module Appydave
           puts ''
           puts 'ℹ️  Note: Lists only projects with files, not empty directories'
           puts ''
-          puts 'PROJECT                                               SIZE             AGE'
-          puts '-' * 100
+          puts 'PROJECT                                               SIZE             AGE              GIT'
+          puts '-' * 115
 
           # Print table rows
           project_data.each do |data|
             age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
             puts format(
-              '%-45s %12s %15s',
+              '%-45s %12s %15s  %-15s',
               data[:name],
               format_size(data[:size]),
-              age_display
+              age_display,
+              data[:git_status]
             )
           end
 
@@ -282,6 +294,17 @@ module Appydave
             'none'
           else
             "#{s3_count}/#{projects.size}"
+          end
+        end
+
+        # Check if a project has uncommitted changes
+        def self.project_has_changes?(brand_path, project)
+          # Use git status --short to check for changes in project folder
+          result = `cd "#{brand_path}" && git status --short "#{project}" 2>/dev/null`
+          if result.empty?
+            '✓ clean'
+          else
+            '⚠️ changes'
           end
         end
 
