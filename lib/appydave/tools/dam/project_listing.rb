@@ -49,15 +49,24 @@ module Appydave
               )
             end
           else
-            # Default view
-            puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    GIT              S3 SYNC'
-            puts '-' * 130
+            # Default view - use same format for header and data
+            puts format(
+              '%-30s %-15s %10s %12s %20s    %-15s  %-10s',
+              'BRAND',
+              'KEY',
+              'PROJECTS',
+              'SIZE',
+              'LAST MODIFIED',
+              'GIT',
+              'S3 SYNC'
+            )
+            puts '-' * 133
 
             brand_data.each do |data|
               brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
               puts format(
-                '%-30s %-12s %10d %12s %20s    %-15s  %-10s',
+                '%-30s %-15s %10d %12s %20s    %-15s  %-10s',
                 brand_display,
                 data[:key],
                 data[:count],
@@ -119,12 +128,22 @@ module Appydave
           puts ''
 
           if detailed
-            # Detailed view with additional columns
-            header = 'PROJECT                                               SIZE             AGE              GIT              S3           ' \
-                     'PATH                                      HEAVY FILES         LIGHT FILES         SSD BACKUP                      ' \
-                     'S3 ↑ UPLOAD      S3 ↓ DOWNLOAD'
-            puts header
-            puts '-' * 250
+            # Detailed view with additional columns - use same format for header and data
+            puts format(
+              '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
+              'PROJECT',
+              'SIZE',
+              'AGE',
+              'GIT',
+              'S3',
+              'PATH',
+              'HEAVY FILES',
+              'LIGHT FILES',
+              'SSD BACKUP',
+              'S3 ↑ UPLOAD',
+              'S3 ↓ DOWNLOAD'
+            )
+            puts '-' * 280
 
             project_data.each do |data|
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
@@ -132,7 +151,7 @@ module Appydave
               s3_download = data[:s3_last_download] ? format_age(data[:s3_last_download]) : 'N/A'
 
               puts format(
-                '%-45s %12s %15s  %-15s  %-12s  %-35s  %-18s  %-18s  %-30s  %-15s  %-15s',
+                '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
                 data[:name],
                 format_size(data[:size]),
                 age_display,
@@ -147,8 +166,15 @@ module Appydave
               )
             end
           else
-            # Default view
-            puts 'PROJECT                                               SIZE             AGE              GIT              S3'
+            # Default view - use same format for header and data
+            puts format(
+              '%-45s %12s %15s  %-15s  %-12s',
+              'PROJECT',
+              'SIZE',
+              'AGE',
+              'GIT',
+              'S3'
+            )
             puts '-' * 130
 
             project_data.each do |data|

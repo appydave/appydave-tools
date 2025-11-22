@@ -37,7 +37,12 @@ module Appydave
 
             unless Dir.exist?(path)
               brands_list = available_brands_display
-              raise "Brand directory not found: #{path}\nAvailable brands:\n#{brands_list}"
+              # Use fuzzy matching to suggest similar brands (check both shortcuts and keys)
+              Appydave::Tools::Configuration::Config.configure
+              brands_config = Appydave::Tools::Configuration::Config.brands
+              all_brand_identifiers = brands_config.brands.flat_map { |b| [b.shortcut, b.key] }.uniq
+              suggestions = FuzzyMatcher.find_matches(brand_key, all_brand_identifiers, threshold: 3)
+              raise BrandNotFoundError.new(path, brands_list, suggestions)
             end
 
             path
