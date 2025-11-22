@@ -1,3 +1,10 @@
+# [0.67.0](https://github.com/appydave/appydave-tools/compare/v0.66.0...v0.67.0) (2025-11-22)
+
+
+### Features
+
+* add --detailed flag to project list showing PATH, SSD BACKUP, HEAVY/LIGHT FILES ([ed098b8](https://github.com/appydave/appydave-tools/commit/ed098b8732729bbafb42ad9a6833f9c75d2c2c06))
+
 # [0.66.0](https://github.com/appydave/appydave-tools/compare/v0.65.0...v0.66.0) (2025-11-22)
 
 
