@@ -76,6 +76,8 @@ module Appydave
           manifest = load_manifest
           if manifest
             show_manifest_summary(manifest)
+            puts ''
+            show_brand_suggestions(manifest)
           else
             puts '❌ Manifest not found'
             puts "   Run: dam manifest #{brand}"
@@ -348,6 +350,50 @@ module Appydave
           else
             '⚠️ Stale'
           end
+        end
+
+        def show_brand_suggestions(manifest)
+          suggestions = []
+
+          # Check manifest age
+          if manifest[:config] && manifest[:config][:last_updated]
+            age = calculate_manifest_age(manifest[:config][:last_updated])
+            days = age / 86_400 if age
+            suggestions << "dam manifest #{brand}  # Manifest is stale (#{days.round}d old)" if days && days > 7
+          end
+
+          # Check git status if repo exists
+          if git_repo?
+            status = git_status_info
+            if status[:modified_count].positive? || status[:untracked_count].positive?
+              suggestions << "git add . && git commit -m 'Update'  # Uncommitted changes (#{status[:modified_count]} modified, #{status[:untracked_count]} untracked)"
+            end
+            if status[:ahead].positive?
+              suggestions << "git push  # Push #{status[:ahead]} commit#{'s' if status[:ahead] != 1} to remote"
+            end
+            if status[:behind].positive?
+              suggestions << "git pull  # Pull #{status[:behind]} commit#{'s' if status[:behind] != 1} from remote"
+            end
+          end
+
+          # Check for projects not backed up to SSD (task #43)
+          ssd_configured = brand_info.locations.ssd_backup &&
+                           brand_info.locations.ssd_backup != 'NOT-SET'
+          if ssd_configured
+            projects_without_ssd = manifest[:projects].select do |p|
+              p[:storage][:local][:exists] && !p[:storage][:ssd][:exists]
+            end
+            if projects_without_ssd.any?
+              count = projects_without_ssd.size
+              suggestions << "dam archive #{brand} <project>  # #{count} project#{'s' if count != 1} not backed up to SSD"
+            end
+          end
+
+          # Show suggestions if any
+          return unless suggestions.any?
+
+          puts '💡 Suggestions:'
+          suggestions.each { |s| puts "   #{s}" }
         end
       end
     end
