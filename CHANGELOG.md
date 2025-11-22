@@ -1,3 +1,12 @@
+# [0.68.0](https://github.com/appydave/appydave-tools/compare/v0.67.0...v0.68.0) (2025-11-22)
+
+
+### Features
+
+* add fuzzy matching for brand typos with 'Did you mean?' suggestions ([e95db43](https://github.com/appydave/appydave-tools/commit/e95db4398351d91dde1cc6af3c6e2f82aa2e420c))
+* add S3 staging with 3-state model (↑ upload, ↓ download, ✓ synced) ([833057f](https://github.com/appydave/appydave-tools/commit/833057f65b3f6434aff20d1956733f4724ac9b35))
+* add S3 upload/download timestamps to project list (--detailed view) ([4228b51](https://github.com/appydave/appydave-tools/commit/4228b51e85e209548a7a9de210877fe4f7fba94e))
+
 # [0.67.0](https://github.com/appydave/appydave-tools/compare/v0.66.0...v0.67.0) (2025-11-22)
 
 
