@@ -1,3 +1,10 @@
+# [0.61.0](https://github.com/appydave/appydave-tools/compare/v0.60.0...v0.61.0) (2025-11-22)
+
+
+### Features
+
+* add GIT STATUS column to brand list showing clean/changes indicator ([8159990](https://github.com/appydave/appydave-tools/commit/8159990abe1f0fa8eeabaac022cf8ba0736486bb))
+
 # [0.60.0](https://github.com/appydave/appydave-tools/compare/v0.59.0...v0.60.0) (2025-11-22)
 
 
