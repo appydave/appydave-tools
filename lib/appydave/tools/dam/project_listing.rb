@@ -85,7 +85,7 @@ module Appydave
 
             # Check if project has uncommitted changes (if brand is git repo)
             git_status = if is_git_repo
-                           project_has_changes?(brand_path, project)
+                           calculate_project_git_status(brand_path, project)
                          else
                            'N/A'
                          end
@@ -297,8 +297,8 @@ module Appydave
           end
         end
 
-        # Check if a project has uncommitted changes
-        def self.project_has_changes?(brand_path, project)
+        # Calculate git status for a specific project
+        def self.calculate_project_git_status(brand_path, project)
           # Use git status --short to check for changes in project folder
           result = `cd "#{brand_path}" && git status --short "#{project}" 2>/dev/null`
           if result.empty?
