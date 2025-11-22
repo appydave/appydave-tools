@@ -19,35 +19,11 @@ module Appydave
           end
 
           # Gather brand data
-          brand_data = brands.map do |brand|
-            Appydave::Tools::Configuration::Config.configure
-            brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
-            brand_path = Config.brand_path(brand)
-            projects = ProjectResolver.list_projects(brand)
-            total_size = calculate_total_size(brand, projects)
-            last_modified = find_last_modified(brand, projects)
-
-            # Get shortcut, key, and name with fallbacks
-            shortcut = brand_info.shortcut&.strip
-            shortcut = nil if shortcut&.empty?
-            key = brand_info.key
-            name = brand_info.name&.strip
-            name = nil if name&.empty?
-
-            {
-              shortcut: shortcut || key,
-              key: key,
-              name: name || key.capitalize,
-              path: brand_path,
-              count: projects.size,
-              size: total_size,
-              modified: last_modified
-            }
-          end
+          brand_data = brands.map { |brand| collect_brand_data(brand) }
 
           # Print table header
-          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED'
-          puts '-' * 100
+          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    GIT'
+          puts '-' * 115
 
           # Print table rows
           brand_data.each do |data|
@@ -55,12 +31,13 @@ module Appydave
             brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
             puts format(
-              '%-30s %-12s %10d %12s %20s',
+              '%-30s %-12s %10d %12s %20s    %-15s',
               brand_display,
               data[:key],
               data[:count],
               format_size(data[:size]),
-              format_date(data[:modified])
+              format_date(data[:modified]),
+              data[:git_status]
             )
           end
 
@@ -239,6 +216,52 @@ module Appydave
           end
 
           puts ''
+        end
+
+        # Collect brand data for display
+        def self.collect_brand_data(brand)
+          Appydave::Tools::Configuration::Config.configure
+          brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
+          brand_path = Config.brand_path(brand)
+          projects = ProjectResolver.list_projects(brand)
+          total_size = calculate_total_size(brand, projects)
+          last_modified = find_last_modified(brand, projects)
+
+          # Get shortcut, key, and name with fallbacks
+          shortcut = brand_info.shortcut&.strip
+          shortcut = nil if shortcut&.empty?
+          key = brand_info.key
+          name = brand_info.name&.strip
+          name = nil if name&.empty?
+
+          # Get git status
+          git_status = calculate_git_status(brand_path)
+
+          {
+            shortcut: shortcut || key,
+            key: key,
+            name: name || key.capitalize,
+            path: brand_path,
+            count: projects.size,
+            size: total_size,
+            modified: last_modified,
+            git_status: git_status
+          }
+        end
+
+        # Calculate git status for a brand
+        def self.calculate_git_status(brand_path)
+          if Dir.exist?(File.join(brand_path, '.git'))
+            modified = GitHelper.modified_files_count(brand_path)
+            untracked = GitHelper.untracked_files_count(brand_path)
+            if modified.positive? || untracked.positive?
+              '⚠️ changes'
+            else
+              '✓ clean'
+            end
+          else
+            'N/A'
+          end
         end
 
         # Calculate total size of all projects in a brand
