@@ -1,3 +1,15 @@
+# [0.69.0](https://github.com/appydave/appydave-tools/compare/v0.68.0...v0.69.0) (2025-11-22)
+
+
+### Bug Fixes
+
+* disable RedundantFormat cop for intentional header formatting ([e4f03be](https://github.com/appydave/appydave-tools/commit/e4f03be70e101e704a617cc9d0f5bf5df9474070))
+
+
+### Features
+
+* add fuzzy brand matching and improve table alignment ([bce8309](https://github.com/appydave/appydave-tools/commit/bce83093b3834b2f6a3c70d2fa5854b88f88d48b))
+
 # [0.68.0](https://github.com/appydave/appydave-tools/compare/v0.67.0...v0.68.0) (2025-11-22)
 
 
