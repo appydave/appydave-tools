@@ -22,8 +22,8 @@ module Appydave
           brand_data = brands.map { |brand| collect_brand_data(brand) }
 
           # Print table header
-          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    GIT'
-          puts '-' * 115
+          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    GIT              S3 SYNC'
+          puts '-' * 130
 
           # Print table rows
           brand_data.each do |data|
@@ -31,13 +31,14 @@ module Appydave
             brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
             puts format(
-              '%-30s %-12s %10d %12s %20s    %-15s',
+              '%-30s %-12s %10d %12s %20s    %-15s  %-10s',
               brand_display,
               data[:key],
               data[:count],
               format_size(data[:size]),
               format_date(data[:modified]),
-              data[:git_status]
+              data[:git_status],
+              data[:s3_sync]
             )
           end
 
@@ -237,6 +238,9 @@ module Appydave
           # Get git status
           git_status = calculate_git_status(brand_path)
 
+          # Get S3 sync status (count of projects with s3-staging)
+          s3_sync_status = calculate_s3_sync_status(brand, projects)
+
           {
             shortcut: shortcut || key,
             key: key,
@@ -245,7 +249,8 @@ module Appydave
             count: projects.size,
             size: total_size,
             modified: last_modified,
-            git_status: git_status
+            git_status: git_status,
+            s3_sync: s3_sync_status
           }
         end
 
@@ -261,6 +266,22 @@ module Appydave
             end
           else
             'N/A'
+          end
+        end
+
+        # Calculate S3 sync status for a brand
+        def self.calculate_s3_sync_status(brand, projects)
+          return 'N/A' if projects.empty?
+
+          s3_count = projects.count do |project|
+            project_path = Config.project_path(brand, project)
+            Dir.exist?(File.join(project_path, 's3-staging'))
+          end
+
+          if s3_count.zero?
+            'none'
+          else
+            "#{s3_count}/#{projects.size}"
           end
         end
 

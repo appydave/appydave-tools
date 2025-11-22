@@ -15,9 +15,9 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brands_with_counts' do
-    it 'displays brands in tabular format with counts, sizes, last modified, and git status' do
+    it 'displays brands in tabular format with counts, sizes, last modified, git status, and S3 sync' do
       expect { described_class.list_brands_with_counts }.to output(
-        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+GIT/)
+        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+GIT\s+S3 SYNC/)
           .and(matching(/appydave - Appydave\s+appydave\s+3/))
           .and(matching(/voz - Voz\s+voz\s+2/))
       ).to_stdout
