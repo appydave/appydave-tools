@@ -143,7 +143,7 @@ class VatCLI
       Appydave::Tools::Dam::ProjectListing.list_with_pattern(brand_arg, pattern_arg)
     else
       # Specific brand
-      Appydave::Tools::Dam::ProjectListing.list_brand_projects(brand_arg)
+      Appydave::Tools::Dam::ProjectListing.list_brand_projects(brand_arg, detailed: detailed)
     end
   rescue StandardError => e
     puts "❌ Error: #{e.message}"

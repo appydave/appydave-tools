@@ -10,6 +10,7 @@ module Appydave
       # Project listing functionality for VAT
       class ProjectListing
         # List all brands with summary table
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.list_brands_with_counts(detailed: false)
           brands = Config.available_brands
 
@@ -77,9 +78,11 @@ module Appydave
                "#{total_projects} project#{'s' if total_projects != 1}, " \
                "#{format_size(total_size)}"
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # List all projects for a specific brand (Mode 3)
-        def self.list_brand_projects(brand_arg)
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def self.list_brand_projects(brand_arg, detailed: false)
           # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
           projects = ProjectResolver.list_projects(brand_arg)
 
@@ -102,58 +105,57 @@ module Appydave
 
           # Gather project data
           brand_path = Config.brand_path(brand_arg)
+          brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_arg)
           is_git_repo = Dir.exist?(File.join(brand_path, '.git'))
 
           project_data = projects.map do |project|
-            project_path = Config.project_path(brand_arg, project)
-            size = FileHelper.calculate_directory_size(project_path)
-            modified = File.mtime(project_path)
-
-            # Check if project has uncommitted changes (if brand is git repo)
-            git_status = if is_git_repo
-                           calculate_project_git_status(brand_path, project)
-                         else
-                           'N/A'
-                         end
-
-            # Check if project has s3-staging folder
-            s3_sync = if Dir.exist?(File.join(project_path, 's3-staging'))
-                        '✓ staged'
-                      else
-                        'none'
-                      end
-
-            {
-              name: project,
-              path: project_path,
-              size: size,
-              modified: modified,
-              age: format_age(modified),
-              stale: stale?(modified),
-              git_status: git_status,
-              s3_sync: s3_sync
-            }
+            collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: detailed)
           end
 
-          # Print table header
+          # Print common header
           puts "Projects in #{brand}:"
           puts ''
           puts 'ℹ️  Note: Lists only projects with files, not empty directories'
           puts ''
-          puts 'PROJECT                                               SIZE             AGE              GIT              S3'
-          puts '-' * 130
 
-          # Print table rows
-          project_data.each do |data|
-            age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
-            puts format(
-              '%-45s %12s %15s  %-15s  %-10s',
-              data[:name],
-              format_size(data[:size]),
-              age_display,
-              data[:git_status],
-              data[:s3_sync]
-            )
+          if detailed
+            # Detailed view with additional columns
+            header = 'PROJECT                                               SIZE             AGE              GIT              S3           ' \
+                     'PATH                                      HEAVY FILES         LIGHT FILES         SSD BACKUP'
+            puts header
+            puts '-' * 200
+
+            project_data.each do |data|
+              age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
+              puts format(
+                '%-45s %12s %15s  %-15s  %-10s  %-35s  %-18s  %-18s  %-30s',
+                data[:name],
+                format_size(data[:size]),
+                age_display,
+                data[:git_status],
+                data[:s3_sync],
+                shorten_path(data[:path]),
+                data[:heavy_files] || 'N/A',
+                data[:light_files] || 'N/A',
+                data[:ssd_backup] || 'N/A'
+              )
+            end
+          else
+            # Default view
+            puts 'PROJECT                                               SIZE             AGE              GIT              S3'
+            puts '-' * 130
+
+            project_data.each do |data|
+              age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
+              puts format(
+                '%-45s %12s %15s  %-15s  %-10s',
+                data[:name],
+                format_size(data[:size]),
+                age_display,
+                data[:git_status],
+                data[:s3_sync]
+              )
+            end
           end
 
           # Print footer summary
@@ -163,8 +165,10 @@ module Appydave
           puts ''
           puts "Total: #{project_count} project#{'s' if project_count != 1}, #{format_size(total_size)}"
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # List with pattern matching (Mode 3b)
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.list_with_pattern(brand_arg, pattern)
           # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
           matches = ProjectResolver.resolve_pattern(brand_arg, pattern)
@@ -227,10 +231,12 @@ module Appydave
           puts "Total: #{match_count} project#{'s' if match_count != 1}, #{format_size(total_size)} " \
                "(#{percentage}% of #{brand})"
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # Helper methods
 
         # Show brand context header with git, S3, and SSD info
+        # rubocop:disable Metrics/AbcSize
         def self.show_brand_header(brand_arg, brand)
           Appydave::Tools::Configuration::Config.configure
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_arg)
@@ -265,8 +271,10 @@ module Appydave
 
           puts ''
         end
+        # rubocop:enable Metrics/AbcSize
 
         # Collect brand data for display
+        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.collect_brand_data(brand, detailed: false)
           Appydave::Tools::Configuration::Config.configure
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
@@ -325,6 +333,7 @@ module Appydave
 
           result
         end
+        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # Calculate git status for a brand
         def self.calculate_git_status(brand_path)
@@ -367,6 +376,74 @@ module Appydave
             '⚠️ changes'
           end
         end
+
+        # Collect project data for display
+        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
+        def self.collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: false)
+          project_path = Config.project_path(brand_arg, project)
+          size = FileHelper.calculate_directory_size(project_path)
+          modified = File.mtime(project_path)
+
+          # Check if project has uncommitted changes (if brand is git repo)
+          git_status = if is_git_repo
+                         calculate_project_git_status(brand_path, project)
+                       else
+                         'N/A'
+                       end
+
+          # Check if project has s3-staging folder
+          s3_sync = if Dir.exist?(File.join(project_path, 's3-staging'))
+                      '✓ staged'
+                    else
+                      'none'
+                    end
+
+          result = {
+            name: project,
+            path: project_path,
+            size: size,
+            modified: modified,
+            age: format_age(modified),
+            stale: stale?(modified),
+            git_status: git_status,
+            s3_sync: s3_sync
+          }
+
+          # Add detailed fields if requested
+          if detailed
+            # Heavy files (video files in root)
+            heavy_count = 0
+            heavy_size = 0
+            Dir.glob(File.join(project_path, '*.{mp4,mov,avi,mkv,webm}')).each do |file|
+              heavy_count += 1
+              heavy_size += File.size(file)
+            end
+
+            # Light files (subtitles, images, metadata)
+            light_count = 0
+            light_size = 0
+            Dir.glob(File.join(project_path, '**/*.{srt,vtt,jpg,png,md,txt,json,yml}')).each do |file|
+              light_count += 1
+              light_size += File.size(file)
+            end
+
+            # SSD backup path (if exists)
+            ssd_backup = brand_info.locations.ssd_backup
+            ssd_path = if ssd_backup && !ssd_backup.empty? && ssd_backup != 'NOT-SET'
+                         ssd_project_path = File.join(ssd_backup, project)
+                         File.exist?(ssd_project_path) ? shorten_path(ssd_project_path) : nil
+                       end
+
+            result.merge!(
+              heavy_files: "#{heavy_count} (#{format_size(heavy_size)})",
+              light_files: "#{light_count} (#{format_size(light_size)})",
+              ssd_backup: ssd_path
+            )
+          end
+
+          result
+        end
+        # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
 
         # Calculate total size of all projects in a brand
         def self.calculate_total_size(brand, projects)
