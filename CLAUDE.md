@@ -2,6 +2,39 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ PENDING: Quality Assurance Process Required
+
+**Action Required:** Two-phase validation for 75-commit DAM enhancement sprint
+
+### Phase 1: Behavioral Regression Audit (MUST RUN FIRST)
+
+- **Instruction Guide:** [docs/ai-instructions/behavioral-regression-audit.md](./docs/ai-instructions/behavioral-regression-audit.md)
+- **Commit Range:** `9e49668` (baseline - known working) → `4228b51` (current - unknown state)
+- **Purpose:** Verify core functionality unchanged except for intentional UX improvements
+- **Method:** Two-snapshot comparison (not 75 individual commits)
+- **5 Phases:** Change inventory → Critical path → Behavioral testing → Logic diff → Spot-check
+- **Output:** `docs/code-quality/behavioral-audit-2025-01-22.md`
+- **Status:** Ready to execute - awaiting user confirmation
+- **Priority:** CRITICAL - Must complete before UAT
+
+### Phase 2: User Acceptance Testing (RUN AFTER REGRESSION AUDIT)
+
+- **UAT Plan:** [docs/code-quality/uat-plan-2025-01-22.md](./docs/code-quality/uat-plan-2025-01-22.md)
+- **Test Suites:** 4 suites, 20 tests (Core functionality, New features, Edge cases, Performance)
+- **Purpose:** Validate final state after regression fixes
+- **Status:** Ready to execute - run after Phase 1 completes
+- **Priority:** High - Final validation before release
+
+### Execution Order
+
+1. **Behavioral Regression Audit** → Identify and fix any breaking changes
+2. **User Acceptance Testing** → Validate everything works as designed
+3. **Ship it** → Merge/release with confidence
+
+**Also Available:** Code quality retrospective analysis guide at [docs/ai-instructions/code-quality-retrospective.md](./docs/ai-instructions/code-quality-retrospective.md)
+
+---
+
 ## Project Purpose
 
 **AppyDave Tools** is a consolidated productivity toolkit built for AppyDave's YouTube content creation workflow. All utilities live in one repository for easier maintenance than managing separate codebases.

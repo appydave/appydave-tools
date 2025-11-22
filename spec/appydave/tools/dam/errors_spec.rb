@@ -61,7 +61,7 @@ RSpec.describe 'Appydave::Tools::Dam::Errors' do
     end
 
     it 'handles nil suggestions' do
-      available = "  appydave - AppyDave"
+      available = '  appydave - AppyDave'
       error = described_class.new('invalid-brand', available, nil)
 
       expect(error.message).to include('Brand directory not found: invalid-brand')
@@ -70,7 +70,7 @@ RSpec.describe 'Appydave::Tools::Dam::Errors' do
     end
 
     it 'handles empty suggestions' do
-      available = "  appydave - AppyDave"
+      available = '  appydave - AppyDave'
       error = described_class.new('invalid-brand', available, [])
 
       expect(error.message).to include('Brand directory not found: invalid-brand')
