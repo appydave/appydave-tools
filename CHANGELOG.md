@@ -1,3 +1,10 @@
+# [0.55.0](https://github.com/appydave/appydave-tools/compare/v0.54.0...v0.55.0) (2025-11-22)
+
+
+### Features
+
+* add suggestions section to brand status with actionable commands ([2bb51f8](https://github.com/appydave/appydave-tools/commit/2bb51f851dc424f37af85448a00a67a6b2e65847)), closes [#42](https://github.com/appydave/appydave-tools/issues/42) [#43](https://github.com/appydave/appydave-tools/issues/43)
+
 # [0.54.0](https://github.com/appydave/appydave-tools/compare/v0.53.0...v0.54.0) (2025-11-22)
 
 
