@@ -50,6 +50,7 @@ module Appydave
             end
           else
             # Default view - use same format for header and data
+            # rubocop:disable Style/RedundantFormat
             puts format(
               '%-30s %-15s %10s %12s %20s    %-15s  %-10s',
               'BRAND',
@@ -60,6 +61,7 @@ module Appydave
               'GIT',
               'S3 SYNC'
             )
+            # rubocop:enable Style/RedundantFormat
             puts '-' * 133
 
             brand_data.each do |data|
@@ -129,6 +131,7 @@ module Appydave
 
           if detailed
             # Detailed view with additional columns - use same format for header and data
+            # rubocop:disable Style/RedundantFormat
             puts format(
               '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
               'PROJECT',
@@ -143,6 +146,7 @@ module Appydave
               'S3 ↑ UPLOAD',
               'S3 ↓ DOWNLOAD'
             )
+            # rubocop:enable Style/RedundantFormat
             puts '-' * 280
 
             project_data.each do |data|
@@ -167,6 +171,7 @@ module Appydave
             end
           else
             # Default view - use same format for header and data
+            # rubocop:disable Style/RedundantFormat
             puts format(
               '%-45s %12s %15s  %-15s  %-12s',
               'PROJECT',
@@ -175,6 +180,7 @@ module Appydave
               'GIT',
               'S3'
             )
+            # rubocop:enable Style/RedundantFormat
             puts '-' * 130
 
             project_data.each do |data|
