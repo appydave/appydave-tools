@@ -128,7 +128,7 @@ module Appydave
             project_data.each do |data|
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
               puts format(
-                '%-45s %12s %15s  %-15s  %-10s  %-35s  %-18s  %-18s  %-30s',
+                '%-45s %12s %15s  %-15s  %-12s  %-35s  %-18s  %-18s  %-30s',
                 data[:name],
                 format_size(data[:size]),
                 age_display,
@@ -148,7 +148,7 @@ module Appydave
             project_data.each do |data|
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
               puts format(
-                '%-45s %12s %15s  %-15s  %-10s',
+                '%-45s %12s %15s  %-15s  %-12s',
                 data[:name],
                 format_size(data[:size]),
                 age_display,
@@ -377,6 +377,22 @@ module Appydave
           end
         end
 
+        # Calculate 3-state S3 sync status for a project
+        def self.calculate_project_s3_sync_status(brand_arg, brand_info, project)
+          # Check if S3 is configured
+          s3_bucket = brand_info.aws.s3_bucket
+          return 'N/A' if s3_bucket.nil? || s3_bucket.empty? || s3_bucket == 'NOT-SET'
+
+          # Use S3Operations to calculate sync status
+          begin
+            s3_ops = S3Operations.new(brand_arg, project, brand_info: brand_info)
+            s3_ops.calculate_sync_status
+          rescue StandardError
+            # S3 not accessible or other error
+            'N/A'
+          end
+        end
+
         # Collect project data for display
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
         def self.collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: false)
@@ -391,12 +407,8 @@ module Appydave
                          'N/A'
                        end
 
-          # Check if project has s3-staging folder
-          s3_sync = if Dir.exist?(File.join(project_path, 's3-staging'))
-                      '✓ staged'
-                    else
-                      'none'
-                    end
+          # Calculate 3-state S3 sync status
+          s3_sync = calculate_project_s3_sync_status(brand_arg, brand_info, project)
 
           result = {
             name: project,

@@ -488,6 +488,72 @@ module Appydave
           puts dry_run ? '✅ Archive dry-run complete!' : '✅ Archive complete!'
         end
 
+        # Calculate 3-state S3 sync status
+        # @return [String] One of: '↑ upload', '↓ download', '✓ synced', 'none'
+        def calculate_sync_status
+          project_dir = project_directory_path
+          staging_dir = File.join(project_dir, 's3-staging')
+
+          # No s3-staging directory means no S3 intent
+          return 'none' unless Dir.exist?(staging_dir)
+
+          # Get S3 files (if S3 configured)
+          begin
+            s3_files = list_s3_files
+          rescue StandardError
+            # S3 not configured or not accessible
+            return 'none'
+          end
+
+          local_files = list_local_files(staging_dir)
+
+          # No files anywhere
+          return 'none' if s3_files.empty? && local_files.empty?
+
+          # Build S3 files map
+          s3_files_map = s3_files.each_with_object({}) do |file, hash|
+            relative_path = extract_relative_path(file['Key'])
+            hash[relative_path] = file
+          end
+
+          # Check for differences
+          needs_upload = false
+          needs_download = false
+
+          # Check all local files
+          local_files.each_key do |relative_path|
+            local_file = File.join(staging_dir, relative_path)
+            s3_file = s3_files_map[relative_path]
+
+            if s3_file
+              # Compare MD5
+              local_md5 = file_md5(local_file)
+              s3_md5 = s3_file['ETag'].gsub('"', '')
+              needs_upload = true if local_md5 != s3_md5
+            else
+              # Local file not in S3
+              needs_upload = true
+            end
+          end
+
+          # Check for S3-only files
+          s3_files_map.each_key do |relative_path|
+            local_file = File.join(staging_dir, relative_path)
+            needs_download = true unless File.exist?(local_file)
+          end
+
+          # Return status based on what's needed
+          if needs_upload && needs_download
+            '⚠️ both'
+          elsif needs_upload
+            '↑ upload'
+          elsif needs_download
+            '↓ download'
+          else
+            '✓ synced'
+          end
+        end
+
         # Build S3 key for a file
         def build_s3_key(relative_path)
           "#{brand_info.aws.s3_prefix}#{project_id}/#{relative_path}"
