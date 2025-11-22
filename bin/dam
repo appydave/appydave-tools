@@ -129,6 +129,7 @@ class VatCLI
 
   # List brands and projects
   def list_command(args)
+    detailed = args.include?('--detailed')
     args = args.reject { |arg| arg.start_with?('--') || arg.start_with?('-') }
 
     brand_arg = args[0]
@@ -136,7 +137,7 @@ class VatCLI
 
     if brand_arg.nil?
       # List all brands with summary
-      Appydave::Tools::Dam::ProjectListing.list_brands_with_counts
+      Appydave::Tools::Dam::ProjectListing.list_brands_with_counts(detailed: detailed)
     elsif pattern_arg
       # Pattern matching
       Appydave::Tools::Dam::ProjectListing.list_with_pattern(brand_arg, pattern_arg)

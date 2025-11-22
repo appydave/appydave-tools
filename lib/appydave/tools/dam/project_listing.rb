@@ -10,7 +10,7 @@ module Appydave
       # Project listing functionality for VAT
       class ProjectListing
         # List all brands with summary table
-        def self.list_brands_with_counts
+        def self.list_brands_with_counts(detailed: false)
           brands = Config.available_brands
 
           if brands.empty?
@@ -19,27 +19,53 @@ module Appydave
           end
 
           # Gather brand data
-          brand_data = brands.map { |brand| collect_brand_data(brand) }
+          brand_data = brands.map { |brand| collect_brand_data(brand, detailed: detailed) }
 
-          # Print table header
-          puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    GIT              S3 SYNC'
-          puts '-' * 130
+          if detailed
+            # Detailed view with additional columns
+            header = 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    ' \
+                     'GIT              S3 SYNC      PATH                                      SSD BACKUP                       ' \
+                     'WORKFLOW     ACTIVE'
+            puts header
+            puts '-' * 200
 
-          # Print table rows
-          brand_data.each do |data|
-            # Format: "shortcut - Name" (simplified display)
-            brand_display = "#{data[:shortcut]} - #{data[:name]}"
+            brand_data.each do |data|
+              brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
-            puts format(
-              '%-30s %-12s %10d %12s %20s    %-15s  %-10s',
-              brand_display,
-              data[:key],
-              data[:count],
-              format_size(data[:size]),
-              format_date(data[:modified]),
-              data[:git_status],
-              data[:s3_sync]
-            )
+              puts format(
+                '%-30s %-12s %10d %12s %20s    %-15s  %-10s  %-35s  %-30s  %-10s  %6d',
+                brand_display,
+                data[:key],
+                data[:count],
+                format_size(data[:size]),
+                format_date(data[:modified]),
+                data[:git_status],
+                data[:s3_sync],
+                shorten_path(data[:path]),
+                data[:ssd_backup] || 'N/A',
+                data[:workflow] || 'N/A',
+                data[:active_count] || 0
+              )
+            end
+          else
+            # Default view
+            puts 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    GIT              S3 SYNC'
+            puts '-' * 130
+
+            brand_data.each do |data|
+              brand_display = "#{data[:shortcut]} - #{data[:name]}"
+
+              puts format(
+                '%-30s %-12s %10d %12s %20s    %-15s  %-10s',
+                brand_display,
+                data[:key],
+                data[:count],
+                format_size(data[:size]),
+                format_date(data[:modified]),
+                data[:git_status],
+                data[:s3_sync]
+              )
+            end
           end
 
           # Print footer summary
@@ -241,7 +267,7 @@ module Appydave
         end
 
         # Collect brand data for display
-        def self.collect_brand_data(brand)
+        def self.collect_brand_data(brand, detailed: false)
           Appydave::Tools::Configuration::Config.configure
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
           brand_path = Config.brand_path(brand)
@@ -262,7 +288,7 @@ module Appydave
           # Get S3 sync status (count of projects with s3-staging)
           s3_sync_status = calculate_s3_sync_status(brand, projects)
 
-          {
+          result = {
             shortcut: shortcut || key,
             key: key,
             name: name || key.capitalize,
@@ -273,6 +299,31 @@ module Appydave
             git_status: git_status,
             s3_sync: s3_sync_status
           }
+
+          # Add detailed fields if requested
+          if detailed
+            # SSD backup path
+            ssd_backup = brand_info.locations.ssd_backup
+            ssd_backup = nil if ssd_backup.nil? || ssd_backup.empty? || ssd_backup == 'NOT-SET'
+
+            # Workflow type (inferred from projects_subfolder setting)
+            workflow = brand_info.settings.projects_subfolder == 'projects' ? 'storyline' : 'flivideo'
+
+            # Active project count (projects with flat structure, not archived)
+            active_count = projects.count do |project|
+              project_path = Config.project_path(brand, project)
+              # Check if not in archived/ subfolder
+              !project_path.include?('/archived/')
+            end
+
+            result.merge!(
+              ssd_backup: ssd_backup ? shorten_path(ssd_backup) : nil,
+              workflow: workflow,
+              active_count: active_count
+            )
+          end
+
+          result
         end
 
         # Calculate git status for a brand
