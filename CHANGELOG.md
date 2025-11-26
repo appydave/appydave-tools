@@ -1,3 +1,15 @@
+# [0.70.0](https://github.com/appydave/appydave-tools/compare/v0.69.0...v0.70.0) (2025-11-26)
+
+
+### Bug Fixes
+
+* rename files_match? to compare_files to satisfy rubocop naming convention ([01140dc](https://github.com/appydave/appydave-tools/commit/01140dca0cfe277e7363e35726fab37204812ef6))
+
+
+### Features
+
+* handle multipart S3 ETags with size-based comparison for sync detection ([d29cf4b](https://github.com/appydave/appydave-tools/commit/d29cf4b704f7595ece902bb49af970d07540240e))
+
 # [0.69.0](https://github.com/appydave/appydave-tools/compare/v0.68.0...v0.69.0) (2025-11-22)
 
 
