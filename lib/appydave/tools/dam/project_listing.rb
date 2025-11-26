@@ -11,7 +11,7 @@ module Appydave
       class ProjectListing
         # List all brands with summary table
         # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-        def self.list_brands_with_counts(detailed: false)
+        def self.list_brands_with_counts(detailed: false, s3: false)
           brands = Config.available_brands
 
           if brands.empty?
@@ -19,64 +19,113 @@ module Appydave
             return
           end
 
-          # Gather brand data
-          brand_data = brands.map { |brand| collect_brand_data(brand, detailed: detailed) }
+          # Gather brand data (skip S3 if not requested)
+          brand_data = brands.map { |brand| collect_brand_data(brand, detailed: detailed, s3: s3) }
 
           if detailed
             # Detailed view with additional columns
-            header = 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    ' \
-                     'GIT              S3 SYNC      PATH                                      SSD BACKUP                       ' \
-                     'WORKFLOW     ACTIVE'
-            puts header
-            puts '-' * 200
+            if s3
+              header = 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    ' \
+                       'GIT              S3 SYNC      PATH                                      SSD BACKUP                       ' \
+                       'WORKFLOW     ACTIVE'
+              puts header
+              puts '-' * 200
+            else
+              header = 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    ' \
+                       'GIT              PATH                                      SSD BACKUP                       ' \
+                       'WORKFLOW     ACTIVE'
+              puts header
+              puts '-' * 189
+            end
 
             brand_data.each do |data|
               brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
-              puts format(
-                '%-30s %-12s %10d %12s %20s    %-15s  %-10s  %-35s  %-30s  %-10s  %6d',
-                brand_display,
-                data[:key],
-                data[:count],
-                format_size(data[:size]),
-                format_date(data[:modified]),
-                data[:git_status],
-                data[:s3_sync],
-                shorten_path(data[:path]),
-                data[:ssd_backup] || 'N/A',
-                data[:workflow] || 'N/A',
-                data[:active_count] || 0
-              )
+              if s3
+                puts format(
+                  '%-30s %-12s %10d %12s %20s    %-15s  %-10s  %-35s  %-30s  %-10s  %6d',
+                  brand_display,
+                  data[:key],
+                  data[:count],
+                  format_size(data[:size]),
+                  format_date(data[:modified]),
+                  data[:git_status],
+                  data[:s3_sync],
+                  shorten_path(data[:path]),
+                  data[:ssd_backup] || 'N/A',
+                  data[:workflow] || 'N/A',
+                  data[:active_count] || 0
+                )
+              else
+                puts format(
+                  '%-30s %-12s %10d %12s %20s    %-15s  %-35s  %-30s  %-10s  %6d',
+                  brand_display,
+                  data[:key],
+                  data[:count],
+                  format_size(data[:size]),
+                  format_date(data[:modified]),
+                  data[:git_status],
+                  shorten_path(data[:path]),
+                  data[:ssd_backup] || 'N/A',
+                  data[:workflow] || 'N/A',
+                  data[:active_count] || 0
+                )
+              end
             end
           else
             # Default view - use same format for header and data
             # rubocop:disable Style/RedundantFormat
-            puts format(
-              '%-30s %-15s %10s %12s %20s    %-15s  %-10s',
-              'BRAND',
-              'KEY',
-              'PROJECTS',
-              'SIZE',
-              'LAST MODIFIED',
-              'GIT',
-              'S3 SYNC'
-            )
+            if s3
+              puts format(
+                '%-30s %-15s %10s %12s %20s    %-15s  %-10s',
+                'BRAND',
+                'KEY',
+                'PROJECTS',
+                'SIZE',
+                'LAST MODIFIED',
+                'GIT',
+                'S3 SYNC'
+              )
+              puts '-' * 133
+            else
+              puts format(
+                '%-30s %-15s %10s %12s %20s    %-15s',
+                'BRAND',
+                'KEY',
+                'PROJECTS',
+                'SIZE',
+                'LAST MODIFIED',
+                'GIT'
+              )
+              puts '-' * 122
+            end
             # rubocop:enable Style/RedundantFormat
-            puts '-' * 133
 
             brand_data.each do |data|
               brand_display = "#{data[:shortcut]} - #{data[:name]}"
 
-              puts format(
-                '%-30s %-15s %10d %12s %20s    %-15s  %-10s',
-                brand_display,
-                data[:key],
-                data[:count],
-                format_size(data[:size]),
-                format_date(data[:modified]),
-                data[:git_status],
-                data[:s3_sync]
-              )
+              if s3
+                puts format(
+                  '%-30s %-15s %10d %12s %20s    %-15s  %-10s',
+                  brand_display,
+                  data[:key],
+                  data[:count],
+                  format_size(data[:size]),
+                  format_date(data[:modified]),
+                  data[:git_status],
+                  data[:s3_sync]
+                )
+              else
+                puts format(
+                  '%-30s %-15s %10d %12s %20s    %-15s',
+                  brand_display,
+                  data[:key],
+                  data[:count],
+                  format_size(data[:size]),
+                  format_date(data[:modified]),
+                  data[:git_status]
+                )
+              end
             end
           end
 
@@ -93,7 +142,7 @@ module Appydave
 
         # List all projects for a specific brand (Mode 3)
         # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-        def self.list_brand_projects(brand_arg, detailed: false)
+        def self.list_brand_projects(brand_arg, detailed: false, s3: false)
           # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
           projects = ProjectResolver.list_projects(brand_arg)
 
@@ -114,13 +163,13 @@ module Appydave
             return
           end
 
-          # Gather project data
+          # Gather project data (skip S3 if not requested)
           brand_path = Config.brand_path(brand_arg)
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_arg)
           is_git_repo = Dir.exist?(File.join(brand_path, '.git'))
 
           project_data = projects.map do |project|
-            collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: detailed)
+            collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: detailed, s3: s3)
           end
 
           # Print common header
@@ -132,67 +181,119 @@ module Appydave
           if detailed
             # Detailed view with additional columns - use same format for header and data
             # rubocop:disable Style/RedundantFormat
-            puts format(
-              '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
-              'PROJECT',
-              'SIZE',
-              'AGE',
-              'GIT',
-              'S3',
-              'PATH',
-              'HEAVY FILES',
-              'LIGHT FILES',
-              'SSD BACKUP',
-              'S3 ↑ UPLOAD',
-              'S3 ↓ DOWNLOAD'
-            )
+            if s3
+              puts format(
+                '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
+                'PROJECT',
+                'SIZE',
+                'AGE',
+                'GIT',
+                'S3',
+                'PATH',
+                'HEAVY FILES',
+                'LIGHT FILES',
+                'SSD BACKUP',
+                'S3 ↑ UPLOAD',
+                'S3 ↓ DOWNLOAD'
+              )
+              puts '-' * 280
+            else
+              puts format(
+                '%-45s %12s %15s  %-15s  %-65s  %-18s  %-18s  %-30s',
+                'PROJECT',
+                'SIZE',
+                'AGE',
+                'GIT',
+                'PATH',
+                'HEAVY FILES',
+                'LIGHT FILES',
+                'SSD BACKUP'
+              )
+              puts '-' * 239
+            end
             # rubocop:enable Style/RedundantFormat
-            puts '-' * 280
 
             project_data.each do |data|
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
-              s3_upload = data[:s3_last_upload] ? format_age(data[:s3_last_upload]) : 'N/A'
-              s3_download = data[:s3_last_download] ? format_age(data[:s3_last_download]) : 'N/A'
 
-              puts format(
-                '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
-                data[:name],
-                format_size(data[:size]),
-                age_display,
-                data[:git_status],
-                data[:s3_sync],
-                shorten_path(data[:path]),
-                data[:heavy_files] || 'N/A',
-                data[:light_files] || 'N/A',
-                data[:ssd_backup] || 'N/A',
-                s3_upload,
-                s3_download
-              )
+              if s3
+                s3_upload = data[:s3_last_upload] ? format_age(data[:s3_last_upload]) : 'N/A'
+                s3_download = data[:s3_last_download] ? format_age(data[:s3_last_download]) : 'N/A'
+
+                puts format(
+                  '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
+                  data[:name],
+                  format_size(data[:size]),
+                  age_display,
+                  data[:git_status],
+                  data[:s3_sync],
+                  shorten_path(data[:path]),
+                  data[:heavy_files] || 'N/A',
+                  data[:light_files] || 'N/A',
+                  data[:ssd_backup] || 'N/A',
+                  s3_upload,
+                  s3_download
+                )
+              else
+                puts format(
+                  '%-45s %12s %15s  %-15s  %-65s  %-18s  %-18s  %-30s',
+                  data[:name],
+                  format_size(data[:size]),
+                  age_display,
+                  data[:git_status],
+                  shorten_path(data[:path]),
+                  data[:heavy_files] || 'N/A',
+                  data[:light_files] || 'N/A',
+                  data[:ssd_backup] || 'N/A'
+                )
+              end
             end
           else
             # Default view - use same format for header and data
             # rubocop:disable Style/RedundantFormat
-            puts format(
-              '%-45s %12s %15s  %-15s  %-12s',
-              'PROJECT',
-              'SIZE',
-              'AGE',
-              'GIT',
-              'S3'
-            )
+            if s3
+              puts format(
+                '%-45s %12s %15s  %-15s  %-12s',
+                'PROJECT',
+                'SIZE',
+                'AGE',
+                'GIT',
+                'S3'
+              )
+              puts '-' * 130
+            else
+              puts format(
+                '%-45s %12s %15s  %-15s',
+                'PROJECT',
+                'SIZE',
+                'AGE',
+                'GIT'
+              )
+              puts '-' * 117
+            end
             # rubocop:enable Style/RedundantFormat
-            puts '-' * 130
 
             project_data.each do |data|
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
-              puts format(
-                '%-45s %12s %15s  %-15s  %-12s',
-                data[:name],
-                format_size(data[:size]),
-                age_display,
-                data[:git_status],
-                data[:s3_sync]
-              )
+
+              if s3
+                puts format(
+                  '%-45s %12s %15s  %-15s  %-12s',
+                  data[:name],
+                  format_size(data[:size]),
+                  age_display,
+                  data[:git_status],
+                  data[:s3_sync]
+                )
+              else
+                puts format(
+                  '%-45s %12s %15s  %-15s',
+                  data[:name],
+                  format_size(data[:size]),
+                  age_display,
+                  data[:git_status]
+                )
+              end
             end
           end
 
@@ -313,7 +414,7 @@ module Appydave
 
         # Collect brand data for display
         # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-        def self.collect_brand_data(brand, detailed: false)
+        def self.collect_brand_data(brand, detailed: false, s3: false)
           Appydave::Tools::Configuration::Config.configure
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
           brand_path = Config.brand_path(brand)
@@ -331,8 +432,8 @@ module Appydave
           # Get git status
           git_status = calculate_git_status(brand_path)
 
-          # Get S3 sync status (count of projects with s3-staging)
-          s3_sync_status = calculate_s3_sync_status(brand, projects)
+          # Get S3 sync status (count of projects with s3-staging) - only if requested
+          s3_sync_status = s3 ? calculate_s3_sync_status(brand, projects) : 'N/A'
 
           result = {
             shortcut: shortcut || key,
@@ -449,7 +550,7 @@ module Appydave
 
         # Collect project data for display
         # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
-        def self.collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: false)
+        def self.collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: false, s3: false)
           project_path = Config.project_path(brand_arg, project)
           size = FileHelper.calculate_directory_size(project_path)
           modified = File.mtime(project_path)
@@ -461,8 +562,8 @@ module Appydave
                          'N/A'
                        end
 
-          # Calculate 3-state S3 sync status
-          s3_sync = calculate_project_s3_sync_status(brand_arg, brand_info, project)
+          # Calculate 3-state S3 sync status - only if requested (performance optimization)
+          s3_sync = s3 ? calculate_project_s3_sync_status(brand_arg, brand_info, project) : 'N/A'
 
           result = {
             name: project,
@@ -500,16 +601,23 @@ module Appydave
                          File.exist?(ssd_project_path) ? shorten_path(ssd_project_path) : nil
                        end
 
-            # S3 timestamps (last upload/download)
-            s3_timestamps = calculate_s3_timestamps(brand_arg, brand_info, project)
-
-            result.merge!(
-              heavy_files: "#{heavy_count} (#{format_size(heavy_size)})",
-              light_files: "#{light_count} (#{format_size(light_size)})",
-              ssd_backup: ssd_path,
-              s3_last_upload: s3_timestamps[:last_upload],
-              s3_last_download: s3_timestamps[:last_download]
-            )
+            # S3 timestamps (last upload/download) - only if requested (performance optimization)
+            if s3
+              s3_timestamps = calculate_s3_timestamps(brand_arg, brand_info, project)
+              result.merge!(
+                heavy_files: "#{heavy_count} (#{format_size(heavy_size)})",
+                light_files: "#{light_count} (#{format_size(light_size)})",
+                ssd_backup: ssd_path,
+                s3_last_upload: s3_timestamps[:last_upload],
+                s3_last_download: s3_timestamps[:last_download]
+              )
+            else
+              result.merge!(
+                heavy_files: "#{heavy_count} (#{format_size(heavy_size)})",
+                light_files: "#{light_count} (#{format_size(light_size)})",
+                ssd_backup: ssd_path
+              )
+            end
           end
 
           result

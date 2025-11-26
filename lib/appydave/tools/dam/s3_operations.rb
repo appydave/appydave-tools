@@ -152,35 +152,37 @@ module Appydave
 
             s3_path = build_s3_key(relative_path)
 
-            # Check if file already exists with same MD5
-            local_md5 = file_md5(file)
-            s3_md5 = s3_file_md5(s3_path)
+            # Check if file already exists in S3 and compare
+            s3_info = get_s3_file_info(s3_path)
 
-            if local_md5 == s3_md5
-              puts "  ⏭️  Skipped: #{relative_path} (unchanged)"
-              skipped += 1
+            if s3_info
+              s3_etag = s3_info['ETag'].gsub('"', '')
+              s3_size = s3_info['Size']
+              match_status = files_match?(local_file: file, s3_etag: s3_etag, s3_size: s3_size)
+
+              if match_status == :synced
+                comparison_method = multipart_etag?(s3_etag) ? 'size match' : 'unchanged'
+                puts "  ⏭️  Skipped: #{relative_path} (#{comparison_method})"
+                skipped += 1
+                next
+              end
+
+              # File exists but content differs - warn before overwriting
+              puts "  ⚠️  Warning: #{relative_path} exists in S3 with different content"
+              puts '     (multipart upload detected - comparing by size)' if multipart_etag?(s3_etag)
+
+              s3_time = s3_info['LastModified']
+              local_time = File.mtime(file)
+              puts "     S3: #{s3_time.strftime('%Y-%m-%d %H:%M')} | Local: #{local_time.strftime('%Y-%m-%d %H:%M')}"
+
+              puts '     ⚠️  S3 file is NEWER than local - you may be overwriting recent changes!' if s3_time > local_time
+              puts '     Uploading will overwrite S3 version...'
+            end
+
+            if upload_file(file, s3_path, dry_run: dry_run)
+              uploaded += 1
             else
-              # Warn if we're about to overwrite an existing S3 file
-              if s3_md5 && s3_md5 != local_md5
-                puts "  ⚠️  Warning: #{relative_path} exists in S3 with different content"
-
-                # Try to get S3 timestamp for comparison
-                s3_file_info = get_s3_file_info(s3_path)
-                if s3_file_info && s3_file_info['LastModified']
-                  s3_time = s3_file_info['LastModified']
-                  local_time = File.mtime(file)
-                  puts "     S3: #{s3_time.strftime('%Y-%m-%d %H:%M')} | Local: #{local_time.strftime('%Y-%m-%d %H:%M')}"
-
-                  puts '     ⚠️  S3 file is NEWER than local - you may be overwriting recent changes!' if s3_time > local_time
-                end
-                puts '     Uploading will overwrite S3 version...'
-              end
-
-              if upload_file(file, s3_path, dry_run: dry_run)
-                uploaded += 1
-              else
-                failed += 1
-              end
+              failed += 1
             end
           end
           # rubocop:enable Metrics/BlockLength
@@ -215,41 +217,47 @@ module Appydave
           skipped = 0
           failed = 0
 
+          # rubocop:disable Metrics/BlockLength
           s3_files.each do |s3_file|
             key = s3_file['Key']
             relative_path = extract_relative_path(key)
             local_file = File.join(staging_dir, relative_path)
 
-            # Check if file already exists with same MD5
-            s3_md5 = s3_file['ETag'].gsub('"', '')
-            local_md5 = File.exist?(local_file) ? file_md5(local_file) : nil
+            # Check if file already exists and compare
+            s3_etag = s3_file['ETag'].gsub('"', '')
+            s3_size = s3_file['Size']
 
-            if local_md5 == s3_md5
-              puts "  ⏭️  Skipped: #{relative_path} (unchanged)"
-              skipped += 1
+            if File.exist?(local_file)
+              match_status = files_match?(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
+
+              if match_status == :synced
+                comparison_method = multipart_etag?(s3_etag) ? 'size match' : 'unchanged'
+                puts "  ⏭️  Skipped: #{relative_path} (#{comparison_method})"
+                skipped += 1
+                next
+              end
+
+              # File exists but content differs - warn before overwriting
+              puts "  ⚠️  Warning: #{relative_path} exists locally with different content"
+              puts '     (multipart upload detected - comparing by size)' if multipart_etag?(s3_etag)
+
+              if s3_file['LastModified']
+                s3_time = s3_file['LastModified']
+                local_time = File.mtime(local_file)
+                puts "     S3: #{s3_time.strftime('%Y-%m-%d %H:%M')} | Local: #{local_time.strftime('%Y-%m-%d %H:%M')}"
+
+                puts '     ⚠️  Local file is NEWER than S3 - you may be overwriting recent changes!' if local_time > s3_time
+              end
+              puts '     Downloading will overwrite local version...'
+            end
+
+            if download_file(key, local_file, dry_run: dry_run)
+              downloaded += 1
             else
-              # Warn if we're about to overwrite an existing local file
-              if local_md5 && local_md5 != s3_md5
-                puts "  ⚠️  Warning: #{relative_path} exists locally with different content"
-
-                # Compare timestamps
-                if s3_file['LastModified'] && File.exist?(local_file)
-                  s3_time = s3_file['LastModified']
-                  local_time = File.mtime(local_file)
-                  puts "     S3: #{s3_time.strftime('%Y-%m-%d %H:%M')} | Local: #{local_time.strftime('%Y-%m-%d %H:%M')}"
-
-                  puts '     ⚠️  Local file is NEWER than S3 - you may be overwriting recent changes!' if local_time > s3_time
-                end
-                puts '     Downloading will overwrite local version...'
-              end
-
-              if download_file(key, local_file, dry_run: dry_run)
-                downloaded += 1
-              else
-                failed += 1
-              end
+              failed += 1
             end
           end
+          # rubocop:enable Metrics/BlockLength
           puts ''
           puts '✅ Download complete!'
           puts "   Downloaded: #{downloaded}, Skipped: #{skipped}, Failed: #{failed}"
@@ -322,11 +330,12 @@ module Appydave
               total_s3_size += s3_size
               total_local_size += local_size
 
-              local_md5 = file_md5(local_file)
-              s3_md5 = s3_file['ETag'].gsub('"', '')
+              s3_etag = s3_file['ETag'].gsub('"', '')
+              match_status = files_match?(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
 
-              if local_md5 == s3_md5
-                puts "  ✓ #{relative_path} (#{file_size_human(s3_size)}) [synced]"
+              if match_status == :synced
+                status_label = multipart_etag?(s3_etag) ? 'synced*' : 'synced'
+                puts "  ✓ #{relative_path} (#{file_size_human(s3_size)}) [#{status_label}]"
               else
                 puts "  ⚠️  #{relative_path} (#{file_size_human(s3_size)}) [modified]"
               end
@@ -526,10 +535,11 @@ module Appydave
             s3_file = s3_files_map[relative_path]
 
             if s3_file
-              # Compare MD5
-              local_md5 = file_md5(local_file)
-              s3_md5 = s3_file['ETag'].gsub('"', '')
-              needs_upload = true if local_md5 != s3_md5
+              # Compare using multipart-aware comparison
+              s3_etag = s3_file['ETag'].gsub('"', '')
+              s3_size = s3_file['Size']
+              match_status = files_match?(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
+              needs_upload = true if match_status != :synced
             else
               # Local file not in S3
               needs_upload = true
@@ -619,6 +629,47 @@ module Appydave
             key: s3_path
           )
           response.etag.gsub('"', '')
+        rescue Aws::S3::Errors::NotFound, Aws::S3::Errors::ServiceError
+          nil
+        end
+
+        # Check if an S3 ETag is from a multipart upload
+        # Multipart ETags have format: "hash-partcount" (e.g., "d41d8cd98f00b204e9800998ecf8427e-5")
+        def multipart_etag?(etag)
+          return false if etag.nil?
+
+          etag.include?('-')
+        end
+
+        # Compare local file with S3 file, handling multipart ETags
+        # Returns: :synced, :modified, or :unknown
+        # For multipart uploads, falls back to size comparison since MD5 won't match
+        def files_match?(local_file:, s3_etag:, s3_size:)
+          return :unknown unless File.exist?(local_file)
+          return :unknown if s3_etag.nil?
+
+          local_size = File.size(local_file)
+
+          if multipart_etag?(s3_etag)
+            # Multipart upload - MD5 comparison won't work, use size
+            # Size match is a reasonable proxy for "unchanged" in this context
+            local_size == s3_size ? :synced : :modified
+          else
+            # Standard upload - use MD5 comparison
+            local_md5 = file_md5(local_file)
+            return :unknown if local_md5.nil?
+
+            local_md5 == s3_etag ? :synced : :modified
+          end
+        end
+
+        # Get S3 file size from path (for upload comparison)
+        def s3_file_size(s3_path)
+          response = s3_client.head_object(
+            bucket: brand_info.aws.s3_bucket,
+            key: s3_path
+          )
+          response.content_length
         rescue Aws::S3::Errors::NotFound, Aws::S3::Errors::ServiceError
           nil
         end

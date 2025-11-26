@@ -130,6 +130,7 @@ class VatCLI
   # List brands and projects
   def list_command(args)
     detailed = args.include?('--detailed')
+    s3 = args.include?('--s3')
     args = args.reject { |arg| arg.start_with?('--') || arg.start_with?('-') }
 
     brand_arg = args[0]
@@ -137,13 +138,13 @@ class VatCLI
 
     if brand_arg.nil?
       # List all brands with summary
-      Appydave::Tools::Dam::ProjectListing.list_brands_with_counts(detailed: detailed)
+      Appydave::Tools::Dam::ProjectListing.list_brands_with_counts(detailed: detailed, s3: s3)
     elsif pattern_arg
       # Pattern matching
       Appydave::Tools::Dam::ProjectListing.list_with_pattern(brand_arg, pattern_arg)
     else
       # Specific brand
-      Appydave::Tools::Dam::ProjectListing.list_brand_projects(brand_arg, detailed: detailed)
+      Appydave::Tools::Dam::ProjectListing.list_brand_projects(brand_arg, detailed: detailed, s3: s3)
     end
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
@@ -956,7 +957,7 @@ class VatCLI
     puts <<~HELP
       List Command
 
-      Usage: dam list [brand] [pattern]
+      Usage: dam list [brand] [pattern] [--s3] [--detailed]
 
       Modes:
         1. List all brands with summary:
@@ -969,10 +970,21 @@ class VatCLI
            dam list appydave 'b6*'       # All projects b60-b69
            dam list appydave 'b4*'       # All projects b40-b49
 
+      Options:
+        --s3          Show S3 sync status (slower, makes AWS API calls)
+        --detailed    Show extended metadata (PATH, SSD, file counts)
+
       Examples:
-        dam list                         # Tabular: brand, project count, size, modified
-        dam list voz                     # Tabular: all VOZ projects with size/date
-        dam list appydave 'b6*'          # Tabular: b60-b69 projects with size/date
+        dam list                         # Fast: brand, project count, size, modified, git
+        dam list --s3                    # Slower: adds S3 SYNC column
+        dam list voz                     # Fast: all VOZ projects (no S3 column)
+        dam list voz --s3                # Slower: VOZ projects with S3 sync status
+        dam list appydave 'b6*'          # Fast: b60-b69 projects
+        dam list appydave --detailed --s3  # Comprehensive: all columns including S3
+
+      Performance Note:
+        The --s3 flag makes AWS API calls for each project, which can be slow.
+        Default view omits S3 status for faster performance.
     HELP
   end
 

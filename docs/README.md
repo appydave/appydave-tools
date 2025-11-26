@@ -11,6 +11,7 @@
 - **[DAM - Digital Asset Management](./guides/tools/dam/)** - Video project storage orchestration
   - [Usage Guide](./guides/tools/dam/dam-usage.md) ✅
   - [Testing Plan](./guides/tools/dam/dam-testing-plan.md) ✅
+- **[VideoFileNamer](./guides/tools/video-file-namer.md)** - Generate structured video segment filenames ✅
 - **[GPT Context](./guides/tools/gpt-context.md)** - Gather files for AI context ✅
 - **[YouTube Manager](./guides/tools/youtube-manager.md)** - Manage YouTube metadata ✅
 - **[Subtitle Processor](./guides/tools/subtitle-processor.md)** - Clean/merge SRT files ✅

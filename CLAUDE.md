@@ -48,6 +48,76 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Shareable individually** - Tools can be featured in standalone videos
 - **Language flexible** - Currently Ruby, could be rewritten if needed
 
+## Documentation Discovery Protocol
+
+**CRITICAL: When user asks about recent changes, work completed, or project history:**
+
+### 1. ALWAYS Check Existing Documentation FIRST
+
+**Check in this order:**
+
+1. **CHANGELOG.md** (PRIMARY SOURCE for recent changes)
+   - Location: `/CHANGELOG.md`
+   - Contains: Complete version history (v0.0.2 → current)
+   - Organized by: Semantic version with Features/Fixes categorized
+   - Updated: Automatically via semantic-release on every release
+   - **Use this for:** "What changed recently?", "What work was done?", "Sprint summary"
+
+2. **Git log** (SECONDARY - only if CHANGELOG lacks detail)
+   - Use for: Commit-level detail, specific date ranges, author information
+   - Command: `git log --since="1 week ago" --oneline`
+
+3. **docs/ folders** (TERTIARY - for architecture/design decisions)
+   - `docs/code-quality/` - Audit reports, retrospectives, UAT plans
+   - `docs/dam/` - DAM-specific requirements and architecture
+   - `docs/usage/` - Tool usage guides
+
+### 2. Before Creating New Documentation
+
+**ALWAYS verify:**
+- ✅ Does it already exist in CHANGELOG.md?
+- ✅ Does it exist in docs/ folders?
+- ✅ Does it exist in existing markdown files?
+- ✅ Is it redundant with automated changelogs?
+
+**Only create new documentation if:**
+- ❌ Information doesn't exist anywhere
+- ❌ Existing docs have gaps
+- ❌ New perspective/format is genuinely needed
+
+### 3. Common Mistakes to Avoid
+
+**DON'T:**
+- ❌ Jump straight to `git log` without checking CHANGELOG.md
+- ❌ Suggest creating new changelogs when CHANGELOG.md exists
+- ❌ Recreate information that's already in automated systems
+- ❌ Ignore existing documentation
+
+**DO:**
+- ✅ Trust CHANGELOG.md as source of truth for version history
+- ✅ Use existing docs before creating new ones
+- ✅ Reference existing documentation in responses
+- ✅ Supplement (not replace) existing docs
+
+### Example: User Asks "What work was done recently?"
+
+**Correct approach:**
+```
+1. Read CHANGELOG.md
+2. Summarize recent versions (e.g., v0.60.0 → v0.69.0)
+3. Group features by theme
+4. Reference specific versions/commits
+5. Supplement with git log if more detail needed
+```
+
+**Incorrect approach:**
+```
+❌ Run git log first
+❌ Manually count commits
+❌ Suggest creating new changelog
+❌ Ignore existing CHANGELOG.md
+```
+
 ## Common Commands
 
 ### Development Setup

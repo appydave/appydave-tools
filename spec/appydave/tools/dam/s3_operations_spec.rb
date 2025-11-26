@@ -171,7 +171,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'uploads files to S3 with correct key format' do
-      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+      # File doesn't exist in S3 yet
+      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
 
       expect(mock_s3_client).to receive(:put_object) do |args|
         expect(args[:bucket]).to eq('test-bucket')
@@ -182,12 +183,32 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'skips files with matching MD5' do
+      local_file = File.join(staging_dir, 'test-file.txt')
       local_md5 = Digest::MD5.hexdigest('test content')
-      allow(s3_ops).to receive(:s3_file_md5).and_return(local_md5)
+      # File exists in S3 with same content (non-multipart ETag)
+      allow(s3_ops).to receive(:get_s3_file_info).and_return({
+                                                               'ETag' => "\"#{local_md5}\"",
+                                                               'Size' => File.size(local_file),
+                                                               'LastModified' => Time.now
+                                                             })
 
       expect(mock_s3_client).not_to receive(:put_object)
 
-      expect { s3_ops.upload(dry_run: false) }.to output(/⏭️  Skipped: test-file.txt/).to_stdout
+      expect { s3_ops.upload(dry_run: false) }.to output(/⏭️  Skipped: test-file.txt \(unchanged\)/).to_stdout
+    end
+
+    it 'skips files with matching size for multipart uploads' do
+      local_file = File.join(staging_dir, 'test-file.txt')
+      # File exists in S3 with multipart ETag (contains dash)
+      allow(s3_ops).to receive(:get_s3_file_info).and_return({
+                                                               'ETag' => '"abc123def456-5"',
+                                                               'Size' => File.size(local_file),
+                                                               'LastModified' => Time.now
+                                                             })
+
+      expect(mock_s3_client).not_to receive(:put_object)
+
+      expect { s3_ops.upload(dry_run: false) }.to output(/⏭️  Skipped: test-file.txt \(size match\)/).to_stdout
     end
 
     it 'excludes Windows Zone.Identifier files from upload' do
@@ -195,7 +216,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       zone_file = File.join(staging_dir, 'video.mp4:Zone.Identifier')
       File.write(zone_file, 'test zone data')
 
-      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+      # File doesn't exist in S3 yet
+      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
 
       # Should not attempt to upload Zone.Identifier file
       expect(mock_s3_client).to receive(:put_object).once do |args|
@@ -211,7 +233,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       ds_store = File.join(staging_dir, '.DS_Store')
       File.write(ds_store, 'mac metadata')
 
-      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+      # File doesn't exist in S3 yet
+      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
 
       # Should not attempt to upload .DS_Store file
       expect(mock_s3_client).to receive(:put_object).once do |args|
@@ -681,7 +704,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
     it 'constructs correct path with projects_subfolder for upload' do
       s3_ops = create_subfolder_s3_operations
-      allow(s3_ops).to receive(:s3_file_md5).and_return(nil)
+      # File doesn't exist in S3 yet
+      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
 
       expect(mock_s3_client).to receive(:put_object) do |args|
         expect(args[:key]).to eq('staging/v-test/test-project/subfolder-test.txt')

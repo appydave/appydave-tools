@@ -15,11 +15,17 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brands_with_counts' do
-    it 'displays brands in tabular format with counts, sizes, last modified, git status, and S3 sync' do
+    it 'displays brands in tabular format with counts, sizes, last modified, and git status (default view without S3)' do
       expect { described_class.list_brands_with_counts }.to output(
-        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+GIT\s+S3 SYNC/)
+        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+GIT/)
           .and(matching(/appydave - Appydave\s+appydave\s+3/))
           .and(matching(/voz - Voz\s+voz\s+2/))
+      ).to_stdout
+    end
+
+    it 'displays S3 SYNC column when s3: true is passed' do
+      expect { described_class.list_brands_with_counts(s3: true) }.to output(
+        a_string_matching(/BRAND\s+KEY\s+PROJECTS\s+SIZE\s+LAST MODIFIED\s+GIT\s+S3 SYNC/)
       ).to_stdout
     end
 
@@ -38,14 +44,20 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
   end
 
   describe '.list_brand_projects' do
-    it 'displays projects in tabular format with sizes, ages, git status, and S3 sync' do
+    it 'displays projects in tabular format with sizes, ages, and git status (default view without S3)' do
       expect { described_class.list_brand_projects('appydave') }.to output(
         a_string_matching(/Projects in v-appydave:/)
-          .and(matching(/PROJECT\s+SIZE\s+AGE\s+GIT\s+S3/))
+          .and(matching(/PROJECT\s+SIZE\s+AGE\s+GIT/))
           .and(matching(/Note: Lists only projects with files/))
           .and(matching(/b60-project/))
           .and(matching(/b61-project/))
           .and(matching(/b65-project/))
+      ).to_stdout
+    end
+
+    it 'displays S3 column when s3: true is passed' do
+      expect { described_class.list_brand_projects('appydave', s3: true) }.to output(
+        a_string_matching(/PROJECT\s+SIZE\s+AGE\s+GIT\s+S3/)
       ).to_stdout
     end
 
