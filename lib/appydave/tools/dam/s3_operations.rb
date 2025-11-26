@@ -158,7 +158,7 @@ module Appydave
             if s3_info
               s3_etag = s3_info['ETag'].gsub('"', '')
               s3_size = s3_info['Size']
-              match_status = files_match?(local_file: file, s3_etag: s3_etag, s3_size: s3_size)
+              match_status = compare_files(local_file: file, s3_etag: s3_etag, s3_size: s3_size)
 
               if match_status == :synced
                 comparison_method = multipart_etag?(s3_etag) ? 'size match' : 'unchanged'
@@ -228,7 +228,7 @@ module Appydave
             s3_size = s3_file['Size']
 
             if File.exist?(local_file)
-              match_status = files_match?(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
+              match_status = compare_files(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
 
               if match_status == :synced
                 comparison_method = multipart_etag?(s3_etag) ? 'size match' : 'unchanged'
@@ -331,7 +331,7 @@ module Appydave
               total_local_size += local_size
 
               s3_etag = s3_file['ETag'].gsub('"', '')
-              match_status = files_match?(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
+              match_status = compare_files(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
 
               if match_status == :synced
                 status_label = multipart_etag?(s3_etag) ? 'synced*' : 'synced'
@@ -538,7 +538,7 @@ module Appydave
               # Compare using multipart-aware comparison
               s3_etag = s3_file['ETag'].gsub('"', '')
               s3_size = s3_file['Size']
-              match_status = files_match?(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
+              match_status = compare_files(local_file: local_file, s3_etag: s3_etag, s3_size: s3_size)
               needs_upload = true if match_status != :synced
             else
               # Local file not in S3
@@ -644,7 +644,7 @@ module Appydave
         # Compare local file with S3 file, handling multipart ETags
         # Returns: :synced, :modified, or :unknown
         # For multipart uploads, falls back to size comparison since MD5 won't match
-        def files_match?(local_file:, s3_etag:, s3_size:)
+        def compare_files(local_file:, s3_etag:, s3_size:)
           return :unknown unless File.exist?(local_file)
           return :unknown if s3_etag.nil?
 
