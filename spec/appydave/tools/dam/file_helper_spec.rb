@@ -69,4 +69,45 @@ RSpec.describe Appydave::Tools::Dam::FileHelper do
       expect(described_class.format_size(1_099_511_627_776)).to eq('1.0 TB')
     end
   end
+
+  describe '.format_age' do
+    it 'formats recent time as "just now"' do
+      time = Time.now - 30
+      expect(described_class.format_age(time)).to eq('just now')
+    end
+
+    it 'formats minutes' do
+      time = Time.now - (5 * 60)
+      expect(described_class.format_age(time)).to eq('5m')
+    end
+
+    it 'formats hours' do
+      time = Time.now - (3 * 3600)
+      expect(described_class.format_age(time)).to eq('3h')
+    end
+
+    it 'formats days' do
+      time = Time.now - (5 * 86_400)
+      expect(described_class.format_age(time)).to eq('5d')
+    end
+
+    it 'formats weeks' do
+      time = Time.now - (2 * 7 * 86_400)
+      expect(described_class.format_age(time)).to eq('2w')
+    end
+
+    it 'formats months' do
+      time = Time.now - (2 * 30 * 86_400)
+      expect(described_class.format_age(time)).to eq('2mo')
+    end
+
+    it 'formats years' do
+      time = Time.now - (2 * 365 * 86_400)
+      expect(described_class.format_age(time)).to eq('2y')
+    end
+
+    it 'returns N/A for nil' do
+      expect(described_class.format_age(nil)).to eq('N/A')
+    end
+  end
 end

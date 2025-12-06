@@ -217,8 +217,8 @@ module Appydave
               age_display = data[:stale] ? "#{data[:age]} ⚠️" : data[:age]
 
               if s3
-                s3_upload = data[:s3_last_upload] ? format_age(data[:s3_last_upload]) : 'N/A'
-                s3_download = data[:s3_last_download] ? format_age(data[:s3_last_download]) : 'N/A'
+                s3_upload = data[:s3_last_upload] ? FileHelper.format_age(data[:s3_last_upload]) : 'N/A'
+                s3_download = data[:s3_last_download] ? FileHelper.format_age(data[:s3_last_download]) : 'N/A'
 
                 puts format(
                   '%-45s %12s %15s  %-15s  %-12s  %-65s  %-18s  %-18s  %-30s  %-15s  %-15s',
@@ -338,7 +338,7 @@ module Appydave
               path: project_path,
               size: size,
               modified: modified,
-              age: format_age(modified),
+              age: FileHelper.format_age(modified),
               stale: stale?(modified)
             }
           end
@@ -570,7 +570,7 @@ module Appydave
             path: project_path,
             size: size,
             modified: modified,
-            age: format_age(modified),
+            age: FileHelper.format_age(modified),
             stale: stale?(modified),
             git_status: git_status,
             s3_sync: s3_sync
@@ -650,32 +650,6 @@ module Appydave
           return 'N/A' if time.nil?
 
           time.strftime('%Y-%m-%d %H:%M')
-        end
-
-        # Format age as relative time (e.g., "3 days", "2 weeks")
-        def self.format_age(time)
-          return 'N/A' if time.nil?
-
-          seconds = Time.now - time
-          return 'just now' if seconds < 60
-
-          minutes = seconds / 60
-          return "#{minutes.round}m" if minutes < 60
-
-          hours = minutes / 60
-          return "#{hours.round}h" if hours < 24
-
-          days = hours / 24
-          return "#{days.round}d" if days < 7
-
-          weeks = days / 7
-          return "#{weeks.round}w" if weeks < 4
-
-          months = days / 30
-          return "#{months.round}mo" if months < 12
-
-          years = days / 365
-          "#{years.round}y"
         end
 
         # Check if project is stale (>90 days old)

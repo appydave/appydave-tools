@@ -37,6 +37,34 @@ module Appydave
 
           format('%<size>.1f %<unit>s', size: bytes.to_f / (1024**exp), unit: units[exp])
         end
+
+        # Format time as relative age (e.g., "3d", "2w", "1mo")
+        # @param time [Time, nil] Time to format
+        # @return [String] Relative age string
+        def format_age(time)
+          return 'N/A' if time.nil?
+
+          seconds = Time.now - time
+          return 'just now' if seconds < 60
+
+          minutes = seconds / 60
+          return "#{minutes.round}m" if minutes < 60
+
+          hours = minutes / 60
+          return "#{hours.round}h" if hours < 24
+
+          days = hours / 24
+          return "#{days.round}d" if days < 7
+
+          weeks = days / 7
+          return "#{weeks.round}w" if weeks < 4
+
+          months = days / 30
+          return "#{months.round}mo" if months < 12
+
+          years = days / 365
+          "#{years.round}y"
+        end
       end
     end
   end

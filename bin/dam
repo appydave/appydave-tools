@@ -22,6 +22,7 @@ class VatCLI
       'archive' => method(:archive_command),
       'manifest' => method(:manifest_command),
       'sync-ssd' => method(:sync_ssd_command),
+      'ssd-status' => method(:ssd_status_command),
       'repo-status' => method(:repo_status_command),
       'repo-sync' => method(:repo_sync_command),
       'repo-push' => method(:repo_push_command),
@@ -69,7 +70,7 @@ class VatCLI
       puts 'Available commands:'
       puts '  list, status, manifest'
       puts '  s3-up, s3-down, s3-status, s3-cleanup-remote, s3-cleanup-local'
-      puts '  archive, sync-ssd'
+      puts '  archive, sync-ssd, ssd-status'
       puts '  repo-status, repo-sync, repo-push'
       puts '  s3-share, s3-discover, s3-scan'
       puts ''
@@ -359,6 +360,24 @@ class VatCLI
 
     status = Appydave::Tools::Dam::Status.new(brand_key, project_id)
     status.show
+  rescue StandardError => e
+    puts "❌ Error: #{e.message}"
+    exit 1
+  end
+
+  # Show SSD mount status
+  def ssd_status_command(args)
+    all = args.include?('--all')
+    args = args.reject { |arg| arg.start_with?('--') }
+    brand_arg = args[0]
+
+    if all || brand_arg.nil?
+      # Show status for all brands
+      Appydave::Tools::Dam::SsdStatus.new.show_all
+    else
+      # Show status for specific brand
+      Appydave::Tools::Dam::SsdStatus.new.show(brand_arg)
+    end
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
     exit 1
@@ -742,6 +761,7 @@ class VatCLI
         archive <brand> <project>        Copy project to SSD backup
         manifest <brand> [--all]         Generate project manifest
         sync-ssd <brand>                 Restore light files from SSD
+        ssd-status [brand]               Check SSD mount status for all/one brand
 
       List Modes:
         dam list                   All brands with counts/sizes

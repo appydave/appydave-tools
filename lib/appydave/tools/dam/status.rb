@@ -42,7 +42,7 @@ module Appydave
         def show_project_status
           project_size = calculate_project_size
           last_modified = File.mtime(project_path)
-          age = format_age(last_modified)
+          age = FileHelper.format_age(last_modified)
 
           puts "📊 Status: v-#{brand}/#{File.basename(project_path)} (#{format_size(project_size)})"
           puts "   Last modified: #{age} ago"
@@ -155,32 +155,9 @@ module Appydave
 
             if Dir.exist?(ssd_full_path)
               last_modified = File.mtime(ssd_full_path)
-              age = format_age(last_modified)
+              age = FileHelper.format_age(last_modified)
               puts "     Last synced: #{age} ago"
             end
-          end
-
-          puts ''
-        end
-
-        def show_git_status
-          puts 'Git:'
-
-          status = git_status_info
-
-          puts "  🌿 Branch: #{status[:branch]}"
-          puts "  📡 Remote: #{status[:remote]}" if status[:remote]
-
-          if status[:modified_count].positive? || status[:untracked_count].positive?
-            puts "  ↕️  Status: #{status[:modified_count]} modified, #{status[:untracked_count]} untracked"
-          else
-            puts '  ↕️  Status: Clean working directory'
-          end
-
-          if status[:ahead].positive? || status[:behind].positive?
-            puts "  🔄 Sync: #{sync_status_text(status[:ahead], status[:behind])}"
-          else
-            puts '  🔄 Sync: Up to date'
           end
 
           puts ''
@@ -340,31 +317,6 @@ module Appydave
           FileHelper.format_size(bytes)
         end
 
-        def format_age(time)
-          return 'N/A' if time.nil?
-
-          seconds = Time.now - time
-          return 'just now' if seconds < 60
-
-          minutes = seconds / 60
-          return "#{minutes.round}m" if minutes < 60
-
-          hours = minutes / 60
-          return "#{hours.round}h" if hours < 24
-
-          days = hours / 24
-          return "#{days.round}d" if days < 7
-
-          weeks = days / 7
-          return "#{weeks.round}w" if weeks < 4
-
-          months = days / 30
-          return "#{months.round}mo" if months < 12
-
-          years = days / 365
-          "#{years.round}y"
-        end
-
         def calculate_manifest_age(last_updated_str)
           last_updated = Time.parse(last_updated_str)
           Time.now - last_updated
@@ -468,7 +420,7 @@ module Appydave
 
           return unless latest_sync
 
-          age = format_age(latest_sync)
+          age = FileHelper.format_age(latest_sync)
           puts "   Last S3 sync: #{age} ago"
         end
       end
