@@ -534,6 +534,23 @@ gem build           # Build gemspec into .gem file
 - **Configuration System**: Flexible config management for multi-project workflows
 - **Type System**: Custom type classes for data validation and transformation
 
+### Architecture Documentation
+
+Comprehensive guides for understanding and extending the codebase:
+
+| Document | Location | Purpose |
+|----------|----------|---------|
+| **CLI Patterns Guide** | [docs/architecture/cli/cli-patterns.md](./docs/architecture/cli/cli-patterns.md) | 4 CLI architecture patterns with decision tree, code examples, migration guide |
+| **CLI Pattern Comparison** | [docs/architecture/cli/cli-pattern-comparison.md](./docs/architecture/cli/cli-pattern-comparison.md) | Visual diagrams, decision matrix, anti-patterns |
+| **exe/bin Convention** | [docs/architecture/cli/exe-bin-convention.md](./docs/architecture/cli/exe-bin-convention.md) | How exe/ wrappers load bin/ implementations for gem installation |
+| **Testing Patterns** | [docs/architecture/testing/testing-patterns.md](./docs/architecture/testing/testing-patterns.md) | RSpec conventions, fixtures, VCR mocking, Guard workflow |
+| **Configuration Systems** | [docs/architecture/configuration/configuration-systems.md](./docs/architecture/configuration/configuration-systems.md) | Config architecture and patterns |
+
+**Quick Reference:**
+- **New CLI tool?** → Read CLI Patterns Guide first, choose pattern 1-4
+- **Adding tests?** → Read Testing Patterns Guide
+- **Understanding exe/ vs bin/?** → Read exe/bin Convention
+
 ### Key Components
 
 #### CLI Actions (`lib/appydave/tools/cli_actions/`)
@@ -580,12 +597,18 @@ gem build           # Build gemspec into .gem file
 - No `require` statements needed in spec files (handled by spec_helper)
 - VCR for HTTP request mocking (YouTube API calls)
 - SimpleCov for coverage reporting
+- **Test business logic (`lib/`), not CLI executables (`bin/`)**
+
+**Full guide:** [docs/architecture/testing/testing-patterns.md](./docs/architecture/testing/testing-patterns.md)
 
 ### File Organization
-- CLI executables in `bin/`
-- Core library code in `lib/appydave/tools/`
-- Tests mirror lib structure in `spec/`
+- **`exe/`** - Thin wrappers installed as gem commands (no `.rb` extension)
+- **`bin/`** - Full CLI implementations (`.rb` extension, used during development)
+- **`lib/appydave/tools/`** - Core library code (business logic)
+- **`spec/`** - Tests mirror lib structure
 - Configuration examples and docs in respective `_doc.md` files
+
+**exe/ vs bin/ explained:** [docs/architecture/cli/exe-bin-convention.md](./docs/architecture/cli/exe-bin-convention.md)
 
 ## Key Dependencies
 - `google-api-client`: YouTube API integration

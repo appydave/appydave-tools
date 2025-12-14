@@ -210,7 +210,8 @@ module Appydave
             return
           end
 
-          puts "📦 Downloading #{s3_files.size} file(s) from S3 to #{project_id}/s3-staging/..."
+          total_size = s3_files.sum { |f| f['Size'] || 0 }
+          puts "📦 Downloading #{s3_files.size} file(s) (#{file_size_human(total_size)}) from S3 to #{project_id}/s3-staging/..."
           puts ''
 
           downloaded = 0

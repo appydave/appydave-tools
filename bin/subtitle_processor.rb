@@ -12,7 +12,8 @@ class SubtitleProcessorCLI
   def initialize
     @commands = {
       'clean' => method(:clean_subtitles),
-      'join' => method(:join_subtitles)
+      'join' => method(:join_subtitles),
+      'transcript' => method(:transcript_subtitles)
     }
   end
 
@@ -146,11 +147,63 @@ class SubtitleProcessorCLI
     joiner.join
   end
 
+  def transcript_subtitles(args)
+    options = {
+      file: nil,
+      output: nil,
+      paragraph_gap: 1
+    }
+
+    transcript_parser = OptionParser.new do |opts|
+      opts.banner = 'Usage: subtitle_processor.rb transcript [options]'
+
+      opts.on('-f', '--file FILE', 'SRT file to convert') do |v|
+        options[:file] = v
+      end
+
+      opts.on('-o', '--output FILE', 'Output file (default: stdout)') do |v|
+        options[:output] = v
+      end
+
+      opts.on('-g', '--gap LINES', Integer, 'Newlines between paragraphs (default: 1)') do |v|
+        options[:paragraph_gap] = v
+      end
+
+      opts.on('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+    end
+
+    begin
+      transcript_parser.parse!(args)
+    rescue OptionParser::InvalidOption => e
+      puts "Error: #{e.message}"
+      puts transcript_parser
+      exit
+    end
+
+    if options[:file].nil?
+      puts 'Error: Input file is required.'
+      puts transcript_parser
+      exit
+    end
+
+    transcript = Appydave::Tools::SubtitleProcessor::Transcript.new(file_path: options[:file])
+
+    if options[:output]
+      transcript.write(options[:output], paragraph_gap: options[:paragraph_gap])
+    else
+      puts transcript.extract(paragraph_gap: options[:paragraph_gap])
+    end
+  end
+
   def print_help
     puts 'Usage: subtitle_processor.rb [command] [options]'
     puts 'Commands:'
     puts '  clean          Clean and normalize SRT files'
     puts '  join           Join multiple SRT files'
+    puts '  transcript     Convert SRT to plain text transcript'
     puts "Run 'subtitle_processor.rb [command] --help' for more information on a command."
   end
 end

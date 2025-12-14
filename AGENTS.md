@@ -18,5 +18,48 @@ Commits follow conventional commits consumed by semantic-release (`feat:`, `fix:
 ## Agent Coordination
 Claude is the primary automation agent; align with the collaboration notes in `CLAUDE.md` before introducing new flows or prompt templates. When scripting repeatable tasks (gpt_context runs, metadata syncs), document the expected Claude inputs/outputs so the agent can reproduce them. Flag breaking CLI changes in PR descriptions with a dedicated **Claude Impact** subsection to keep downstream automations in sync.
 
+## Slash Command Agents
+
+This project has specialized agents activated via slash commands:
+
+| Command | Agent | Purpose |
+|---------|-------|---------|
+| `/po` | Product Owner | Requirements gathering, spec writing, documentation |
+| `/dev` | Developer | Feature implementation, code changes |
+| `/uat` | UAT Tester | User acceptance testing, verification |
+| `/progress` | Status Check | Quick project status summary |
+
+### Workflow
+
+```
+/progress → Quick orientation, see what's pending
+    ↓
+/po → Discuss requirements, write specs to docs/backlog.md
+    ↓
+/dev → Implement features based on specs
+    ↓
+/uat → Test implementation against acceptance criteria
+    ↓
+/po → Review UAT results, update documentation
+```
+
+### Agent Files
+
+Located in `.claude/commands/`:
+- `po.md` - Product Owner agent instructions
+- `dev.md` - Developer agent instructions
+- `uat.md` - UAT tester agent instructions
+- `progress.md` - Status check command
+
+### Key Documentation Files
+
+| File | Purpose | Maintained By |
+|------|---------|---------------|
+| `docs/backlog.md` | Requirements (FR/NFR) with status | /po |
+| `docs/brainstorming-notes.md` | Ideas being explored | /po |
+| `docs/uat/` | UAT plans and results | /uat |
+| `CHANGELOG.md` | Version history | Auto (semantic-release) |
+| `CLAUDE.md` | Project context for Claude | Manual |
+
 ## Security & Configuration Tips
 Keep API keys and OAuth secrets in `.env` or `~/.config/appydave/` (managed via `ad_config`). Never commit those files; `.gitignore` already excludes them. Validate YouTube API changes against a test channel before touching production content, and rotate credentials when machines change owners.

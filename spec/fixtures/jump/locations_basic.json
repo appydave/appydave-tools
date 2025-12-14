@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "version": "1.0",
+    "last_updated": "2025-12-13T10:00:00Z"
+  },
+  "categories": {
+    "type": {
+      "description": "Kind of location",
+      "values": ["tool", "gem", "brand", "client"]
+    }
+  },
+  "brands": {
+    "appydave": {
+      "aliases": ["ad", "appy"],
+      "description": "AppyDave brand"
+    }
+  },
+  "clients": {
+    "supportsignal": {
+      "aliases": ["ss"],
+      "description": "SupportSignal client"
+    }
+  },
+  "locations": [
+    {
+      "key": "ad-tools",
+      "path": "~/dev/ad/appydave-tools",
+      "jump": "jad-tools",
+      "brand": "appydave",
+      "type": "tool",
+      "tags": ["ruby", "cli"],
+      "description": "AppyDave CLI tools"
+    },
+    {
+      "key": "ss-app",
+      "path": "~/dev/clients/supportsignal/app",
+      "jump": "jss-app",
+      "client": "supportsignal",
+      "type": "tool",
+      "tags": ["typescript", "nextjs"],
+      "description": "SupportSignal app"
+    }
+  ]
+}

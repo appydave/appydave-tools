@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'appydave/tools'
+
+# Set $PROGRAM_NAME to the bin file so the guard passes
+$PROGRAM_NAME = File.expand_path('../bin/zsh_history.rb', __dir__)
+
+load $PROGRAM_NAME

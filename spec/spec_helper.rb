@@ -12,6 +12,7 @@ require 'vcr' # ChatGPT: https://chatgpt.com/c/f7dc1eee-a11a-4969-8ce1-f51f56cf7
 
 # Load shared helpers
 require_relative 'support/dam_filesystem_helpers'
+require_relative 'support/jump_test_helpers'
 
 Appydave::Tools::Configuration::Config.set_default do |config|
   config.config_path = Dir.mktmpdir

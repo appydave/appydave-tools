@@ -3,4 +3,4 @@
 
 require 'appydave/tools'
 
-load File.expand_path('../bin/subtitle_manager.rb', __dir__)
+load File.expand_path('../bin/subtitle_processor.rb', __dir__)

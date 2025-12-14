@@ -426,6 +426,21 @@ guard
 bin/console
 ```
 
+### Architecture Documentation
+
+Before adding new tools or making significant changes, review these guides:
+
+| Guide | What It Covers |
+|-------|----------------|
+| [CLI Patterns](./docs/architecture/cli/cli-patterns.md) | 4 CLI architecture patterns, decision tree, code examples |
+| [exe/ vs bin/](./docs/architecture/cli/exe-bin-convention.md) | How executables are organized for gem installation |
+| [Testing Patterns](./docs/architecture/testing/testing-patterns.md) | RSpec conventions, fixtures, mocking, continuous testing |
+| [CLI Pattern Comparison](./docs/architecture/cli/cli-pattern-comparison.md) | Visual diagrams, decision matrix |
+
+**Quick start:**
+- Creating a CLI tool? → [CLI Patterns Guide](./docs/architecture/cli/cli-patterns.md)
+- Writing tests? → [Testing Patterns Guide](./docs/architecture/testing/testing-patterns.md)
+
 ### Semantic Versioning
 
 This project uses **automated versioning** via semantic-release. Don't manually edit version files.
