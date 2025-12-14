@@ -75,6 +75,15 @@ Naming/MethodParameterName:
   AllowedNames:
     - as
     - s3
+
+Naming/PredicateMethod:
+  AllowedMethods:
+    - add
+    - update
+    - remove
+    - save
+    - delete
+    - create
 Style/EmptyMethod:    
   Exclude:
     - "**/spec/**/*"
