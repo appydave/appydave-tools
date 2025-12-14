@@ -1,3 +1,16 @@
+# [0.71.0](https://github.com/appydave/appydave-tools/compare/v0.70.0...v0.71.0) (2025-12-14)
+
+
+### Bug Fixes
+
+* allow common mutator methods in Naming/PredicateMethod cop ([4deb4b3](https://github.com/appydave/appydave-tools/commit/4deb4b35b0375bac6d67324a17444dc5d31b5f41))
+
+
+### Features
+
+* add dam ssd-status command and consolidate format_age to FileHelper ([2b09f99](https://github.com/appydave/appydave-tools/commit/2b09f99391a5312032d7feb2cbc125cc1e5011ad))
+* add jump cli ([0887245](https://github.com/appydave/appydave-tools/commit/08872458eb67cd9a25a622b89299817a7bf22207))
+
 # [0.70.0](https://github.com/appydave/appydave-tools/compare/v0.69.0...v0.70.0) (2025-11-26)
 
 
