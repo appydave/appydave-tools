@@ -1,3 +1,10 @@
+## [0.71.1](https://github.com/appydave/appydave-tools/compare/v0.71.0...v0.71.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* resolve jump get/remove returning 'No locations found' by making Search#get return results array consistent with search/list ([8ea39b5](https://github.com/appydave/appydave-tools/commit/8ea39b5fdd9bb9fe55c22f9cb86c8b66782c0f09))
+
 # [0.71.0](https://github.com/appydave/appydave-tools/compare/v0.70.0...v0.71.0) (2025-12-14)
 
 
