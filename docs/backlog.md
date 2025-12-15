@@ -13,6 +13,7 @@ Requirements tracking for AppyDave Tools development.
 | 3 | NFR-1: Improve test coverage for DAM commands | 2025-12-06 | Pending |
 | 4 | FR-3: Jump Location Tool (see spec) | 2025-12-13 | ✅ Implemented 2025-12-13 |
 | 5 | NFR-2: Claude Code Skill for Jump Tool (see below) | 2025-12-14 | ✅ Implemented 2025-12-14 |
+| 6 | BUG-1: Jump CLI get/remove commands fail to find entries (see below) | 2025-12-15 | Pending |
 
 ---
 
@@ -59,6 +60,62 @@ Requirements tracking for AppyDave Tools development.
 **Notes**:
 - Use VCR or WebMock for S3 API calls
 - Focus on edge cases: missing config, network errors, permission issues
+
+---
+
+### BUG-1: Jump CLI get/remove Commands Fail to Find Entries
+
+**Priority**: High - Core functionality broken
+
+**Summary**: The `get` and `remove` commands fail to find locations by key, while `search` successfully finds the same entries.
+
+**Steps to Reproduce**:
+```bash
+# Search finds the entry ✅
+bin/jump.rb search awb-team
+# Result: Shows awb-team with jump alias jwb-team
+
+# Get fails to find the same entry ❌
+bin/jump.rb get awb-team
+# Result: "Location not found"
+
+# Remove also fails ❌
+bin/jump.rb remove test-minimal --force
+# Result: "No locations found."
+```
+
+**Affected Commands**:
+- `get <key>` - Returns "Location not found" or "No locations found"
+- `remove <key>` - Returns "No locations found"
+
+**Working Commands**:
+- `search <terms>` - Works correctly, finds entries
+- `list` - Works correctly, shows all entries
+- `list --format json` - Works correctly
+
+**Suspected Cause**:
+The `get` and `remove` commands likely use a different key lookup mechanism than `search`. Possibilities:
+1. **Exact match vs fuzzy match** - `get` might expect an exact internal key format that differs from what's displayed
+2. **Case sensitivity** - Key matching might be case-sensitive
+3. **Index/cache issue** - Commands might be reading from different data sources or a stale index
+4. **Key field mismatch** - The lookup might be checking a different field than `key`
+
+**Evidence**:
+When `get agent-workflow-build` failed, it suggested: "Did you mean: test-minimal, test-full, dev?" - This suggests the lookup is working but matching against something unexpected (possibly only returning entries without certain fields, or using a different search algorithm).
+
+**Config Location**: `~/.config/appydave/locations.json`
+
+**Investigation Points**:
+- Compare how `search` resolves entries vs `get`/`remove`
+- Check `lib/appydave/tools/name_manager/` for lookup logic
+- Look at `LocationRegistry#find` or similar method
+- Verify the key field being matched against
+
+**Acceptance Criteria**:
+- [ ] `get <key>` finds entry when `search <key>` finds it
+- [ ] `remove <key>` finds entry when `search <key>` finds it
+- [ ] Add regression tests for key lookup consistency
+- [ ] Document root cause in commit message
 
 ---
 

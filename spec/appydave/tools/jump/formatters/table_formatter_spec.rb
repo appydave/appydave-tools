@@ -123,6 +123,40 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
       end
     end
 
+    context 'when formatting single location result (from get command)' do
+      let(:data) do
+        {
+          success: true,
+          results: [
+            {
+              index: 1,
+              key: 'ad-tools',
+              jump: 'jad-tools',
+              type: 'project',
+              brand: 'appydave',
+              description: 'AppyDave Tools CLI',
+              score: 100
+            }
+          ],
+          count: 1
+        }
+      end
+
+      it 'displays the single location' do
+        output = formatter.format
+
+        expect(output).to include('ad-tools')
+        expect(output).to include('jad-tools')
+        expect(output).to include('Total: 1 location(s)')
+      end
+
+      it 'does not display "No locations found"' do
+        output = formatter.format
+
+        expect(output).not_to include('No locations found')
+      end
+    end
+
     context 'when formatting location results' do
       let(:data) do
         {

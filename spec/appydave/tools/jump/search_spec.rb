@@ -123,7 +123,16 @@ RSpec.describe Appydave::Tools::Jump::Search do
       result = search.get('ad-tools')
 
       expect(result[:success]).to be true
-      expect(result[:result][:key]).to eq('ad-tools')
+      expect(result[:results]).to be_an(Array)
+      expect(result[:results].first[:key]).to eq('ad-tools')
+    end
+
+    it 'returns results array with count for consistency with search/list' do
+      result = search.get('ad-tools')
+
+      expect(result[:success]).to be true
+      expect(result[:results]).to be_an(Array)
+      expect(result[:count]).to eq(1)
     end
 
     it 'returns error for unknown key' do

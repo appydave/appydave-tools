@@ -66,14 +66,17 @@ module Appydave
         # Get a location by exact key
         #
         # @param key [String] Exact key to find
-        # @return [Hash] Result with success and result/error
+        # @return [Hash] Result with success and results array (consistent with search/list)
         def get(key)
           location = config.find(key)
 
           if location
+            result = location_to_result(location, SCORE_EXACT_KEY)
+            result[:index] = 1
             {
               success: true,
-              result: location_to_result(location, SCORE_EXACT_KEY)
+              count: 1,
+              results: [result]
             }
           else
             suggestions = find_suggestions(key)
