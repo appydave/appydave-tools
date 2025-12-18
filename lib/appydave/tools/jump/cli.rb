@@ -158,6 +158,7 @@ module Appydave
 
         def run_add(args)
           format = format_option(args)
+          no_generate = args.delete('--no-generate')
           attrs = parse_location_args(args)
 
           if attrs[:key].nil?
@@ -169,11 +170,19 @@ module Appydave
           result = cmd.run
 
           format_output(result, format)
+
+          # Auto-regenerate aliases after successful add
+          if result[:success] && !no_generate
+            regenerate_result = auto_regenerate_aliases
+            output_regenerate_result(regenerate_result) if regenerate_result
+          end
+
           exit_code_for(result)
         end
 
         def run_update(args)
           format = format_option(args)
+          no_generate = args.delete('--no-generate')
           key = args.shift
           attrs = parse_location_args(args)
 
@@ -186,11 +195,19 @@ module Appydave
           result = cmd.run
 
           format_output(result, format)
+
+          # Auto-regenerate aliases after successful update
+          if result[:success] && !no_generate
+            regenerate_result = auto_regenerate_aliases
+            output_regenerate_result(regenerate_result) if regenerate_result
+          end
+
           exit_code_for(result)
         end
 
         def run_remove(args)
           format = format_option(args)
+          no_generate = args.delete('--no-generate')
           force = args.delete('--force')
           key = args.first
 
@@ -203,6 +220,13 @@ module Appydave
           result = cmd.run
 
           format_output(result, format)
+
+          # Auto-regenerate aliases after successful remove
+          if result[:success] && !no_generate
+            regenerate_result = auto_regenerate_aliases
+            output_regenerate_result(regenerate_result) if regenerate_result
+          end
+
           exit_code_for(result)
         end
 
@@ -331,6 +355,36 @@ module Appydave
           value
         end
 
+        # Auto-regenerate helpers
+
+        def auto_regenerate_aliases
+          output_path = aliases_output_path
+          return nil unless output_path
+
+          cmd = Commands::Generate.new(
+            load_config,
+            'aliases',
+            output_path: output_path,
+            path_validator: path_validator
+          )
+          cmd.run
+        end
+
+        def aliases_output_path
+          Configuration::Config.configure
+          Configuration::Config.settings.aliases_output_path
+        rescue StandardError
+          nil
+        end
+
+        def output_regenerate_result(result)
+          return unless result[:success]
+
+          output.puts ''
+          output.puts "Backed up: #{result[:backup]}" if result[:backup]
+          output.puts "Regenerated: #{result[:path]} (#{result[:lines]} lines)"
+        end
+
         # Help display methods
 
         def show_version
@@ -451,10 +505,16 @@ module Appydave
               --type, -t <type>     Location type (tool, gem, brand, etc.)
               --tags <t1,t2>        Comma-separated tags
               --description, -d     Human description
+              --no-generate         Skip auto-regenerating aliases file
+
+            Auto-Regeneration:
+              After a successful add, the aliases file is automatically regenerated
+              if 'aliases-output-path' is set in settings.json.
 
             Examples:
               jump add --key my-project --path ~/dev/my-project
-              jump add -k ad-tools -p ~/dev/ad/appydave-tools --brand appydave --type tool --tags ruby,cli
+              jump add -k ad-tools -p ~/dev/ad/appydave-tools --brand appydave --type tool
+              jump add --key temp-proj --path ~/tmp/proj --no-generate
           HELP
         end
 
@@ -472,10 +532,16 @@ module Appydave
               --type, -t <type>     New type
               --tags <t1,t2>        New tags (replaces existing)
               --description, -d     New description
+              --no-generate         Skip auto-regenerating aliases file
+
+            Auto-Regeneration:
+              After a successful update, the aliases file is automatically regenerated
+              if 'aliases-output-path' is set in settings.json.
 
             Examples:
               jump update my-project --description "Updated description"
               jump update ad-tools --tags ruby,cli,youtube
+              jump update my-project --path ~/new/path --no-generate
           HELP
         end
 
@@ -483,12 +549,19 @@ module Appydave
           output.puts <<~HELP
             jump remove - Remove a location
 
-            Usage: jump remove <key> --force
+            Usage: jump remove <key> --force [--no-generate]
 
-            The --force flag is required to prevent accidental deletions.
+            Options:
+              --force               Required to confirm deletion
+              --no-generate         Skip auto-regenerating aliases file
+
+            Auto-Regeneration:
+              After a successful remove, the aliases file is automatically regenerated
+              if 'aliases-output-path' is set in settings.json.
 
             Examples:
               jump remove old-project --force
+              jump remove temp-project --force --no-generate
           HELP
         end
 

@@ -32,6 +32,12 @@ module Appydave
             get('download-image-folder') || download_folder
           end
 
+          # Default output path for jump generate aliases command
+          # Used by auto-regenerate after CRUD operations
+          def aliases_output_path
+            get('aliases-output-path')
+          end
+
           def current_user
             get('current_user')
           end
