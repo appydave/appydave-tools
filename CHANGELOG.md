@@ -1,3 +1,10 @@
+# [0.73.0](https://github.com/appydave/appydave-tools/compare/v0.72.0...v0.73.0) (2025-12-18)
+
+
+### Features
+
+* add smart grouping and auto-backup to jump generate aliases ([aedc533](https://github.com/appydave/appydave-tools/commit/aedc533f9a9fd158de806830f7c495dd4d1b011b))
+
 # [0.72.0](https://github.com/appydave/appydave-tools/compare/v0.71.1...v0.72.0) (2025-12-18)
 
 
