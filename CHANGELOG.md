@@ -1,3 +1,10 @@
+# [0.72.0](https://github.com/appydave/appydave-tools/compare/v0.71.1...v0.72.0) (2025-12-18)
+
+
+### Features
+
+* add ah-help generate target for aliases-help.zsh format ([874fde9](https://github.com/appydave/appydave-tools/commit/874fde982a2b66ba7d9ec8f8078d79fcde7db4f6))
+
 ## [0.71.1](https://github.com/appydave/appydave-tools/compare/v0.71.0...v0.71.1) (2025-12-15)
 
 
