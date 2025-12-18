@@ -245,7 +245,7 @@ module Appydave
 
           unless target
             output.puts 'Usage: jump generate <target> [--output <file>] [--output-dir <dir>]'
-            output.puts 'Targets: aliases, help, all'
+            output.puts 'Targets: aliases, help, ah-help, all'
             return EXIT_INVALID_INPUT
           end
 
@@ -542,16 +542,18 @@ module Appydave
             Targets:
               aliases     Generate shell alias file (aliases-jump.zsh)
               help        Generate help content for fzf (jump-help.txt)
-              all         Generate both files
+              ah-help     Generate content for aliases-help.zsh (ah function format)
+              all         Generate both aliases and help files
 
             Options:
-              --output <file>       Write to specific file (for aliases, help)
+              --output <file>       Write to specific file (for aliases, help, ah-help)
               --output-dir <dir>    Write to directory (for all)
 
             Examples:
               jump generate aliases
               jump generate aliases --output ~/.oh-my-zsh/custom/aliases-jump.zsh
               jump generate help --output ~/.oh-my-zsh/custom/data/jump-help.txt
+              jump generate ah-help --output ~/.oh-my-zsh/custom/aliases-help.zsh
               jump generate all --output-dir ~/.oh-my-zsh/custom/
           HELP
         end

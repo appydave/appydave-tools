@@ -6,7 +6,7 @@ module Appydave
       module Commands
         # Generate command creates shell aliases and help content
         class Generate < Base
-          VALID_TARGETS = %w[aliases help all].freeze
+          VALID_TARGETS = %w[aliases help ah-help all].freeze
 
           attr_reader :target, :output_path, :output_dir
 
@@ -28,7 +28,9 @@ module Appydave
               )
             end
 
-            send("generate_#{target}")
+            # Convert hyphenated targets to underscored method names
+            method_name = "generate_#{target.tr('-', '_')}"
+            send(method_name)
           end
 
           private
@@ -41,6 +43,11 @@ module Appydave
           def generate_help
             content = build_help_content
             write_or_return(content, output_path, 'jump-help.txt')
+          end
+
+          def generate_ah_help
+            content = build_ah_help_content
+            write_or_return(content, output_path, 'aliases-help.zsh')
           end
 
           def generate_all
@@ -114,6 +121,99 @@ module Appydave
 
             lines.join("\n")
           end
+
+          def build_ah_help_content
+            lines = []
+
+            # Group locations into logical sections
+            sections = group_locations_for_ah_help
+
+            sections.each do |section_name, locations|
+              lines << "## #{section_name}"
+
+              locations.each do |loc|
+                path = format_display_path(loc.path)
+                tags = build_ah_tags(loc)
+
+                # Format: alias (24 chars) + path + tags
+                alias_col = loc.jump.ljust(24)
+                path_with_tags = "#{path}#{' ' * [1, 48 - path.length].max}#{tags}"
+
+                lines << "#{alias_col}#{path_with_tags}"
+              end
+
+              lines << ''
+            end
+
+            lines.join("\n")
+          end
+
+          def format_display_path(path)
+            # Collapse home directory to ~
+            expanded = path_validator.expand(path)
+            home = Dir.home
+            expanded.start_with?(home) ? expanded.sub(home, '~') : expanded
+          end
+
+          def build_ah_tags(loc)
+            tags = [loc.type, loc.brand, loc.client].compact.reject(&:empty?)
+            tags.concat(loc.tags) if loc.tags
+            tags.uniq.map { |t| "##{t}" }.join(' ')
+          end
+
+          def group_locations_for_ah_help
+            sections = {
+              'Base Directories' => [],
+              'Brand Projects - AppyDave' => [],
+              'Brand Projects - Other' => [],
+              'Client Projects' => [],
+              'Video Projects' => [],
+              'Ruby Gems' => [],
+              'Reference & Archives' => [],
+              'Other' => []
+            }
+
+            config.locations.each do |loc|
+              section = determine_ah_section(loc)
+              sections[section] << loc
+            end
+
+            # Remove empty sections and sort locations within each
+            sections.reject { |_, locs| locs.empty? }.transform_values do |locs|
+              locs.sort_by(&:jump)
+            end
+          end
+
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+          def determine_ah_section(loc)
+            type = loc.type&.downcase
+            brand = loc.brand&.downcase
+
+            case type
+            when 'monorepo', 'config'
+              return 'Base Directories' if loc.client.nil? && loc.brand.nil?
+            when 'video'
+              return 'Video Projects'
+            when 'gem'
+              return 'Ruby Gems'
+            when 'client'
+              return 'Client Projects'
+            when 'archive', 'reference'
+              return 'Reference & Archives'
+            end
+
+            return 'Client Projects' if loc.client
+
+            case brand
+            when 'appydave'
+              'Brand Projects - AppyDave'
+            when 'beauty-and-joy', 'david-cruwys', 'aitldr'
+              'Brand Projects - Other'
+            else
+              'Other'
+            end
+          end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           def group_locations_for_aliases
             grouped = {}

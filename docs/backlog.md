@@ -129,7 +129,7 @@ When `get agent-workflow-build` failed, it suggested: "Did you mean: test-minima
 - Personal skill at `~/.claude/skills/jump/SKILL.md`
 - Description includes brand names (appydave, voz, supportsignal, joy, aitldr, kiros), products (flivideo, storyline, klueless, dam), and trigger keywords
 - Primary mode: Jump CLI commands (`jump search`, `jump get`, `jump list`)
-- Fallback mode: Direct JSON read from `/ad/brains/brand-david/data-systems/collections/jump/current.json`
+- Fallback mode: Direct JSON read from `/ad/brains/brand-dave/data-systems/collections/jump/current.json`
 - Tool restrictions: `allowed-tools: Read, Bash, Grep, Glob`
 - Includes natural language examples and key location reference table
 
