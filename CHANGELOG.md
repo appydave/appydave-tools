@@ -1,3 +1,10 @@
+# [0.74.0](https://github.com/appydave/appydave-tools/compare/v0.73.0...v0.74.0) (2025-12-18)
+
+
+### Features
+
+* add auto-regenerate aliases after jump CRUD operations ([0fe21d7](https://github.com/appydave/appydave-tools/commit/0fe21d72c4af492ebebf75645683dd49b9a2fe52))
+
 # [0.73.0](https://github.com/appydave/appydave-tools/compare/v0.72.0...v0.73.0) (2025-12-18)
 
 
