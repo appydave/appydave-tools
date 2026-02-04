@@ -1,3 +1,10 @@
+## [0.74.1](https://github.com/appydave/appydave-tools/compare/v0.74.0...v0.74.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* remove redundant rubocop disable comments blocking CI ([0aa8956](https://github.com/appydave/appydave-tools/commit/0aa89561f229488c01c2a9467c829ac3a8851e72))
+
 # [0.74.0](https://github.com/appydave/appydave-tools/compare/v0.73.0...v0.74.0) (2025-12-18)
 
 
