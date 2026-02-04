@@ -2,6 +2,15 @@
 
 Quick reference for choosing the right pattern when creating new CLI tools.
 
+## Overview
+
+AppyDave Tools uses **four CLI patterns**, each optimized for different scales:
+
+- **Pattern 1**: 1 operation - Simple, linear
+- **Pattern 2**: 2-5 commands - Inline routing
+- **Pattern 3**: 6-9 commands - BaseAction (shared validation)
+- **Pattern 4**: 10+ commands - Delegated CLI (testable)
+
 ## Visual Comparison
 
 ```
@@ -68,20 +77,59 @@ Quick reference for choosing the right pattern when creating new CLI tools.
 │                                                                     │
 │  Examples: youtube_manager                                         │
 └─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                 PATTERN 4: DELEGATED CLI CLASS                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  bin/tool.rb ──────────────┐                                       │
+│    (30 lines)              │                                        │
+│    cli = CLI.new           │                                        │
+│    exit(cli.run(ARGV))     │                                        │
+│                            │                                        │
+│  lib/tools/tool/ ◄─────────┘                                       │
+│    ├── cli.rb              (Full CLI class - 400+ lines)            │
+│    │   ├── def run(args)   (Entry point with case/when)            │
+│    │   ├── run_search      (Command dispatcher)                    │
+│    │   ├── run_add         (Command dispatcher)                    │
+│    │   └── run_remove      (Command dispatcher)                    │
+│    │                                                                │
+│    ├── search.rb           (Business logic)                        │
+│    ├── crud.rb             (Business logic)                        │
+│    └── config.rb           (Configuration)                         │
+│                                                                     │
+│  spec/tools/tool/                                                   │
+│    ├── cli_spec.rb         (Test CLI behavior!)                    │
+│    ├── search_spec.rb      (Business logic tests)                  │
+│    └── crud_spec.rb        (Business logic tests)                  │
+│                                                                     │
+│  Characteristics:                                                   │
+│  • 10+ commands - Scales excellently                              │
+│  • CLI is testable (RSpec with mocks)                             │
+│  • Dependency injection (config, output, validators)              │
+│  • Exit codes (0-4 for different errors)                          │
+│  • Professional-grade architecture                                │
+│                                                                     │
+│  Example: jump (10 commands, 29-line bin/, 400+ line lib/cli.rb)  │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Decision Matrix
 
-| Criteria | Pattern 1 | Pattern 2 | Pattern 3 |
-|----------|-----------|-----------|-----------|
-| **Number of commands** | 1 | 2-5 | 6+ |
-| **Complexity** | Low | Medium | High |
-| **Setup time** | Fast | Medium | Slower |
-| **Scalability** | ❌ | ⚠️ | ✅ |
-| **Consistency enforcement** | N/A | ❌ | ✅ |
-| **Easy to understand** | ✅ | ✅ | ⚠️ |
-| **Shared validation** | N/A | ❌ | ✅ |
-| **Commands share logic** | N/A | ⚠️ | ✅ |
+| Criteria | Pattern 1 | Pattern 2 | Pattern 3 | Pattern 4 |
+|----------|-----------|-----------|-----------|-----------|
+| **Number of commands** | 1 | 2-5 | 6-9 | 10+ |
+| **Complexity** | Low | Medium | High | High |
+| **Setup time** | Fast | Medium | Slower | Slower |
+| **Scalability** | ❌ | ⚠️ | ✅ | ✅✅ |
+| **Testable CLI** | N/A | ❌ | ❌ | ✅ |
+| **Consistency enforcement** | N/A | ❌ | ✅ | ⚠️ |
+| **Easy to understand** | ✅ | ✅ | ⚠️ | ⚠️ |
+| **Shared validation** | N/A | ❌ | ✅ | ⚠️ |
+| **Commands share logic** | N/A | ⚠️ | ✅ | ⚠️ |
+| **Exit codes** | ⚠️ | ⚠️ | ⚠️ | ✅ |
+| **Dependency injection** | ❌ | ❌ | ❌ | ✅ |
+| **Professional-grade** | Simple only | Medium tools | ✅ | ✅✅ |
 
 Legend:
 - ✅ Excellent fit
@@ -125,17 +173,48 @@ lib/appydave/tools/youtube_manager/
 Total: 6+ files (2 commands)
 ```
 
+### Pattern 4 (jump)
+```
+bin/jump.rb                                  1 file (30 lines!)
+lib/appydave/tools/jump/
+  ├── cli.rb                                 1 file (400+ lines)
+  ├── config.rb                              1 file
+  ├── search.rb                              1 file
+  ├── crud.rb                                1 file
+  ├── validators/
+  │   └── path_validator.rb                  1 file
+  ├── formatters/
+  │   ├── table_formatter.rb                 3 files
+  │   ├── json_formatter.rb
+  │   └── paths_formatter.rb
+  └── generators/
+      └── aliases_generator.rb               1 file
+────────────────────────────────────────────
+Total: 10+ files (10 commands)
+```
+
 ## Code Volume Comparison
 
-For a tool with **2 commands** (get, update):
+### For a tool with 2 commands (get, update):
 
 | Pattern | Lines of Code | Files | Boilerplate |
 |---------|---------------|-------|-------------|
 | Pattern 1 | N/A | N/A | Not applicable |
 | Pattern 2 | ~150 LOC | 3 | Low |
 | Pattern 3 | ~200 LOC | 6 | Medium |
+| Pattern 4 | ~250 LOC | 4 | Medium |
 
-**Recommendation:** Use Pattern 2 for 2-5 commands, switch to Pattern 3 at 6+
+**Recommendation:** Use Pattern 2 for 2-5 commands
+
+### For a tool with 10 commands:
+
+| Pattern | bin/ LOC | lib/ LOC | Total LOC | Files |
+|---------|----------|----------|-----------|-------|
+| Pattern 2 | 800-1600 | 500 | 1300-2100 | 11 |
+| Pattern 3 | 80 | 2000+ | 2080+ | 21+ |
+| Pattern 4 | 30 | 1500+ | 1530+ | 10+ |
+
+**Recommendation:** Use Pattern 4 for 10+ commands (cleaner, testable)
 
 ## When to Refactor Between Patterns
 
@@ -145,12 +224,31 @@ For a tool with **2 commands** (get, update):
 **Effort:** Medium - Requires restructuring bin/ file
 
 ### Pattern 2 → Pattern 3
-**Trigger:** 
-- Command count reaches 6+
+**Trigger:**
+- Command count reaches 6-9
 - Commands share significant validation logic
 - Need consistent error handling across commands
+- Don't need CLI testing
 
 **Effort:** Medium-High - Create BaseAction, convert methods to Action classes
+
+### Pattern 2 → Pattern 4
+**Trigger:**
+- Command count reaches 10+
+- bin/ file exceeds 500 lines
+- Want to test CLI behavior
+- Building professional-grade tool
+
+**Effort:** Medium - Move CLI class to lib/, add dependency injection, create CLI tests
+
+### Pattern 3 → Pattern 4
+**Trigger:**
+- Want to test CLI behavior (exit codes, output)
+- Need dependency injection for testing
+- Commands growing beyond 10+
+- BaseAction pattern feels constraining
+
+**Effort:** Medium - Convert Actions to methods in CLI class, add dependency injection
 
 ## Real-World Examples
 
@@ -195,6 +293,38 @@ For a tool with **2 commands** (get, update):
 - Both use YouTube API authorization
 - Future commands: `delete`, `upload`, `list`, `analyze`
 - Shared pattern: authorize → validate → execute → report
+
+---
+
+### Pattern 4: jump
+**Purpose:** Manage development folder locations
+
+**Commands:** 10
+- `search` - Fuzzy search locations
+- `get` - Get by exact key
+- `list` - List all locations
+- `add` - Add new location
+- `update` - Update existing location
+- `remove` - Remove location
+- `validate` - Validate paths exist
+- `report` - Generate reports
+- `generate` - Generate shell aliases
+- `info` - Show configuration info
+
+**Why Pattern 4?**
+- 10 commands - Too many for Pattern 2/3
+- Want to test CLI behavior (exit codes, output formatting)
+- Professional development tool (needs dependency injection)
+- Complex CLI logic (400+ lines in lib/cli.rb)
+- Multiple output formatters (table, json, paths)
+- Comprehensive help system
+
+**Key benefits:**
+- ✅ Full RSpec test coverage of CLI behavior
+- ✅ Mock config, validators in tests
+- ✅ Test exit codes (0 = success, 1-4 = different errors)
+- ✅ Thin bin/ wrapper (29 lines)
+- ✅ Professional-grade architecture
 
 ## Anti-Patterns to Avoid
 
@@ -271,8 +401,8 @@ When migrating an existing tool or creating a new one:
 - [ ] Implement business logic in `lib/`
 - [ ] Add `# frozen_string_literal: true`
 - [ ] No `require` statements in `lib/` (except Ruby stdlib)
-- [ ] No CLI code in `lib/` classes
-- [ ] Write RSpec tests for business logic
+- [ ] No CLI code in `lib/` classes (except Pattern 4: CLI in lib/cli.rb)
+- [ ] Write RSpec tests for business logic (Pattern 4: also test CLI class)
 - [ ] Register in `appydave-tools.gemspec`
 - [ ] Document in `CLAUDE.md`
 - [ ] Create `_doc.md` in module directory
@@ -281,4 +411,4 @@ When migrating an existing tool or creating a new one:
 
 ---
 
-**Last updated:** 2025-11-08
+**Last updated:** 2025-02-04

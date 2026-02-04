@@ -6,10 +6,11 @@ This guide documents the established CLI architecture patterns used in appydave-
 
 - [Overview](#overview)
 - [Philosophy](#philosophy)
-- [The Three Patterns](#the-three-patterns)
+- [The Four Patterns](#the-four-patterns)
   - [Pattern 1: Single-Command Tools](#pattern-1-single-command-tools)
   - [Pattern 2: Multi-Command with Inline Routing](#pattern-2-multi-command-with-inline-routing)
   - [Pattern 3: Multi-Command with BaseAction](#pattern-3-multi-command-with-baseaction)
+  - [Pattern 4: Delegated CLI Class](#pattern-4-delegated-cli-class)
 - [Decision Tree](#decision-tree)
 - [Directory Structure](#directory-structure)
 - [Best Practices](#best-practices)
@@ -28,7 +29,7 @@ AppyDave Tools follows a **consolidated toolkit philosophy** - multiple independ
 - **Maintainable**: Clear separation of concerns between CLI and business logic
 - **Testable**: Business logic separated from CLI interface
 
-The architecture supports three distinct patterns, each suited for different tool complexity levels.
+The architecture supports four distinct patterns, each suited for different tool complexity levels.
 
 ---
 
@@ -692,6 +693,235 @@ YouTubeVideoManagerCLI.new.run
 
 ---
 
+### Pattern 4: Delegated CLI Class
+
+**Use when:** The tool has 10+ commands and you want to test CLI behavior.
+
+**Example:** `jump` - Manage development folder locations
+
+#### Structure
+
+```
+bin/
+├── jump.rb                     # Thin wrapper (30 lines)
+lib/appydave/tools/
+├── jump/
+│   ├── cli.rb                  # Full CLI implementation (400+ lines)
+│   ├── config.rb               # Configuration
+│   ├── search.rb               # Business logic
+│   ├── crud.rb                 # Business logic
+│   └── formatters/             # Output formatting
+│       ├── table_formatter.rb
+│       ├── json_formatter.rb
+│       └── paths_formatter.rb
+```
+
+#### Implementation Pattern
+
+**bin/jump.rb:**
+```ruby
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Jump Location Tool - Manage development folder locations
+#
+# Usage:
+#   jump search <terms>           # Fuzzy search locations
+#   jump get <key>                # Get by exact key
+#   jump list                     # List all locations
+#   jump add --key <key>          # Add new location
+
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+
+require 'appydave/tools'
+
+cli = Appydave::Tools::Jump::CLI.new
+exit_code = cli.run(ARGV)
+exit(exit_code)
+```
+
+**lib/appydave/tools/jump/cli.rb:**
+```ruby
+# frozen_string_literal: true
+
+module Appydave
+  module Tools
+    module Jump
+      # CLI provides the command-line interface for the Jump tool
+      #
+      # Uses the Delegated CLI pattern for 10+ commands with
+      # dependency injection and comprehensive testing.
+      class CLI
+        EXIT_SUCCESS = 0
+        EXIT_NOT_FOUND = 1
+        EXIT_INVALID_INPUT = 2
+        EXIT_CONFIG_ERROR = 3
+        EXIT_PATH_NOT_FOUND = 4
+
+        attr_reader :config, :path_validator, :output
+
+        def initialize(config: nil, path_validator: nil, output: $stdout)
+          @path_validator = path_validator || PathValidator.new
+          @output = output
+          @config = config
+        end
+
+        def run(args = ARGV)
+          command = args.shift
+
+          case command
+          when nil, '', '--help', '-h'
+            show_main_help
+            EXIT_SUCCESS
+          when '--version', '-v'
+            show_version
+            EXIT_SUCCESS
+          when 'help'
+            show_help(args)
+            EXIT_SUCCESS
+          when 'search'
+            run_search(args)
+          when 'get'
+            run_get(args)
+          when 'list'
+            run_list(args)
+          when 'add'
+            run_add(args)
+          when 'update'
+            run_update(args)
+          when 'remove'
+            run_remove(args)
+          else
+            output.puts "Unknown command: #{command}"
+            EXIT_INVALID_INPUT
+          end
+        rescue StandardError => e
+          output.puts "Error: #{e.message}"
+          EXIT_CONFIG_ERROR
+        end
+
+        private
+
+        # Command implementations
+
+        def run_search(args)
+          query = args.join(' ')
+          search = Search.new(load_config)
+          result = search.search(query)
+
+          format_output(result)
+          exit_code_for(result)
+        end
+
+        def run_add(args)
+          options = {}
+          OptionParser.new do |opts|
+            opts.on('--key KEY') { |v| options[:key] = v }
+            opts.on('--path PATH') { |v| options[:path] = v }
+          end.parse!(args)
+
+          crud = Crud.new(load_config)
+          result = crud.add(options)
+
+          if result[:success]
+            output.puts "✅ Added: #{options[:key]}"
+            EXIT_SUCCESS
+          else
+            output.puts "❌ Error: #{result[:message]}"
+            exit_code_for(result)
+          end
+        end
+
+        # ... more command methods ...
+      end
+    end
+  end
+end
+```
+
+**lib/appydave/tools/jump/search.rb:**
+```ruby
+# frozen_string_literal: true
+
+module Appydave
+  module Tools
+    module Jump
+      # Search provides fuzzy search and exact lookup
+      class Search
+        def initialize(config)
+          @config = config
+        end
+
+        def search(query)
+          # Business logic - no CLI dependencies
+          locations = @config.locations
+          matches = locations.select { |loc| match_query?(loc, query) }
+
+          {
+            success: !matches.empty?,
+            code: matches.empty? ? 'NOT_FOUND' : nil,
+            data: matches
+          }
+        end
+
+        private
+
+        def match_query?(location, query)
+          # Fuzzy matching logic
+        end
+      end
+    end
+  end
+end
+```
+
+**Characteristics:**
+- ✅ CLI is a class in lib/ (fully testable via RSpec)
+- ✅ Ultra-thin bin/ wrapper (25-40 lines)
+- ✅ Dependency injection (config, output, validators)
+- ✅ Exit codes (0-4 for different error types)
+- ✅ Case/when command dispatch (scales to 10+ commands)
+- ✅ Professional-grade tool architecture
+- ❌ More setup than Pattern 2/3
+- ❌ Need to understand dependency injection
+
+**Testing:**
+```ruby
+# spec/appydave/tools/jump/cli_spec.rb
+RSpec.describe Appydave::Tools::Jump::CLI do
+  subject(:cli) { described_class.new(config: mock_config, output: output) }
+
+  let(:output) { StringIO.new }
+  let(:mock_config) { instance_double(Config, locations: mock_locations) }
+
+  describe '#run' do
+    it 'shows help and returns success exit code' do
+      exit_code = cli.run(['--help'])
+
+      expect(output.string).to include('Usage: jump')
+      expect(exit_code).to eq(described_class::EXIT_SUCCESS)
+    end
+
+    it 'searches for locations' do
+      exit_code = cli.run(['search', 'proj'])
+
+      expect(output.string).to include('proj-1')
+      expect(exit_code).to eq(described_class::EXIT_SUCCESS)
+    end
+
+    it 'returns not found exit code when no matches' do
+      exit_code = cli.run(['search', 'nonexistent'])
+
+      expect(exit_code).to eq(described_class::EXIT_NOT_FOUND)
+    end
+  end
+end
+```
+
+**See full guide:** [Pattern 4: Delegated CLI Class](./pattern-4-delegated-cli.md)
+
+---
+
 ## Decision Tree
 
 Use this flowchart to choose the right pattern:
@@ -707,20 +937,72 @@ Start: How many distinct operations does your tool perform?
 │  └─ Pattern 2: Multi-Command with Inline Routing
 │     Examples: subtitle_processor, configuration
 │
-└─ 6+ operations OR commands share validation/execution patterns
-   └─ Pattern 3: Multi-Command with BaseAction
-      Examples: youtube_manager
+├─ 6-9 operations OR commands share validation patterns
+│  └─ Pattern 3: Multi-Command with BaseAction
+│     Examples: youtube_manager
+│     Choose Pattern 3 when:
+│     • Commands share validation/execution patterns
+│     • Want template method enforcement
+│     • Don't need CLI testing
+│
+└─ 10+ operations OR need testable CLI OR complex tool
+   └─ Pattern 4: Delegated CLI Class
+      Example: jump
+      Choose Pattern 4 when:
+      • Want to test CLI behavior (exit codes, output)
+      • Need dependency injection for testing
+      • Building professional-grade tool
+      • CLI complexity > 300 lines
 ```
+
+### Pattern Selection Flowchart
+
+```
+How many commands?
+│
+├─ 1 command
+│  └─ Pattern 1 (single-command)
+│
+├─ 2-5 commands
+│  └─ Pattern 2 (inline routing)
+│
+├─ 6-9 commands
+│  ├─ Need CLI testing? ──Yes──> Pattern 4 (delegated CLI)
+│  └─ Share validation? ──Yes──> Pattern 3 (BaseAction)
+│
+└─ 10+ commands
+   ├─ Need CLI testing? ──Yes──> Pattern 4 (delegated CLI)
+   ├─ Share validation? ──Yes──> Pattern 3 (BaseAction)
+   └─ Default ──────────────────> Pattern 4 (delegated CLI)
+```
+
+### Quick Decision Guide
+
+| If you need... | Use Pattern |
+|----------------|-------------|
+| One operation with options | 1 |
+| 2-5 simple commands | 2 |
+| 6-9 commands with shared validation | 3 |
+| 10+ commands | 4 |
+| To test CLI behavior | 4 |
+| Professional-grade tool | 4 |
+| Dependency injection | 4 |
+| Template method enforcement | 3 |
+| Simplest possible | 1 or 2 |
 
 **Additional Considerations:**
 
-| Question | Pattern 1 | Pattern 2 | Pattern 3 |
-|----------|-----------|-----------|-----------|
-| Commands share business logic? | N/A | ❌ Duplicate code | ✅ Shared via base class |
-| Tool might grow to 10+ commands? | ❌ Wrong pattern | ⚠️ Will need refactor | ✅ Scales well |
-| Need programmatic API? | ✅ Yes | ✅ Yes | ✅ Yes |
-| Commands have different option patterns? | N/A | ✅ Easy | ✅ Easy |
-| Team familiar with OOP patterns? | ✅ Simple | ✅ Simple | ⚠️ Requires understanding |
+| Question | Pattern 1 | Pattern 2 | Pattern 3 | Pattern 4 |
+|----------|-----------|-----------|-----------|-----------|
+| Commands share business logic? | N/A | ❌ Duplicate code | ✅ Shared via base class | ⚠️ Manual (extract to modules) |
+| Tool might grow to 10+ commands? | ❌ Wrong pattern | ⚠️ Will need refactor | ⚠️ Consider Pattern 4 | ✅ Designed for it |
+| Need programmatic API? | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
+| Commands have different option patterns? | N/A | ✅ Easy | ✅ Easy | ✅ Easy |
+| Team familiar with OOP patterns? | ✅ Simple | ✅ Simple | ⚠️ Requires understanding | ⚠️ Requires DI knowledge |
+| Want to test CLI behavior? | N/A | ❌ Hard (bin/) | ❌ Hard (bin/) | ✅ Easy (lib/cli.rb) |
+| Need exit codes? | ⚠️ Manual | ⚠️ Manual | ⚠️ Manual | ✅ Built-in |
+| CLI complexity > 300 lines? | ❌ Wrong pattern | ⚠️ Consider refactor | ⚠️ Consider Pattern 4 | ✅ Perfect fit |
+| Professional-grade tool? | ⚠️ For simple tools | ⚠️ For medium tools | ✅ Yes | ✅ Yes (best) |
 
 ---
 
@@ -1583,22 +1865,33 @@ ResourceManagerCLI.new.run
 
 ## Summary
 
-This guide provides three proven patterns for CLI architecture in appydave-tools:
+This guide provides four proven patterns for CLI architecture in appydave-tools:
 
 1. **Pattern 1**: Single-command tools - Simple, linear execution
 2. **Pattern 2**: Multi-command with inline routing - 2-5 commands, simple routing
-3. **Pattern 3**: Multi-command with BaseAction - 6+ commands, shared patterns
+3. **Pattern 3**: Multi-command with BaseAction - 6-9 commands, shared patterns
+4. **Pattern 4**: Delegated CLI Class - 10+ commands, testable CLI, professional-grade
 
 **Key Principles:**
 - Separate CLI interface (`bin/`) from business logic (`lib/`)
-- No CLI code in `lib/` - business logic should be usable programmatically
+- No CLI code in `lib/` - business logic should be usable programmatically (except Pattern 4)
 - Use `frozen_string_literal: true` in all Ruby files
 - Follow existing naming conventions
-- Test business logic, not CLI executables
+- Test business logic, not CLI executables (Pattern 4 tests CLI too)
 - Document with `_doc.md` files
 
-When in doubt, start with **Pattern 1** or **Pattern 2** and refactor to **Pattern 3** if the tool grows to 6+ commands.
+**Pattern Selection:**
+- **1-5 commands**: Start with Pattern 1 or Pattern 2
+- **6-9 commands**: Use Pattern 3 (shared validation) or Pattern 4 (testable CLI)
+- **10+ commands**: Use Pattern 4 (delegated CLI class)
+- **Need CLI testing**: Use Pattern 4
+- **Professional tool**: Use Pattern 4
+
+**See detailed guides:**
+- [Pattern 4: Delegated CLI Class](./pattern-4-delegated-cli.md) - Full guide with testing examples
+- [CLI Pattern Comparison](./cli-pattern-comparison.md) - Quick visual comparison
+- [exe/bin Convention](./exe-bin-convention.md) - Directory structure explained
 
 ---
 
-**Last updated:** 2025-11-08
+**Last updated:** 2025-02-04
