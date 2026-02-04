@@ -27,7 +27,6 @@ module Appydave
           @config = config
         end
 
-        # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
         def run(args = ARGV)
           command = args.shift
 
@@ -71,7 +70,6 @@ module Appydave
           output.puts e.backtrace.first(3).join("\n") if ENV['DEBUG']
           EXIT_CONFIG_ERROR
         end
-        # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
         private
 
@@ -305,7 +303,6 @@ module Appydave
 
         # Argument parsing helpers
 
-        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity
         def parse_location_args(args)
           attrs = {}
 
@@ -343,7 +340,6 @@ module Appydave
 
           attrs
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity
 
         def extract_option(args, flag)
           index = args.index(flag)
@@ -392,7 +388,6 @@ module Appydave
           output.puts 'Part of appydave-tools gem'
         end
 
-        # rubocop:disable Metrics/MethodLength
         def show_main_help
           output.puts <<~HELP
             Jump - Development Folder Location Manager
@@ -436,9 +431,7 @@ module Appydave
             Run 'jump help <command>' for detailed command help.
           HELP
         end
-        # rubocop:enable Metrics/MethodLength
 
-        # rubocop:disable Metrics/CyclomaticComplexity
         def show_help(args)
           topic = args.first
 
@@ -461,7 +454,6 @@ module Appydave
             show_main_help
           end
         end
-        # rubocop:enable Metrics/CyclomaticComplexity
 
         def show_search_help
           output.puts <<~HELP

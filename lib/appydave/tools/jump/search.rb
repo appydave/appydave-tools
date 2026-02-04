@@ -132,7 +132,6 @@ module Appydave
           total_score
         end
 
-        # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         def score_for_term(location, term)
           score = 0
 
@@ -161,7 +160,6 @@ module Appydave
 
           score
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
         def brand_alias_match?(brand_key, term)
           return false unless brand_key

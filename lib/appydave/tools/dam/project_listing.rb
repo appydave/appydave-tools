@@ -10,7 +10,6 @@ module Appydave
       # Project listing functionality for VAT
       class ProjectListing
         # List all brands with summary table
-        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.list_brands_with_counts(detailed: false, s3: false)
           brands = Config.available_brands
 
@@ -138,10 +137,8 @@ module Appydave
                "#{total_projects} project#{'s' if total_projects != 1}, " \
                "#{format_size(total_size)}"
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # List all projects for a specific brand (Mode 3)
-        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.list_brand_projects(brand_arg, detailed: false, s3: false)
           # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
           projects = ProjectResolver.list_projects(brand_arg)
@@ -304,10 +301,8 @@ module Appydave
           puts ''
           puts "Total: #{project_count} project#{'s' if project_count != 1}, #{format_size(total_size)}"
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # List with pattern matching (Mode 3b)
-        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.list_with_pattern(brand_arg, pattern)
           # ProjectResolver expects the original brand key/shortcut, not the expanded v-* version
           matches = ProjectResolver.resolve_pattern(brand_arg, pattern)
@@ -370,12 +365,10 @@ module Appydave
           puts "Total: #{match_count} project#{'s' if match_count != 1}, #{format_size(total_size)} " \
                "(#{percentage}% of #{brand})"
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # Helper methods
 
         # Show brand context header with git, S3, and SSD info
-        # rubocop:disable Metrics/AbcSize
         def self.show_brand_header(brand_arg, brand)
           Appydave::Tools::Configuration::Config.configure
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_arg)
@@ -410,10 +403,8 @@ module Appydave
 
           puts ''
         end
-        # rubocop:enable Metrics/AbcSize
 
         # Collect brand data for display
-        # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
         def self.collect_brand_data(brand, detailed: false, s3: false)
           Appydave::Tools::Configuration::Config.configure
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand)
@@ -472,7 +463,6 @@ module Appydave
 
           result
         end
-        # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
         # Calculate git status for a brand
         def self.calculate_git_status(brand_path)
@@ -549,7 +539,7 @@ module Appydave
         end
 
         # Collect project data for display
-        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
+        # rubocop:disable Metrics/ParameterLists
         def self.collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: false, s3: false)
           project_path = Config.project_path(brand_arg, project)
           size = FileHelper.calculate_directory_size(project_path)
@@ -622,7 +612,7 @@ module Appydave
 
           result
         end
-        # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/ParameterLists
+        # rubocop:enable Metrics/ParameterLists
 
         # Calculate total size of all projects in a brand
         def self.calculate_total_size(brand, projects)

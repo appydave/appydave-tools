@@ -201,7 +201,6 @@ module Appydave
             end
           end
 
-          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def determine_ah_section(loc)
             type = loc.type&.downcase
             brand = loc.brand&.downcase
@@ -230,7 +229,6 @@ module Appydave
               'Other'
             end
           end
-          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           def group_locations_for_aliases
             grouped = {}
@@ -247,7 +245,6 @@ module Appydave
             end
           end
 
-          # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def build_smart_alias_sections
             sections = []
             locations = config.locations.dup
@@ -343,7 +340,6 @@ module Appydave
 
             sections.reject { |s| s[:locations].empty? && !s[:major] }
           end
-          # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           def add_section(sections, title, locations, major: false)
             return if locations.empty?

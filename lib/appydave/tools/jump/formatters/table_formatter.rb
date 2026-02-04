@@ -119,7 +119,6 @@ module Appydave
             '-' * terminal_width
           end
 
-          # rubocop:disable Metrics/AbcSize
           def format_row(result)
             index = result[:index].to_s.rjust(3)
             key = pad(result[:key] || '', key_width)
@@ -138,7 +137,6 @@ module Appydave
             "#{colorize(index, :dim)}  #{colorize(key, :green)}  #{colorize(jump, :blue)}  " \
               "#{type}  #{colorize(owner, :magenta)}  #{desc} #{score_indicator}"
           end
-          # rubocop:enable Metrics/AbcSize
 
           def key_width
             @key_width ||= [results.map { |r| (r[:key] || '').length }.max || 10, 20].min

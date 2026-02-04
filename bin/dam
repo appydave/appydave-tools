@@ -35,7 +35,7 @@ class VatCLI
     }
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  # rubocop:disable Metrics/MethodLength
   def run
     command, *args = ARGV
 
@@ -78,12 +78,12 @@ class VatCLI
       exit 1
     end
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength
 
   private
 
   # Show help information
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength
   def help_command(args)
     topic = args[0]
 
@@ -126,7 +126,7 @@ class VatCLI
       puts "Run 'dam help' for general help."
     end
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/MethodLength
 
   # List brands and projects
   def list_command(args)
@@ -463,7 +463,7 @@ class VatCLI
   end
 
   # Parse S3 command arguments
-  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+  # rubocop:disable Metrics/MethodLength
   def parse_s3_args(args, command)
     dry_run = args.include?('--dry-run')
     force = args.include?('--force')
@@ -508,7 +508,7 @@ class VatCLI
 
     { brand: brand_key, project: project_id, dry_run: dry_run, force: force }
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength
 
   def valid_brand?(brand_key)
     Appydave::Tools::Configuration::Config.configure
@@ -520,7 +520,7 @@ class VatCLI
   # Mutates the matched_projects hash to add :local_status key
   # @param matched_projects [Hash] Map of project_id => S3 data
   # @param brand_key [String] Brand key (e.g., 'appydave', 'ss')
-  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def add_local_sync_status!(matched_projects, brand_key)
     matched_projects.each do |project_id, data|
       project_path = Appydave::Tools::Dam::Config.project_path(brand_key, project_id)
@@ -551,7 +551,7 @@ class VatCLI
       end
     end
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   # Format local sync status for display
   # @param status [Symbol] :synced, :no_files, :partial, :no_project
@@ -660,7 +660,7 @@ class VatCLI
     true
   end
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
   def display_s3_files(files, brand_key, project_id, shareable)
     brand_display = Appydave::Tools::Dam::Config.expand_brand(brand_key)
 
@@ -721,7 +721,7 @@ class VatCLI
 
     puts ''
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 
   # Help text methods
   # rubocop:disable Metrics/MethodLength
@@ -1402,7 +1402,7 @@ class VatCLI
     exit 1
   end
 
-  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
   def scan_single_brand_s3(brand_arg)
     puts "🔄 Scanning S3 for #{brand_arg}..."
     puts ''
@@ -1495,10 +1495,10 @@ class VatCLI
     puts "   • Manifest: #{manifest_path}"
     puts ''
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity
 
   # Display S3 scan results in table format
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Style/FormatStringToken
+  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Style/FormatStringToken
   def display_s3_scan_table(matched_projects, orphaned_projects, bucket, prefix, region)
     puts '✅ S3 Projects Report'
     puts ''
@@ -1540,9 +1540,9 @@ class VatCLI
       puts "     #{console_url}"
     end
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Style/FormatStringToken
+  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Style/FormatStringToken
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
   def scan_all_brands_s3
     Appydave::Tools::Configuration::Config.configure
     brands_config = Appydave::Tools::Configuration::Config.brands
@@ -1583,7 +1583,7 @@ class VatCLI
     puts ''
     puts "Total brands scanned: #{successful.size}/#{results.size}"
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 
   # Format bytes in human-readable format
   # rubocop:disable Style/FormatStringToken

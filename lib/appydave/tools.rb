@@ -117,8 +117,9 @@ end
 
 module Appydave
   module Tools
-    # raise Appydave::Tools::Error, 'Sample message'
-    Error = Class.new(StandardError)
+    # Custom error class for appydave-tools
+    class Error < StandardError
+    end
 
     # Your code goes here...
   end

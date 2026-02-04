@@ -20,7 +20,6 @@ class ZshHistoryCLI
     }
   end
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def run
     command = ARGV[0]
 
@@ -65,7 +64,6 @@ class ZshHistoryCLI
       exit 1
     end
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
   private
 
@@ -73,7 +71,7 @@ class ZshHistoryCLI
   # HELP COMMAND
   # ============================================================
 
-  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/CyclomaticComplexity
   def help_command(args)
     topic = args[0]
 
@@ -110,9 +108,8 @@ class ZshHistoryCLI
       puts '  zsh_history help workflow   # Typical usage workflow'
     end
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/CyclomaticComplexity
 
-  # rubocop:disable Metrics/MethodLength
   def show_main_help
     puts <<~HELP
       ZSH History - Parse, filter, and manage shell history
@@ -493,13 +490,11 @@ class ZshHistoryCLI
         - ^ anchors to start of command
     HELP
   end
-  # rubocop:enable Metrics/MethodLength
 
   # ============================================================
   # SHOW COMMAND
   # ============================================================
 
-  # rubocop:disable Metrics/AbcSize
   def show_command(args)
     options = parse_common_options(args)
 
@@ -526,13 +521,11 @@ class ZshHistoryCLI
 
     write_output(output, options[:output])
   end
-  # rubocop:enable Metrics/AbcSize
 
   # ============================================================
   # PURGE COMMAND
   # ============================================================
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def purge_command(args)
     options = parse_common_options(args)
 
@@ -568,13 +561,11 @@ class ZshHistoryCLI
       formatter.write_history(commands_to_write, options[:history_path])
     end
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
   # ============================================================
   # STATS COMMAND
   # ============================================================
 
-  # rubocop:disable Metrics/AbcSize
   def stats_command(args)
     options = parse_common_options(args)
 
@@ -602,7 +593,6 @@ class ZshHistoryCLI
     formatter = Appydave::Tools::ZshHistory::Formatter.new
     puts formatter.format_stats(result.stats, date_range: date_range)
   end
-  # rubocop:enable Metrics/AbcSize
 
   # ============================================================
   # SEARCH COMMAND
@@ -789,7 +779,6 @@ class ZshHistoryCLI
   # OPTION PARSING
   # ============================================================
 
-  # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   def parse_common_options(args)
     options = {
       days: nil,
@@ -839,7 +828,6 @@ class ZshHistoryCLI
     parser.parse!(args)
     options
   end
-  # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 end
 
 # Run CLI
