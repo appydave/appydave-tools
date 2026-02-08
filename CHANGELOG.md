@@ -1,3 +1,15 @@
+# [0.75.0](https://github.com/appydave/appydave-tools/compare/v0.74.1...v0.75.0) (2026-02-08)
+
+
+### Bug Fixes
+
+* fix RuboCop violations in jump report commands ([261404e](https://github.com/appydave/appydave-tools/commit/261404ed5cc9e3b93c64db30548728992b353355))
+
+
+### Features
+
+* add --limit and --skip-unassigned flags to jump report commands ([d0ff2ae](https://github.com/appydave/appydave-tools/commit/d0ff2aeae4edffc81448e62502c3974a0942559f))
+
 ## [0.74.1](https://github.com/appydave/appydave-tools/compare/v0.74.0...v0.74.1) (2026-02-04)
 
 
