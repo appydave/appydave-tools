@@ -12,12 +12,14 @@ module Appydave
             summary
           ].freeze
 
-          attr_reader :report_type, :filter
+          attr_reader :report_type, :filter, :limit, :skip_unassigned
 
-          def initialize(config, report_type, filter: nil, path_validator: PathValidator.new, **options)
+          def initialize(config, report_type, filter: nil, limit: nil, skip_unassigned: true, path_validator: PathValidator.new, **options)
             super(config, path_validator: path_validator, **options)
             @report_type = report_type
             @filter = filter
+            @limit = limit
+            @skip_unassigned = skip_unassigned
           end
 
           def run
@@ -96,10 +98,15 @@ module Appydave
               { type: type, location_count: count }
             end
 
+            sorted = types.sort_by { |t| -t[:location_count] }
+            limited = limit ? sorted.take(limit) : sorted
+
             success_result(
               report: 'types',
-              count: types.size,
-              results: types.sort_by { |t| -t[:location_count] }
+              count: limited.size,
+              total_count: types.size,
+              results: limited,
+              truncated: limit && types.size > limit
             )
           end
 
@@ -113,37 +120,51 @@ module Appydave
               { tag: tag, location_count: count }
             end
 
+            sorted = tags.sort_by { |t| -t[:location_count] }
+            limited = limit ? sorted.take(limit) : sorted
+
             success_result(
               report: 'tags',
-              count: tags.size,
-              results: tags.sort_by { |t| -t[:location_count] }
+              count: limited.size,
+              total_count: tags.size,
+              results: limited,
+              truncated: limit && tags.size > limit
             )
           end
 
           def report_by_brand
             grouped = group_by_field(:brand, filter)
+            grouped = apply_group_filters(grouped)
             success_result(
               report: 'by-brand',
               filter: filter,
-              groups: grouped
+              groups: grouped,
+              limit: limit,
+              skip_unassigned: skip_unassigned
             )
           end
 
           def report_by_client
             grouped = group_by_field(:client, filter)
+            grouped = apply_group_filters(grouped)
             success_result(
               report: 'by-client',
               filter: filter,
-              groups: grouped
+              groups: grouped,
+              limit: limit,
+              skip_unassigned: skip_unassigned
             )
           end
 
           def report_by_type
             grouped = group_by_field(:type, filter)
+            grouped = apply_group_filters(grouped)
             success_result(
               report: 'by-type',
               filter: filter,
-              groups: grouped
+              groups: grouped,
+              limit: limit,
+              skip_unassigned: skip_unassigned
             )
           end
 
@@ -158,10 +179,15 @@ module Appydave
               end
             end
 
+            grouped = grouped.sort_by { |_, locs| -locs.size }.to_h
+            grouped = apply_group_filters(grouped)
+
             success_result(
               report: 'by-tag',
               filter: filter,
-              groups: grouped.sort_by { |_, locs| -locs.size }.to_h
+              groups: grouped,
+              limit: limit,
+              skip_unassigned: skip_unassigned
             )
           end
 
@@ -206,6 +232,24 @@ module Appydave
               jump: location.jump,
               description: location.description
             }.compact
+          end
+
+          def apply_group_filters(grouped)
+            # Remove unassigned group if skip_unassigned is true
+            grouped = grouped.reject { |key, _| key == 'unassigned' } if skip_unassigned
+
+            # Apply limit to each group (limit items per group)
+            if limit
+              grouped.transform_values do |locations|
+                {
+                  items: locations.take(limit),
+                  total: locations.size,
+                  truncated: locations.size > limit
+                }
+              end
+            else
+              grouped
+            end
           end
         end
       end

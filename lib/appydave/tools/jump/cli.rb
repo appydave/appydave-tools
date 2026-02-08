@@ -241,16 +241,25 @@ module Appydave
 
         def run_report(args)
           format = format_option(args)
+          limit = extract_option(args, '--limit')&.to_i
+          skip_unassigned = !args.delete('--include-unassigned')
           report_type = args.shift
           filter = args.first
 
           unless report_type
-            output.puts 'Usage: jump report <type> [filter]'
+            output.puts 'Usage: jump report <type> [filter] [--limit N] [--include-unassigned]'
             output.puts 'Types: categories, brands, clients, types, tags, by-brand, by-client, by-type, by-tag, summary'
             return EXIT_INVALID_INPUT
           end
 
-          cmd = Commands::Report.new(load_config, report_type, filter: filter, path_validator: path_validator)
+          cmd = Commands::Report.new(
+            load_config,
+            report_type,
+            filter: filter,
+            limit: limit,
+            skip_unassigned: skip_unassigned,
+            path_validator: path_validator
+          )
           result = cmd.run
 
           format_output(result, format)
@@ -577,7 +586,7 @@ module Appydave
           output.puts <<~HELP
             jump report - Generate reports
 
-            Usage: jump report <type> [filter]
+            Usage: jump report <type> [filter] [--limit N] [--include-unassigned]
 
             Report Types:
               categories    List all category definitions
@@ -591,9 +600,15 @@ module Appydave
               by-tag        Group locations by tag
               summary       Overview of all data
 
+            Options:
+              --limit N               Limit output to top N items/groups
+              --include-unassigned    Show unassigned groups (hidden by default)
+
             Examples:
               jump report brands
-              jump report by-brand appydave
+              jump report tags --limit 20
+              jump report by-brand --include-unassigned
+              jump report by-client appydave --limit 5
               jump report tags --format json
           HELP
         end

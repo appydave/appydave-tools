@@ -26,6 +26,10 @@ module Appydave
             data[:results] || []
           end
 
+          def groups
+            data[:groups] || {}
+          end
+
           def success?
             data[:success]
           end
