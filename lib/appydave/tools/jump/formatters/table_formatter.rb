@@ -247,16 +247,16 @@ module Appydave
             groups.each do |group_name, group_data|
               # Handle both old format (array) and new format (hash with items/total/truncated)
               locations, total_in_group, truncated = if group_data.is_a?(Hash) && group_data.key?(:items)
-                                                        [group_data[:items], group_data[:total], group_data[:truncated]]
-                                                      else
-                                                        [group_data, group_data.length, false]
-                                                      end
+                                                       [group_data[:items], group_data[:total], group_data[:truncated]]
+                                                     else
+                                                       [group_data, group_data.length, false]
+                                                     end
 
               next if locations.empty?
 
               # Group header
               lines << ''
-              lines << colorize("#{group_name.upcase} (#{total_in_group} location#{total_in_group == 1 ? '' : 's'})", :bold)
+              lines << colorize("#{group_name.upcase} (#{total_in_group} location#{'s' unless total_in_group == 1})", :bold)
               lines << header_separator
 
               # Add index to each location for display
@@ -278,7 +278,7 @@ module Appydave
             # Footer
             lines << ''
             footer = "Total: #{total_locations} location(s) in #{total_groups} group(s)"
-            footer += " (unassigned hidden)" if data[:skip_unassigned]
+            footer += ' (unassigned hidden)' if data[:skip_unassigned]
             lines << colorize(footer, :dim)
 
             lines.join("\n")

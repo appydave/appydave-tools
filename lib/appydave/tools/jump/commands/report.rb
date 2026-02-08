@@ -14,12 +14,12 @@ module Appydave
 
           attr_reader :report_type, :filter, :limit, :skip_unassigned
 
-          def initialize(config, report_type, filter: nil, limit: nil, skip_unassigned: true, path_validator: PathValidator.new, **options)
-            super(config, path_validator: path_validator, **options)
+          def initialize(config, report_type, **options)
+            super(config, path_validator: options[:path_validator] || PathValidator.new, **options)
             @report_type = report_type
-            @filter = filter
-            @limit = limit
-            @skip_unassigned = skip_unassigned
+            @filter = options[:filter]
+            @limit = options[:limit]
+            @skip_unassigned = options.fetch(:skip_unassigned, true)
           end
 
           def run

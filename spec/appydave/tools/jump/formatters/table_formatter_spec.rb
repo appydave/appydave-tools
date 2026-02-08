@@ -211,7 +211,7 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
     end
 
     context 'when formatting count reports with --limit flag' do
-      context 'for tags report' do
+      context 'when formatting tags report' do
         let(:data) do
           {
             success: true,
@@ -251,7 +251,7 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
         end
       end
 
-      context 'for types report' do
+      context 'when formatting types report' do
         let(:data) do
           {
             success: true,
@@ -312,7 +312,7 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
     end
 
     context 'when formatting grouped reports with --limit flag' do
-      context 'for by-brand report' do
+      context 'when formatting by-brand report' do
         let(:data) do
           {
             success: true,
@@ -382,7 +382,7 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
     end
 
     context 'when formatting grouped reports with --skip-unassigned (default)' do
-      context 'for by-brand report' do
+      context 'when formatting by-brand report' do
         let(:data) do
           {
             success: true,
@@ -420,7 +420,7 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
         end
       end
 
-      context 'for by-client report' do
+      context 'when formatting by-client report' do
         let(:data) do
           {
             success: true,
