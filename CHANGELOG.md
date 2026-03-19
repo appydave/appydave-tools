@@ -1,3 +1,13 @@
+## [0.76.5](https://github.com/appydave/appydave-tools/compare/v0.76.4...v0.76.5) (2026-03-19)
+
+
+### Bug Fixes
+
+* extract LocalSyncStatus module from VatCLI; add spec ([0672855](https://github.com/appydave/appydave-tools/commit/0672855a25ebcbb2df3f5eea6208f910aed74124))
+* remove redundant rubocop disable directives in LocalSyncStatus ([9050795](https://github.com/appydave/appydave-tools/commit/905079573caf7555771da02b2d9c6ebfc34d1c95))
+* replace format_bytes with FileHelper.format_size; remove duplicate method from VatCLI ([3cd362f](https://github.com/appydave/appydave-tools/commit/3cd362f79342578ddb7a750b9b404851cf4d1eb4))
+* restore youtube_automation_config require removed by micro-cleanup; fix spec brand dir setup ([a5779a7](https://github.com/appydave/appydave-tools/commit/a5779a7b5dab1697b2a21ca3bbece9c0bff340c2))
+
 ## [0.76.4](https://github.com/appydave/appydave-tools/compare/v0.76.3...v0.76.4) (2026-03-19)
 
 
