@@ -1,3 +1,15 @@
+## [0.76.2](https://github.com/appydave/appydave-tools/compare/v0.76.1...v0.76.2) (2026-03-19)
+
+
+### Bug Fixes
+
+* add dedicated specs for Jump Commands layer ([8eec40c](https://github.com/appydave/appydave-tools/commit/8eec40cb60b08b1ca7901f288cff8c9a70783fe2))
+* add determine_range edge cases and fix stale comment ([6e97390](https://github.com/appydave/appydave-tools/commit/6e97390e135ac452a364bfac45fcbc4679b5a26d))
+* add functional CLI tests for -i -e -f -o flags to gpt_context cli_spec ([feed9c7](https://github.com/appydave/appydave-tools/commit/feed9c70abfbec83c6bdb0fcba45fce0ec528657))
+* fix no-args cli spec assertion to avoid false positive on Linux clipboard error ([a50b68e](https://github.com/appydave/appydave-tools/commit/a50b68ea57e2d989b35da2c5f1172181cf825438))
+* fix no-args clipboard assertion to avoid false failure from clipboard gem warning on Linux CI ([197b9de](https://github.com/appydave/appydave-tools/commit/197b9dea84fc12c14b03c39333593f430542228a))
+* strengthen gpt_context no-args spec to verify collection does not proceed ([972d617](https://github.com/appydave/appydave-tools/commit/972d617b2241326a6b4beca53d520ebcb1051530))
+
 ## [0.76.1](https://github.com/appydave/appydave-tools/compare/v0.76.0...v0.76.1) (2026-03-19)
 
 
