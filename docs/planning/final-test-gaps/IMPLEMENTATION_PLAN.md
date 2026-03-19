@@ -5,15 +5,17 @@
 **Target**: All 4 work units complete; 817+ examples passing; rubocop clean; no regressions; regression catch rate meaningfully above 55%
 
 ## Summary
-- Total: 4 | Complete: 0 | In Progress: 4 | Pending: 0 | Failed: 0
+- Total: 4 | Complete: 4 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
 
 ## In Progress
-- [~] fix-b023 — file_collector_spec: add json format, aider format, and error path tests
-- [~] fix-b028 — cli_spec: add file body content assertions to -i and -e tests
-- [~] fix-b029 — add_spec: validate ALL returned location data fields match input attrs (path, jump, tags, description)
-- [~] fix-b030 — update_spec: verify non-updated fields are unchanged on both updated record and sibling records
+
+## Complete
+- [x] fix-b023 — file_collector_spec: +10 examples (5 json, 4 aider, 1 error path). Key fix: json exclusion test needed `exclude_patterns: ['excluded/**/*']` not `[]`. Nonexistent dir test used non-matching glob to avoid false positives. 830 examples, 85.92% coverage.
+- [x] fix-b028 — cli_spec: +6 body assertions across -i (3) and -e (3) blocks. No new example count (assertions added to existing `it` blocks). 830 examples, v0.76.3 released.
+- [x] fix-b029 — add_spec: +1 example asserting path/jump/tags/description. Confirmed `location.to_h` uses symbol keys and `.compact`. 830 examples.
+- [x] fix-b030 — update_spec: +2 examples (non-updated fields on updated record; sibling record field isolation). 11→13 examples. 830 examples.
 
 ## Complete
 

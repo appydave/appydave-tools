@@ -44,7 +44,6 @@ require 'appydave/tools/configuration/models/config_base'
 require 'appydave/tools/configuration/models/settings_config'
 require 'appydave/tools/configuration/models/brands_config'
 require 'appydave/tools/configuration/models/channels_config'
-require 'appydave/tools/configuration/models/youtube_automation_config'
 require 'appydave/tools/name_manager/project_name'
 
 require 'appydave/tools/prompt_tools/prompt_completion'
@@ -96,8 +95,6 @@ require 'appydave/tools/jump/commands/report'
 require 'appydave/tools/jump/commands/generate'
 require 'appydave/tools/jump/cli'
 
-require 'appydave/tools/youtube_automation/gpt_agent'
-
 require 'appydave/tools/youtube_manager/models/youtube_details'
 require 'appydave/tools/youtube_manager/models/captions'
 require 'appydave/tools/youtube_manager/youtube_base'
@@ -112,7 +109,6 @@ Appydave::Tools::Configuration::Config.set_default do |config|
   config.register(:settings, Appydave::Tools::Configuration::Models::SettingsConfig)
   config.register(:brands, Appydave::Tools::Configuration::Models::BrandsConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
-  config.register(:youtube_automation, Appydave::Tools::Configuration::Models::YoutubeAutomationConfig)
 end
 
 module Appydave

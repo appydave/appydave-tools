@@ -43,7 +43,6 @@ ad_config -c
 This creates empty configuration files at `~/.config/appydave/`:
 - `settings.json` - Paths and preferences
 - `channels.json` - YouTube channel definitions
-- `youtube-automation.json` - Automation workflows
 
 **2. Option A: Copy example files**
 
@@ -276,38 +275,6 @@ prompt_tools completion -f prompt_template.md -k topic=Ruby,style=tutorial -c
 
 ---
 
-### ⚡ YouTube Automation *(Internal/Experimental)*
-
-**The problem:** Video content creation workflows involve multiple steps: research → scripting → production.
-
-**The solution:** Run predefined prompt sequences against OpenAI API to automate research and content generation steps.
-
-```bash
-# Run automation sequence (requires configuration)
-youtube_automation -s 01-1
-
-# With debug output
-youtube_automation -s 01-1 -d
-```
-
-**What it does:**
-- Loads sequence configuration from `~/.config/appydave/youtube_automation.json`
-- Reads prompt templates from Dropbox (`_common/raw_prompts/`)
-- Executes OpenAI API calls for each sequence step
-- Saves responses to output files
-
-**Configuration required:**
-- Sequence definitions in `youtube_automation.json`
-- Prompt template files in configured Dropbox path
-- `OPENAI_ACCESS_TOKEN` environment variable
-
-**Current status:** ⚠️ **Internal tool** - Hardcoded Dropbox paths, uses deprecated Completion API, not documented for external use.
-
-**Relationship to other tools:** This is separate from **Move Images** tool (which organizes downloaded images into video project asset folders).
-
-**Use cases:** Automated content research, script outline generation, multi-step prompt workflows.
-
----
 
 ### ⚙️ Configuration Manager
 
@@ -338,7 +305,6 @@ ad_config -p
 |------|---------|-------------------------|
 | `settings.json` | Paths and preferences (video-projects-root, download folders, etc.) | ✅ Yes (after removing personal paths) |
 | `channels.json` | YouTube channel definitions (code, name, youtube_handle, locations) | ✅ Yes (share structure, customize paths locally) |
-| `youtube_automation.json` | Automation workflow configurations | ✅ Yes (if no sensitive data) |
 | `.env` | **Secrets and API keys** | ❌ **NEVER** (gitignored) |
 
 **Key Settings:**

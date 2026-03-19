@@ -16,7 +16,7 @@ module Appydave
         end
 
         def build
-          return build_formats unless @working_directory && Dir.exist?(@working_directory)
+          return '' unless @working_directory && Dir.exist?(@working_directory)
 
           FileUtils.cd(@working_directory) { build_formats }
         end

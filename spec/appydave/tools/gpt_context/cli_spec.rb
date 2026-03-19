@@ -135,6 +135,21 @@ RSpec.describe 'gpt_context CLI help' do
         expect(content).to include('# file: test.rb')
       end
     end
+
+    it 'outputs valid JSON when -f json specified' do
+      Dir.mktmpdir do |tmpdir|
+        File.write(File.join(tmpdir, 'test.rb'), '# test content')
+        outfile = File.join(tmpdir, 'output.txt')
+
+        `ruby #{script} -i '*.rb' -f json -b #{tmpdir} -o #{outfile} 2>&1`
+
+        content = File.read(outfile)
+        expect { JSON.parse(content) }.not_to raise_error
+        parsed = JSON.parse(content)
+        expect(parsed).to have_key('tree')
+        expect(parsed).to have_key('content')
+      end
+    end
   end
 
   describe '-o output target' do
