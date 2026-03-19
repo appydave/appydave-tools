@@ -12,11 +12,11 @@
 ## In Progress
 - [~] fix-b024-ssl-tests — Add configure_ssl_options unit tests to s3_operations_spec + share_operations_spec
 - [~] fix-b022-cli-tests — Add functional subprocess tests to gpt_context cli_spec.rb (-i, -e, -f, -o)
-- [~] fix-b026-b025-range-tests — Add determine_range edge cases (b00, b9, a40) + fix stale comment
 - [~] fix-b018-jump-specs — Add specs for Jump Commands::Remove, Add, Update
 
 ## Complete
 - [x] fix-b027-noargs-test — Added second no-args example: verifies output does NOT include '# file:' or 'clipboard'. 766 examples, 0 failures. Note: B024 agent had RSpec/ScatteredSetup rubocop issue (multiple before hooks) — fixed in subsequent commit.
+- [x] fix-b026-b025-range-tests — Edge cases (b00, b9, a40) added to sync_from_ssd_spec + manifest_generator_spec. Stale comment fixed in sync_from_ssd.rb:173. ⚠️ CI ISSUE: cli_spec.rb:39 failing — 'not_to include clipboard' assertion is fragile (no-args output may mention clipboard on some platforms). B022 agent touching cli_spec.rb may resolve this.
 
 ## Failed / Needs Retry
 
