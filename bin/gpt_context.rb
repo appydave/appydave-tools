@@ -19,52 +19,95 @@ options = Appydave::Tools::GptContext::Options.new(
 )
 
 OptionParser.new do |opts|
-  opts.banner = 'Usage: gather_content.rb [options]'
+  opts.banner = <<~BANNER
+    GPT Context Gatherer - Collect project files for AI context
 
-  opts.on('-i', '--include PATTERN', 'Pattern or file to include (can be used multiple times)') do |pattern|
+    SYNOPSIS
+        gpt_context [options]
+
+    DESCRIPTION
+        Collects and packages codebase files for AI assistant context.
+        Outputs to clipboard (default), file, or stdout.
+
+  BANNER
+
+  opts.separator 'OPTIONS'
+  opts.separator ''
+
+  opts.on('-i', '--include PATTERN',
+          'Glob pattern for files to include (repeatable)',
+          'Example: -i "lib/**/*.rb" -i "bin/**/*.rb"') do |pattern|
     options.include_patterns << pattern
   end
 
-  opts.on('-e', '--exclude PATTERN', 'Pattern or file to exclude (can be used multiple times)') do |pattern|
+  opts.on('-e', '--exclude PATTERN',
+          'Glob pattern for files to exclude (repeatable)',
+          'Example: -e "spec/**/*" -e "node_modules/**/*"') do |pattern|
     options.exclude_patterns << pattern
   end
 
-  opts.on('-f', '--format FORMAT', 'Output format: content, tree, or json, if not provided then both are used') do |format|
+  opts.on('-f', '--format FORMATS',
+          'Output format(s): tree, content, json, aider, files',
+          'Comma-separated. Default: content',
+          'Example: -f tree,content') do |format|
     options.format = format
   end
 
-  opts.on('-l', '--line-limit LIMIT', 'Limit the number of lines included from each file') do |limit|
-    options.line_limit = limit.to_i
+  opts.on('-l', '--line-limit N', Integer,
+          'Limit lines per file (default: unlimited)') do |n|
+    options.line_limit = n
   end
 
-  # New option for specifying base directory
-  opts.on('-b', '--base-dir DIRECTORY', 'Set the base directory to gather files from') do |directory|
+  opts.on('-b', '--base-dir DIRECTORY',
+          'Set the base directory to gather files from') do |directory|
     options.working_directory = directory
   end
 
-  # Debug output options
-  opts.on('-d', '--debug [MODE]', 'Enable debug mode [none, info, params, debug]', 'none', 'info', 'params', 'debug') do |debug|
+  opts.on('-d', '--debug [MODE]', 'Enable debug mode [none, info, params, debug]',
+          'none', 'info', 'params', 'debug') do |debug|
     options.debug = debug || 'info'
   end
 
-  # Output targets: clipboard or file
-  opts.on('-o', '--output TARGET', 'Output target: clipboard, or a file path (can be used multiple times)') do |target|
+  opts.on('-o', '--output TARGET',
+          'Output target: clipboard, filename, or stdout',
+          'Default: clipboard. Repeatable for multiple targets.') do |target|
     options.output_target << target
   end
 
-  opts.on('-p', '--prompt MESSAGE', 'Message/prompt to include in aider format output') do |message|
+  opts.on('-p', '--prompt TEXT',
+          'Prompt text for aider format output') do |message|
     options.prompt = message
   end
 
-  opts.on_tail('-h', '--help', 'Show this message') do
-    puts opts
-    puts "\nExamples:"
-    puts "  #{File.basename($PROGRAM_NAME)} -i 'lib/**/*.rb' -e 'lib/excluded/**/*.rb' -d"
-    puts "  #{File.basename($PROGRAM_NAME)} --include 'src/**/*.js' --exclude 'src/vendor/**/*.js'"
+  opts.separator ''
+  opts.separator 'OUTPUT FORMATS'
+  opts.separator '    tree     - Directory tree structure'
+  opts.separator '    content  - File contents with headers (default)'
+  opts.separator '    json     - Structured JSON output'
+  opts.separator '    aider    - Aider CLI command format (requires -p)'
+  opts.separator '    files    - File paths only'
+  opts.separator ''
+  opts.separator 'EXAMPLES'
+  opts.separator '    # Gather Ruby library code for AI context'
+  opts.separator "    gpt_context -i 'lib/**/*.rb' -e 'spec/**/*' -d"
+  opts.separator ''
+  opts.separator '    # Project structure overview'
+  opts.separator "    gpt_context -i '**/*' -f tree -e 'node_modules/**/*'"
+  opts.separator ''
+  opts.separator '    # Save to file with tree and content'
+  opts.separator "    gpt_context -i 'src/**/*.ts' -f tree,content -o context.txt"
+  opts.separator ''
+  opts.separator '    # Generate aider command'
+  opts.separator "    gpt_context -i 'lib/**/*.rb' -f aider -p 'Add logging'"
+  opts.separator ''
 
-    puts ''
-    puts '  # Get GPT Context Gatherer code that is found in any folder (bin, lib & spec)'
-    puts "  #{File.basename($PROGRAM_NAME)} -i '**/*gather*.rb'"
+  opts.on('-v', '--version', 'Show version') do
+    puts "gpt_context version #{Appydave::Tools::VERSION}"
+    exit
+  end
+
+  opts.on_tail('-h', '--help', 'Show this help') do
+    puts opts
     exit
   end
 end.parse!
