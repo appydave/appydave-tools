@@ -13,10 +13,10 @@
 - [~] fix-b024-ssl-tests — Add configure_ssl_options unit tests to s3_operations_spec + share_operations_spec
 - [~] fix-b022-cli-tests — Add functional subprocess tests to gpt_context cli_spec.rb (-i, -e, -f, -o)
 - [~] fix-b026-b025-range-tests — Add determine_range edge cases (b00, b9, a40) + fix stale comment
-- [~] fix-b027-noargs-test — Strengthen no-args spec: verify FileCollector not instantiated
 - [~] fix-b018-jump-specs — Add specs for Jump Commands::Remove, Add, Update
 
 ## Complete
+- [x] fix-b027-noargs-test — Added second no-args example: verifies output does NOT include '# file:' or 'clipboard'. 766 examples, 0 failures. Note: B024 agent had RSpec/ScatteredSetup rubocop issue (multiple before hooks) — fixed in subsequent commit.
 
 ## Failed / Needs Retry
 
