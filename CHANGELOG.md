@@ -1,3 +1,11 @@
+## [0.76.6](https://github.com/appydave/appydave-tools/compare/v0.76.5...v0.76.6) (2026-03-19)
+
+
+### Bug Fixes
+
+* extract S3ScanCommand class from VatCLI; add smoke-test spec ([cd03606](https://github.com/appydave/appydave-tools/commit/cd03606e3307665c7f69391d6c160f50df1773ba))
+* remove redundant rubocop disable directives from S3ScanCommand (CI rubocop 1.85.1) ([4c9deb4](https://github.com/appydave/appydave-tools/commit/4c9deb4298d4577a99d0e82e7b72918a26275d40))
+
 ## [0.76.5](https://github.com/appydave/appydave-tools/compare/v0.76.4...v0.76.5) (2026-03-19)
 
 
