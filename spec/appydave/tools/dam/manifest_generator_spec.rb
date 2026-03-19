@@ -598,4 +598,28 @@ RSpec.describe Appydave::Tools::Dam::ManifestGenerator do
       expect(project_ids).not_to include('brand', 'personas', 'video-scripts', 'projects')
     end
   end
+
+  describe '#determine_range' do
+    let(:manifest_generator) { create_generator }
+
+    it 'determines range for b40' do
+      range = manifest_generator.send(:determine_range, 'b40-test-project')
+      expect(range).to eq('b00-b49')
+    end
+
+    it 'determines range for b65' do
+      range = manifest_generator.send(:determine_range, 'b65-guy-monroe')
+      expect(range).to eq('b50-b99')
+    end
+
+    it 'determines range for b99' do
+      range = manifest_generator.send(:determine_range, 'b99-final-project')
+      expect(range).to eq('b50-b99')
+    end
+
+    it 'returns default range for non-FliVideo pattern' do
+      range = manifest_generator.send(:determine_range, 'boy-baker')
+      expect(range).to eq('000-099')
+    end
+  end
 end
