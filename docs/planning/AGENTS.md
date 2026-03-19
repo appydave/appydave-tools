@@ -45,7 +45,7 @@ kfeat "add feature description"             # Minor version bump
 kfix "fix bug description"                  # Patch version bump
 ```
 
-**Baseline (2026-03-19):** 831 examples, 0 failures, ~85.92% line coverage
+**Baseline (2026-03-19):** 847 examples, 0 failures, ~86.21% line coverage
 
 ---
 
@@ -221,9 +221,9 @@ Appydave::Tools::Configuration::Config.configure
 
 ## Quality Gates
 
-- **Tests:** `bundle exec rspec` — 831 examples, 0 failures (do not ship if any fail)
+- **Tests:** `bundle exec rspec` — 847 examples, 0 failures (do not ship if any fail)
 - **Lint:** `bundle exec rubocop --format clang` — 0 offenses (CI will reject)
-- **Coverage:** ≥ 85.92% line coverage
+- **Coverage:** ≥ 86.21% line coverage
 - **frozen_string_literal:** Required on every new `.rb` file
 - **Commit format:** `kfeat`/`kfix` only — triggers semantic versioning + CI wait
 
@@ -247,6 +247,12 @@ Appydave::Tools::Configuration::Config.configure
 - **BUG-1 status (as of 2026-03-19 audit):** Static analysis shows `Jump::Config#find` and `Commands::Remove` both have correct dual-key guards (`loc.key == key` on Location objects; `loc['key'] == key || loc[:key] == key` on raw hashes). The bug may be environmental or already fixed. Always verify live before writing fix code.
 - **Jump Commands layer is undertested:** `Commands::Remove`, `Commands::Add`, `Commands::Update` have zero dedicated specs. Auto-regenerate CLI spec does not substitute for command-layer unit tests verifying `--force` guards, error codes, and suggestion logic (see B018).
 - **Jump report commands** got `--limit` and `--skip-unassigned` flags after initial implementation. Jump tool scope grows incrementally.
+
+### From extract-vat-cli (2026-03-19)
+
+- **Do NOT carry over rubocop-disable comments when extracting methods.** Run rubocop on the new file first — methods that needed disables in a 1,600-line God class often don't exceed thresholds in a properly-scoped library class. Carrying them over causes CI to flag `Lint/RedundantCopDisableDirective` and requires a second fix commit.
+- **grep for callers before writing the plan.** `format_bytes` had 4 callers in bin/dam, not 3 as counted from memory. The orphaned-projects loop was missed.
+- **`valid_brand?` needs `Config.brands` mock, not just `SettingsConfig` mock.** The shared `'with vat filesystem and brands'` context only mocks `SettingsConfig#video_projects_root`. Any method calling `Config.brands` directly needs an explicit brands config mock.
 
 ### From Three-Lens Audit (2026-03-19)
 

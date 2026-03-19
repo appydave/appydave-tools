@@ -5,13 +5,13 @@
 **Target**: All 4 complete; 831+ examples passing; rubocop 0 offenses; no regressions
 
 ## Summary
-- Total: 4 | Complete: 0 | In Progress: 0 | Pending: 4 | Failed: 0
+- Total: 4 | Complete: 4 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
 - [x] extract-format-bytes — Replaced 4 callers (plan said 3; orphaned-projects loop in display_s3_scan_table was a 4th). format_bytes deleted. rubocop 0 offenses. Commit: 3cd362f.
 - [x] extract-local-sync-status — LocalSyncStatus module created, 7 specs added (838 total), both methods gone from VatCLI. Side-fix: restored youtube_automation_config require incorrectly removed in prior commit. v0.76.5.
 - [x] extract-s3-scan-command — S3ScanCommand created, 2 smoke tests added (840 total), 3 methods gone from VatCLI. Note: rubocop-disable directives became redundant once methods left God class — needed 2nd kfix to remove them. v0.76.6.
-- [~] extract-s3-arg-parser — Extract `parse_s3_args` + `valid_brand?` + `parse_share_args` + `show_share_usage_and_exit` + `parse_discover_args` → new `S3ArgParser` class; add spec
+- [x] extract-s3-arg-parser — S3ArgParser module created, 7 specs added (847 total), 5 methods + 8 callers updated, all gone from VatCLI. Note: valid_brand? needed Config.brands mock (shared context only mocks SettingsConfig). v0.76.7.
 
 ## In Progress
 

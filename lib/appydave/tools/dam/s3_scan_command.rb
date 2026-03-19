@@ -49,10 +49,8 @@ module Appydave
           manifest_path = File.join(brand_path, 'projects.json')
 
           unless File.exist?(manifest_path)
-            puts "❌ Manifest not found: #{manifest_path}"
-            puts "   Run: dam manifest #{brand_key}"
-            puts "   Then retry: dam s3-scan #{brand_key}"
-            exit 1
+            raise Appydave::Tools::Dam::ConfigurationError,
+                  "Manifest not found: #{manifest_path}. Run: dam manifest #{brand_key}"
           end
 
           manifest = JSON.parse(File.read(manifest_path), symbolize_names: true)

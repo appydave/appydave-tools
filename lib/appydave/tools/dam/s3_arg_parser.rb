@@ -20,26 +20,15 @@ module Appydave
             # Auto-detect from PWD
             brand, project_id = Appydave::Tools::Dam::ProjectResolver.detect_from_pwd
             if brand.nil? || project_id.nil?
-              puts '❌ Could not auto-detect brand/project from current directory'
-              puts "Usage: dam #{command} <brand> <project> [--dry-run]"
-              exit 1
+              raise Appydave::Tools::Dam::UsageError,
+                    "Could not auto-detect brand/project from current directory. Usage: dam #{command} <brand> <project> [--dry-run]"
             end
             brand_key = brand # Already detected, use as-is
           else
             # Validate brand exists before trying to resolve project
             unless valid_brand?(brand_arg)
-              puts "❌ Invalid brand: '#{brand_arg}'"
-              puts ''
-              puts 'Valid brands:'
-              puts '  appydave  → v-appydave         (AppyDave brand)'
-              puts '  voz       → v-voz              (VOZ client)'
-              puts '  aitldr    → v-aitldr           (AITLDR brand)'
-              puts '  kiros     → v-kiros            (Kiros client)'
-              puts '  joy       → v-beauty-and-joy   (Beauty & Joy)'
-              puts '  ss        → v-supportsignal    (SupportSignal)'
-              puts ''
-              puts "Usage: dam #{command} <brand> <project> [--dry-run]"
-              exit 1
+              raise Appydave::Tools::Dam::UsageError,
+                    "Invalid brand: '#{brand_arg}'. Valid brands: appydave, voz, aitldr, kiros, joy, ss. Usage: dam #{command} <brand> <project> [--dry-run]"
             end
 
             brand_key = brand_arg # Use the shortcut/key (e.g., 'appydave')
@@ -72,7 +61,7 @@ module Appydave
           project_arg = args[1]
           file_arg = args[2]
 
-          show_share_usage_and_exit if brand_arg.nil? || project_arg.nil? || file_arg.nil?
+          raise_share_usage_error if brand_arg.nil? || project_arg.nil? || file_arg.nil?
 
           brand_key = brand_arg
           brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
@@ -92,12 +81,8 @@ module Appydave
           project_arg = args[1]
 
           if brand_arg.nil? || project_arg.nil?
-            puts 'Usage: dam s3-discover <brand> <project> [--shareable]'
-            puts ''
-            puts 'Examples:'
-            puts '  dam s3-discover appydave b70              # List files'
-            puts '  dam s3-discover appydave b70 --shareable  # Generate share commands'
-            exit 1
+            raise Appydave::Tools::Dam::UsageError,
+                  'Usage: dam s3-discover <brand> <project> [--shareable]'
           end
 
           brand_key = brand_arg
@@ -116,19 +101,9 @@ module Appydave
           brands.key?(brand_key) || brands.shortcut?(brand_key)
         end
 
-        def show_share_usage_and_exit
-          puts 'Usage: dam s3-share <brand> <project> <file> [--expires 7d] [--download]'
-          puts ''
-          puts 'Options:'
-          puts '  --expires TIME    Expiry time (default: 7d)'
-          puts '  --download        Force download instead of viewing in browser'
-          puts ''
-          puts 'Examples:'
-          puts '  dam s3-share appydave b70 video.mp4'
-          puts '  dam s3-share appydave b70 video.mp4 --expires 24h'
-          puts '  dam s3-share appydave b70 video.mp4 --download'
-          puts '  dam s3-share voz boy-baker final-edit.mov --expires 3d --download'
-          exit 1
+        def raise_share_usage_error
+          raise Appydave::Tools::Dam::UsageError,
+                'Usage: dam s3-share <brand> <project> <file> [--expires 7d] [--download]'
         end
       end
     end

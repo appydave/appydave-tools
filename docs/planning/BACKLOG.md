@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-19 (micro-cleanup campaign complete)
-**Total**: 33 | Pending: 7 | In Progress: 1 | Done: 25 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-19 (extract-vat-cli campaign complete)
+**Total**: 37 | Pending: 11 | Done: 26 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -14,8 +14,12 @@
 - [ ] B008 — Performance: cache git/S3 status with 5-min TTL | Priority: low
 - [ ] B009 — UX: progress indicators for dam operations > 5s | Priority: low
 - [ ] B010 — UX: auto-adjust dam table column widths to terminal width | Priority: low
-- [~] B011 — Arch: extract VatCLI business logic from bin/dam (1,600-line God class) | Campaign: extract-vat-cli
+- [x] B011 — Arch: extract VatCLI business logic from bin/dam (1,600-line God class) | Completed: extract-vat-cli (2026-03-19)
 - [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: low
+- [ ] B034 — Fix: replace exit 1 with typed exceptions in S3ScanCommand + S3ArgParser | Priority: high (blocks B007 + test coverage)
+- [ ] B035 — Fix: remove ENV['BRAND_PATH'] side effect from S3ArgParser | Priority: high (blocks B007 parallelism)
+- [ ] B036 — Tests: improve S3ScanCommand spec from D to B (depends on B034) | Priority: medium
+- [ ] B037 — Tests: LocalSyncStatus :partial case, local_file_count assertion, Zone.Identifier exclusion | Priority: medium
 
 ---
 

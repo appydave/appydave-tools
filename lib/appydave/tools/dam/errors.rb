@@ -34,6 +34,9 @@ module Appydave
 
       # Raised when git operation fails
       class GitOperationError < DamError; end
+
+      # Raised when CLI arguments are invalid or missing
+      class UsageError < DamError; end
     end
   end
 end
