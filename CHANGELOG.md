@@ -1,3 +1,11 @@
+## [0.76.4](https://github.com/appydave/appydave-tools/compare/v0.76.3...v0.76.4) (2026-03-19)
+
+
+### Bug Fixes
+
+* add subprocess test for -f json flag to cli_spec ([de6a28a](https://github.com/appydave/appydave-tools/commit/de6a28a39790d29f5141fbf313fa5e44782b90a6))
+* restore youtube_automation_config require accidentally removed in previous commit ([e4180db](https://github.com/appydave/appydave-tools/commit/e4180db9ad90040ec4faf2811fad713a20e6be8e))
+
 ## [0.76.3](https://github.com/appydave/appydave-tools/compare/v0.76.2...v0.76.3) (2026-03-19)
 
 
