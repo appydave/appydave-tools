@@ -80,6 +80,7 @@ require 'appydave/tools/dam/repo_sync'
 require 'appydave/tools/dam/repo_push'
 require 'appydave/tools/dam/local_sync_status'
 require 'appydave/tools/dam/s3_scan_command'
+require 'appydave/tools/dam/s3_arg_parser'
 
 require 'appydave/tools/jump/path_validator'
 require 'appydave/tools/jump/location'

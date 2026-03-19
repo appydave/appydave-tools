@@ -154,7 +154,7 @@ class VatCLI
 
   # S3 Upload
   def s3_up_command(args)
-    options = parse_s3_args(args, 's3-up')
+    options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-up')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.upload(dry_run: options[:dry_run])
   rescue StandardError => e
@@ -164,7 +164,7 @@ class VatCLI
 
   # S3 Download
   def s3_down_command(args)
-    options = parse_s3_args(args, 's3-down')
+    options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-down')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.download(dry_run: options[:dry_run])
   rescue StandardError => e
@@ -174,7 +174,7 @@ class VatCLI
 
   # S3 Status
   def s3_status_command(args)
-    options = parse_s3_args(args, 's3-status')
+    options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-status')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.status
   rescue StandardError => e
@@ -184,7 +184,7 @@ class VatCLI
 
   # S3 Cleanup Remote
   def s3_cleanup_remote_command(args)
-    options = parse_s3_args(args, 's3-cleanup-remote')
+    options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-cleanup-remote')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
@@ -194,7 +194,7 @@ class VatCLI
 
   # S3 Cleanup Local
   def s3_cleanup_local_command(args)
-    options = parse_s3_args(args, 's3-cleanup-local')
+    options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-cleanup-local')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup_local(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
@@ -204,7 +204,7 @@ class VatCLI
 
   # Share file via pre-signed URL
   def s3_share_command(args)
-    options = parse_share_args(args)
+    options = Appydave::Tools::Dam::S3ArgParser.parse_share(args)
 
     share_ops = Appydave::Tools::Dam::ShareOperations.new(options[:brand], options[:project])
     share_ops.generate_links(files: options[:file], expires: options[:expires], download: options[:download])
@@ -215,7 +215,7 @@ class VatCLI
 
   # Discover files in S3 for a project
   def s3_discover_command(args)
-    options = parse_discover_args(args)
+    options = Appydave::Tools::Dam::S3ArgParser.parse_discover(args)
     files = fetch_s3_files(options[:brand_key], options[:project_id])
 
     return if handle_empty_files?(files, options[:brand_key], options[:project_id])
@@ -228,7 +228,7 @@ class VatCLI
 
   # Archive project to SSD
   def archive_command(args)
-    options = parse_s3_args(args, 'archive')
+    options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 'archive')
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.archive(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
@@ -459,132 +459,6 @@ class VatCLI
   rescue StandardError => e
     puts "❌ Error: #{e.message}"
     exit 1
-  end
-
-  # Parse S3 command arguments
-  # rubocop:disable Metrics/MethodLength
-  def parse_s3_args(args, command)
-    dry_run = args.include?('--dry-run')
-    force = args.include?('--force')
-    args = args.reject { |arg| arg.start_with?('--') }
-
-    brand_arg = args[0]
-    project_arg = args[1]
-
-    if brand_arg.nil?
-      # Auto-detect from PWD
-      brand, project_id = Appydave::Tools::Dam::ProjectResolver.detect_from_pwd
-      if brand.nil? || project_id.nil?
-        puts '❌ Could not auto-detect brand/project from current directory'
-        puts "Usage: dam #{command} <brand> <project> [--dry-run]"
-        exit 1
-      end
-      brand_key = brand # Already detected, use as-is
-    else
-      # Validate brand exists before trying to resolve project
-      unless valid_brand?(brand_arg)
-        puts "❌ Invalid brand: '#{brand_arg}'"
-        puts ''
-        puts 'Valid brands:'
-        puts '  appydave  → v-appydave         (AppyDave brand)'
-        puts '  voz       → v-voz              (VOZ client)'
-        puts '  aitldr    → v-aitldr           (AITLDR brand)'
-        puts '  kiros     → v-kiros            (Kiros client)'
-        puts '  joy       → v-beauty-and-joy   (Beauty & Joy)'
-        puts '  ss        → v-supportsignal    (SupportSignal)'
-        puts ''
-        puts "Usage: dam #{command} <brand> <project> [--dry-run]"
-        exit 1
-      end
-
-      brand_key = brand_arg # Use the shortcut/key (e.g., 'appydave')
-      brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg) # Expand for path resolution
-      project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
-    end
-
-    # Set ENV for compatibility with ConfigLoader
-    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
-
-    { brand: brand_key, project: project_id, dry_run: dry_run, force: force }
-  end
-  # rubocop:enable Metrics/MethodLength
-
-  def valid_brand?(brand_key)
-    Appydave::Tools::Configuration::Config.configure
-    brands = Appydave::Tools::Configuration::Config.brands
-    brands.key?(brand_key) || brands.shortcut?(brand_key)
-  end
-
-  def parse_share_args(args)
-    # Extract --expires flag
-    expires = '7d' # default
-    if (expires_index = args.index('--expires'))
-      expires = args[expires_index + 1]
-      args.delete_at(expires_index + 1)
-      args.delete_at(expires_index)
-    end
-
-    # Extract --download flag
-    download = args.include?('--download')
-
-    # Remove other flags
-    args = args.reject { |arg| arg.start_with?('--') }
-
-    brand_arg = args[0]
-    project_arg = args[1]
-    file_arg = args[2]
-
-    show_share_usage_and_exit if brand_arg.nil? || project_arg.nil? || file_arg.nil?
-
-    brand_key = brand_arg
-    brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
-    project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
-
-    # Set ENV for compatibility with ConfigLoader
-    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
-
-    { brand: brand_key, project: project_id, file: file_arg, expires: expires, download: download }
-  end
-
-  def show_share_usage_and_exit
-    puts 'Usage: dam s3-share <brand> <project> <file> [--expires 7d] [--download]'
-    puts ''
-    puts 'Options:'
-    puts '  --expires TIME    Expiry time (default: 7d)'
-    puts '  --download        Force download instead of viewing in browser'
-    puts ''
-    puts 'Examples:'
-    puts '  dam s3-share appydave b70 video.mp4'
-    puts '  dam s3-share appydave b70 video.mp4 --expires 24h'
-    puts '  dam s3-share appydave b70 video.mp4 --download'
-    puts '  dam s3-share voz boy-baker final-edit.mov --expires 3d --download'
-    exit 1
-  end
-
-  def parse_discover_args(args)
-    shareable = args.include?('--shareable')
-    args = args.reject { |arg| arg.start_with?('--') }
-
-    brand_arg = args[0]
-    project_arg = args[1]
-
-    if brand_arg.nil? || project_arg.nil?
-      puts 'Usage: dam s3-discover <brand> <project> [--shareable]'
-      puts ''
-      puts 'Examples:'
-      puts '  dam s3-discover appydave b70              # List files'
-      puts '  dam s3-discover appydave b70 --shareable  # Generate share commands'
-      exit 1
-    end
-
-    brand_key = brand_arg
-    brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
-    project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
-
-    # Set ENV for compatibility with ConfigLoader
-    ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
-
-    { brand_key: brand_key, project_id: project_id, shareable: shareable }
   end
 
   def fetch_s3_files(brand_key, project_id)
