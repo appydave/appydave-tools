@@ -1,3 +1,11 @@
+## [0.76.10](https://github.com/appydave/appydave-tools/compare/v0.76.9...v0.76.10) (2026-03-19)
+
+
+### Bug Fixes
+
+* add partial, Zone.Identifier, local_file_count, and unknown format tests to local_sync_status_spec ([3fddeff](https://github.com/appydave/appydave-tools/commit/3fddeffe28d27884b9c056c0a75001b77a01deb1))
+* rebuild s3_scan_command_spec: replace smoke tests with 8+ behaviour examples ([de9d118](https://github.com/appydave/appydave-tools/commit/de9d11815f6f30813dcb2fca53a81a6839bda0d1))
+
 ## [0.76.9](https://github.com/appydave/appydave-tools/compare/v0.76.8...v0.76.9) (2026-03-19)
 
 
