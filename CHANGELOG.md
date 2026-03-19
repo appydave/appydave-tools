@@ -1,3 +1,11 @@
+## [0.76.1](https://github.com/appydave/appydave-tools/compare/v0.76.0...v0.76.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* align SyncFromSsd#determine_range with ManifestGenerator format; add specs ([3f8cb37](https://github.com/appydave/appydave-tools/commit/3f8cb37a78bd3d9720eace21cf1abbbca285cd66))
+* remove unconditional ssl_verify_peer: false from S3 clients; keep env override ([f49efb1](https://github.com/appydave/appydave-tools/commit/f49efb1c4a97ba904f3f3fc7d4292139a5e6c3fd))
+
 # [0.76.0](https://github.com/appydave/appydave-tools/compare/v0.75.0...v0.76.0) (2026-03-19)
 
 
