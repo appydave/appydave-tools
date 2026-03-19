@@ -1,3 +1,10 @@
+## [0.76.13](https://github.com/appydave/appydave-tools/compare/v0.76.12...v0.76.13) (2026-03-19)
+
+
+### Bug Fixes
+
+* remove redundant smoke-test from s3_scan_command_spec; fix RSpec/RepeatedExample CI rubocop offense ([5711e4e](https://github.com/appydave/appydave-tools/commit/5711e4e62d6ab648fc2a93fae32453095a00d4ca))
+
 ## [0.76.12](https://github.com/appydave/appydave-tools/compare/v0.76.11...v0.76.12) (2026-03-19)
 
 
