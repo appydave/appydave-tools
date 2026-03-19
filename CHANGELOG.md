@@ -1,3 +1,10 @@
+## [0.76.8](https://github.com/appydave/appydave-tools/compare/v0.76.7...v0.76.8) (2026-03-19)
+
+
+### Bug Fixes
+
+* replace exit 1 with typed exceptions in S3ScanCommand and S3ArgParser; add UsageError to errors.rb ([87bb43a](https://github.com/appydave/appydave-tools/commit/87bb43a9a9e67734061685670d32239aeef9a306))
+
 ## [0.76.7](https://github.com/appydave/appydave-tools/compare/v0.76.6...v0.76.7) (2026-03-19)
 
 
