@@ -693,14 +693,14 @@ class VatCLI
 
       # Format columns
       file_col = filename.ljust(40)
-      size_col = format_bytes(size).rjust(10)
+      size_col = Appydave::Tools::Dam::FileHelper.format_size(size).rjust(10)
       date_col = last_modified ? last_modified.strftime('%Y-%m-%d %H:%M') : 'N/A'.ljust(16)
 
       puts "#{file_col} #{size_col}     #{date_col}"
     end
 
     puts '-' * 72
-    puts "Total: #{files.size} #{files.size == 1 ? 'file' : 'files'}, #{format_bytes(total_bytes)}"
+    puts "Total: #{files.size} #{files.size == 1 ? 'file' : 'files'}, #{Appydave::Tools::Dam::FileHelper.format_size(total_bytes)}"
 
     # Quick actions section
     puts ''
@@ -1507,7 +1507,7 @@ class VatCLI
     # Display matched projects first (sorted alphabetically)
     matched_projects.sort.each do |project_id, data|
       files = data[:file_count].to_s.rjust(5)
-      size = format_bytes(data[:total_bytes]).rjust(10)
+      size = Appydave::Tools::Dam::FileHelper.format_size(data[:total_bytes]).rjust(10)
       local_status = format_local_status(data[:local_status], data[:local_file_count], data[:file_count])
       modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
 
@@ -1520,7 +1520,7 @@ class VatCLI
     puts '-' * 92
     orphaned_projects.sort.each do |project_id, data|
       files = data[:file_count].to_s.rjust(5)
-      size = format_bytes(data[:total_bytes]).rjust(10)
+      size = Appydave::Tools::Dam::FileHelper.format_size(data[:total_bytes]).rjust(10)
       local_status = 'N/A'
       modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
 
@@ -1582,19 +1582,6 @@ class VatCLI
     puts "Total brands scanned: #{successful.size}/#{results.size}"
   end
   # rubocop:enable Metrics/MethodLength
-
-  # Format bytes in human-readable format
-  # rubocop:disable Style/FormatStringToken
-  def format_bytes(bytes)
-    return '0 B' if bytes.zero?
-
-    units = %w[B KB MB GB TB]
-    exp = (Math.log(bytes) / Math.log(1024)).to_i
-    exp = [exp, units.length - 1].min
-
-    format('%.1f %s', bytes.to_f / (1024**exp), units[exp])
-  end
-  # rubocop:enable Style/FormatStringToken
 end
 
 # Run CLI

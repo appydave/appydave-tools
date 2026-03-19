@@ -14,6 +14,18 @@
 
 ---
 
+## ⚠️ Pre-Commit Check (Mandatory Every Commit)
+
+Before running `kfix`, always run:
+```bash
+git status
+```
+Confirm ONLY the files you intentionally changed are staged. If unexpected files appear, run `git diff` to investigate before proceeding.
+
+**Why:** micro-cleanup (2026-03-19) accidentally staged a pre-existing uncommitted change in `lib/appydave/tools.rb` when running `kfix`.
+
+---
+
 ## Build & Run Commands
 
 ```bash
@@ -33,7 +45,7 @@ kfeat "add feature description"             # Minor version bump
 kfix "fix bug description"                  # Patch version bump
 ```
 
-**Baseline (2026-03-19):** 748 examples, 0 failures, 84.88% line coverage (7680/9048)
+**Baseline (2026-03-19):** 831 examples, 0 failures, ~85.92% line coverage
 
 ---
 
@@ -82,9 +94,9 @@ docs/
 
 Every work unit must satisfy ALL of the following before marking `[x]`:
 
-- [ ] `bundle exec rspec` — 748+ examples, 0 failures
+- [ ] `bundle exec rspec` — 831+ examples, 0 failures
 - [ ] `bundle exec rubocop --format clang` — 0 offenses
-- [ ] Line coverage stays ≥ 84.88%
+- [ ] Line coverage stays ≥ 85.92%
 - [ ] Any new functionality has ≥ 1 spec covering it
 - [ ] All new `.rb` files start with `# frozen_string_literal: true`
 - [ ] No hardcoded brand transformation strings (always use BrandResolver)
@@ -209,9 +221,9 @@ Appydave::Tools::Configuration::Config.configure
 
 ## Quality Gates
 
-- **Tests:** `bundle exec rspec` — 748 examples, 0 failures (do not ship if any fail)
+- **Tests:** `bundle exec rspec` — 831 examples, 0 failures (do not ship if any fail)
 - **Lint:** `bundle exec rubocop --format clang` — 0 offenses (CI will reject)
-- **Coverage:** ≥ 84.88% line coverage
+- **Coverage:** ≥ 85.92% line coverage
 - **frozen_string_literal:** Required on every new `.rb` file
 - **Commit format:** `kfeat`/`kfix` only — triggers semantic versioning + CI wait
 

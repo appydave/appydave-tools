@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
 **Last updated**: 2026-03-19 (micro-cleanup campaign complete)
-**Total**: 33 | Pending: 8 | Done: 25 | Deferred: 0 | Rejected: 0
+**Total**: 33 | Pending: 7 | In Progress: 1 | Done: 25 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -14,7 +14,7 @@
 - [ ] B008 — Performance: cache git/S3 status with 5-min TTL | Priority: low
 - [ ] B009 — UX: progress indicators for dam operations > 5s | Priority: low
 - [ ] B010 — UX: auto-adjust dam table column widths to terminal width | Priority: low
-- [ ] B011 — Arch: extract VatCLI business logic from bin/dam (1,600-line God class) | Priority: low
+- [~] B011 — Arch: extract VatCLI business logic from bin/dam (1,600-line God class) | Campaign: extract-vat-cli
 - [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: low
 
 ---
