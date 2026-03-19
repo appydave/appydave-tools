@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-19 (final-test-gaps campaign complete; B031/B032/B033 added from quality audit)
-**Total**: 33 | Pending: 11 | Done: 22 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-19 (micro-cleanup campaign complete)
+**Total**: 33 | Pending: 8 | Done: 25 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -10,11 +10,6 @@
 ### Medium Priority
 - [ ] B001 — FR-1: GPT Context token counting | Priority: medium
 - [ ] B012 — Arch: add integration tests for brand resolution end-to-end | Priority: medium
-
-### Low Priority
-- [ ] B031 — Tests: add_spec.rb assert `type` field in location data integrity test | Priority: low
-- [ ] B032 — Tests: cli_spec.rb add subprocess test for `-f json` flag | Priority: low
-- [ ] B033 — Fix: file_collector.rb line 19 return `''` directly when working_directory doesn't exist | Priority: low
 - [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low
 - [ ] B008 — Performance: cache git/S3 status with 5-min TTL | Priority: low
 - [ ] B009 — UX: progress indicators for dam operations > 5s | Priority: low
@@ -48,6 +43,9 @@
 - [x] B028 — Tests: cli_spec file body content assertions in -i/-e tests | Completed: final-test-gaps (2026-03-19)
 - [x] B029 — Tests: add_spec validate all returned location data fields | Completed: final-test-gaps (2026-03-19)
 - [x] B030 — Tests: update_spec verify non-updated fields unchanged | Completed: final-test-gaps (2026-03-19)
+- [x] B031 — Tests: add_spec `type` field assertion | Completed: already in commit 8eec40c; closed micro-cleanup (2026-03-19)
+- [x] B032 — Tests: cli_spec `-f json` subprocess test | Completed: micro-cleanup (2026-03-19), v0.76.4
+- [x] B033 — Fix: file_collector.rb return `''` when working_directory missing | Completed: already in commit 13d5f87; closed micro-cleanup (2026-03-19)
 
 ---
 
