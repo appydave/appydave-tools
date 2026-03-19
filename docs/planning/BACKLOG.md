@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-19 (extract-vat-cli campaign complete)
-**Total**: 37 | Pending: 11 | Done: 26 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-19 (library-boundary-cleanup campaign complete)
+**Total**: 40 | Pending: 9 | Done: 30 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -10,16 +10,13 @@
 ### Medium Priority
 - [ ] B001 — FR-1: GPT Context token counting | Priority: medium
 - [ ] B012 — Arch: add integration tests for brand resolution end-to-end | Priority: medium
-- [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low
+- [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low (now unblocked)
 - [ ] B008 — Performance: cache git/S3 status with 5-min TTL | Priority: low
 - [ ] B009 — UX: progress indicators for dam operations > 5s | Priority: low
 - [ ] B010 — UX: auto-adjust dam table column widths to terminal width | Priority: low
-- [x] B011 — Arch: extract VatCLI business logic from bin/dam (1,600-line God class) | Completed: extract-vat-cli (2026-03-19)
-- [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: low
-- [ ] B034 — Fix: replace exit 1 with typed exceptions in S3ScanCommand + S3ArgParser | Priority: high (blocks B007 + test coverage)
-- [ ] B035 — Fix: remove ENV['BRAND_PATH'] side effect from S3ArgParser | Priority: high (blocks B007 parallelism)
-- [ ] B036 — Tests: improve S3ScanCommand spec from D to B (depends on B034) | Priority: medium
-- [ ] B037 — Tests: LocalSyncStatus :partial case, local_file_count assertion, Zone.Identifier exclusion | Priority: medium
+- [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: low (now unblocked)
+- [ ] B038 — Cleanup: remove ENV['BRAND_PATH'] dead code from bin/dam (10 assignments, never read in lib/) | Priority: low
+- [ ] B039 — Tests: strengthen s3_scan_command_spec data-value assertions + remove LocalSyncStatus stub | Priority: low
 
 ---
 
@@ -50,6 +47,11 @@
 - [x] B031 — Tests: add_spec `type` field assertion | Completed: already in commit 8eec40c; closed micro-cleanup (2026-03-19)
 - [x] B032 — Tests: cli_spec `-f json` subprocess test | Completed: micro-cleanup (2026-03-19), v0.76.4
 - [x] B033 — Fix: file_collector.rb return `''` when working_directory missing | Completed: already in commit 13d5f87; closed micro-cleanup (2026-03-19)
+- [x] B011 — Arch: extract VatCLI business logic from bin/dam (1,600-line God class) | Completed: extract-vat-cli (2026-03-19)
+- [x] B034 — Fix: replace exit 1 with typed exceptions in S3ScanCommand + S3ArgParser; add UsageError | Completed: library-boundary-cleanup (2026-03-19), v0.76.8
+- [x] B035 — Fix: remove ENV['BRAND_PATH'] side effect from S3ArgParser; return brand_path: in result hash | Completed: library-boundary-cleanup (2026-03-19), v0.76.9
+- [x] B036 — Tests: rebuild S3ScanCommand spec from D to B (10 behaviour examples) | Completed: library-boundary-cleanup (2026-03-19), v0.76.10
+- [x] B037 — Tests: LocalSyncStatus :partial, local_file_count, Zone.Identifier exclusion, unknown format | Completed: library-boundary-cleanup (2026-03-19), v0.76.11
 
 ---
 

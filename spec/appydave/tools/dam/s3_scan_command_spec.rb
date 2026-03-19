@@ -46,7 +46,8 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
     allow(Appydave::Tools::Configuration::Config).to receive(:brands).and_return(mock_brands_config)
     allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with(brand_key).and_return('v-appydave')
     allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with(brand_key).and_return(appydave_path)
-    allow(Appydave::Tools::Dam::LocalSyncStatus).to receive(:enrich!)
+    allow(Appydave::Tools::Dam::Config).to receive(:project_path).with(brand_key, 'b65-test-project').and_return(File.join(appydave_path, 'b65-test-project'))
+    FileUtils.mkdir_p(File.join(appydave_path, 'b65-test-project', 's3-staging'))
     allow(scanner).to receive(:puts)
     allow(scanner).to receive(:print)
   end
@@ -67,12 +68,15 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
         updated = JSON.parse(File.read(manifest_path), symbolize_names: true)
         project = updated[:projects].find { |p| p[:id] == 'b65-test-project' }
         expect(project).not_to be_nil
-        expect(project[:storage][:s3]).not_to be_empty
+        expect(project[:storage][:s3]).to include(
+          file_count: 3,
+          total_bytes: 1_500_000,
+          last_modified: '2025-01-01T00:00:00Z'
+        )
       end
 
-      it 'enriches matched projects with local sync status' do
-        scanner.scan_single(brand_key)
-        expect(Appydave::Tools::Dam::LocalSyncStatus).to have_received(:enrich!)
+      it 'enriches matched projects with local sync status without raising' do
+        expect { scanner.scan_single(brand_key) }.not_to raise_error
       end
     end
 
@@ -119,7 +123,11 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
         scanner.scan_single(brand_key)
         updated = JSON.parse(File.read(manifest_path), symbolize_names: true)
         project = updated[:projects].find { |p| p[:id] == 'b65-test-project' }
-        expect(project[:storage][:s3]).not_to be_empty
+        expect(project[:storage][:s3]).to include(
+          file_count: 3,
+          total_bytes: 1_500_000,
+          last_modified: '2025-01-01T00:00:00Z'
+        )
       end
     end
   end

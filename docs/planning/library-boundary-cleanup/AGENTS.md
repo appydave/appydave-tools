@@ -645,6 +645,12 @@ end
 - **`ENV['BRAND_PATH']` is set in 5 places in bin/dam.** Three are in parse methods (being extracted to B035). Two remain in `generate_single_manifest` and `sync_ssd_command` — out of scope for this campaign.
 - **Do NOT attempt B020 (split S3Operations) in this campaign.** Different class, different risk profile.
 
+### From library-boundary-cleanup (2026-03-20)
+
+- **`instance_double` string form fails CI on Ubuntu.** Always use full constant: `instance_double(Fully::Qualified::ClassName)`. String form passes locally but Ubuntu CI enforces constant lookup. A CI failure after a green local run is almost always this.
+- **`git add .` is the recurring staging bug.** Three campaigns have had accidental staging from `git add .`. Stage specific files by name: `git add lib/appydave/tools/dam/local_sync_status.rb spec/...`. Never `git add .` or `git add -A` in this repo.
+- **`ENV['BRAND_PATH']` in bin/dam is dead code.** 10 assignments in bin/dam, 0 reads in lib/. S3Operations receives brand_path as a constructor parameter. Tracked as B038 for cleanup.
+
 ### From extract-vat-cli (2026-03-19)
 
 - **valid_brand? needs Config.brands mock.** The shared filesystem context only mocks `SettingsConfig`. When testing code that calls `Config.brands`, mock it separately: `allow(Appydave::Tools::Configuration::Config).to receive(:brands).and_return(...)`.

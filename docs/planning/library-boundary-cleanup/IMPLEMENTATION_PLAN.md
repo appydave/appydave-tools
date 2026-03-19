@@ -5,13 +5,13 @@
 **Target**: 4 items complete; 847+ examples passing; rubocop 0 offenses; no regressions
 
 ## Summary
-- Total: 4 | Complete: 3 | In Progress: 1 | Pending: 0 | Failed: 0
+- Total: 4 | Complete: 4 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
 
 ## In Progress
 - [x] B036 — tests-s3-scan-command — 10 behaviour examples replacing 2 smoke tests (happy path, manifest missing, empty results, orphaned projects, scan_all partial). 861 examples, 0 failures. 86.43% coverage. v0.76.10. Commit: de9d118.
-- [~] B037 — tests-local-sync-status — Add :partial case, local_file_count assertion, Zone.Identifier exclusion, unknown format guard
+- [x] B037 — tests-local-sync-status — 6 new examples: :partial (2), local_file_count in :synced (1), Zone.Identifier exclusion (2), unknown format guard (1). Source already had both features — tests only. CI fix: replaced string instance_double with full constant. v0.76.11. Commits: 3fddeff, 3bd417d.
 
 ## Complete
 - [x] B034 — extract-exit-calls — UsageError added to errors.rb; exit 1 replaced in s3_scan_command.rb (1) and s3_arg_parser.rb (4); show_share_usage_and_exit renamed. 847 examples, 0 failures. v0.76.8. Commit: 87bb43a.
