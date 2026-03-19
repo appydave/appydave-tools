@@ -1,3 +1,10 @@
+## [0.76.9](https://github.com/appydave/appydave-tools/compare/v0.76.8...v0.76.9) (2026-03-19)
+
+
+### Bug Fixes
+
+* remove ENV BRAND_PATH side-effect from S3ArgParser; return brand_path in result hash ([762da4b](https://github.com/appydave/appydave-tools/commit/762da4b445b41d8109f6c48539736455ee66d8de))
+
 ## [0.76.8](https://github.com/appydave/appydave-tools/compare/v0.76.7...v0.76.8) (2026-03-19)
 
 
