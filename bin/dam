@@ -297,8 +297,7 @@ class VatCLI
     puts '📋 Summary - Generated Manifests:'
     puts ''
 
-    successful = results.select { |r| r[:success] }
-    failed = results.reject { |r| r[:success] }
+    successful, failed = results.partition { |r| r[:success] }
 
     successful.each do |result|
       brand_display = result[:brand].ljust(15)
@@ -1567,8 +1566,7 @@ class VatCLI
     puts '📋 Summary - S3 Scans:'
     puts ''
 
-    successful = results.select { |r| r[:success] }
-    failed = results.reject { |r| r[:success] }
+    successful, failed = results.partition { |r| r[:success] }
 
     successful.each do |result|
       brand_display = result[:brand].ljust(15)
