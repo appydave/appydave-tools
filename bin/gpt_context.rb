@@ -112,7 +112,7 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-if options.include_patterns.empty? && options.exclude_patterns.empty? && options.format.nil?
+if options.include_patterns.empty? && options.exclude_patterns.empty?
   script_name = File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME))
 
   puts 'No options provided to GPT Context. Please specify patterns to include or exclude.'

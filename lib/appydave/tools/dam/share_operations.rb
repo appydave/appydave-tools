@@ -87,17 +87,9 @@ module Appydave
         end
 
         def configure_ssl_options
-          # Check for explicit SSL verification bypass (for development/testing)
-          if ENV['AWS_SDK_RUBY_SKIP_SSL_VERIFICATION'] == 'true'
-            puts '⚠️  WARNING: SSL verification is disabled (development mode)'
-            return { ssl_verify_peer: false }
-          end
+          return { ssl_verify_peer: false } if ENV['AWS_SDK_RUBY_SKIP_SSL_VERIFICATION'] == 'true'
 
-          # Disable SSL peer verification to work around OpenSSL 3.4.x CRL checking issues
-          # This is safe for AWS S3 connections as we're still using HTTPS (encrypted connection)
-          {
-            ssl_verify_peer: false
-          }
+          {}
         end
 
         public

@@ -25,4 +25,12 @@ RSpec.describe 'gpt_context CLI help' do
       expect(output).to match(/gpt_context version \d+\.\d+\.\d+/)
     end
   end
+
+  describe 'no arguments' do
+    it 'prints an error message when no patterns provided' do
+      output = `ruby #{script} 2>&1`
+      expect(output).to include('No options provided')
+      expect($CHILD_STATUS.exitstatus).to eq(0)
+    end
+  end
 end

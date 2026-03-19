@@ -181,14 +181,17 @@ module Appydave
           sync_light_files(ssd_path, local_dir, dry_run: dry_run)
         end
 
-        # Determine range folder for project (e.g., b65 → 60-69)
+        # Determine range folder for project (e.g., b65 → b50-b99)
         def determine_range(project_id)
-          # FliVideo pattern: b40, b41, ... b99
-          if project_id =~ /^b(\d+)/
-            tens = (Regexp.last_match(1).to_i / 10) * 10
-            "#{tens}-#{tens + 9}"
+          # FliVideo/Modern pattern: b40, a82, etc.
+          if project_id =~ /^([a-z])(\d+)/
+            letter = Regexp.last_match(1)
+            number = Regexp.last_match(2).to_i
+            range_start = (number / 50) * 50
+            range_end = range_start + 49
+            format("#{letter}%02d-#{letter}%02d", range_start, range_end)
           else
-            # Legacy pattern or unknown: use first 3 chars
+            # Legacy pattern or unknown
             '000-099'
           end
         end

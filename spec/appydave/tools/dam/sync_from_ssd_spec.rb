@@ -140,7 +140,7 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
           expect { sync_from_ssd.sync }.to output(/Sync complete/).to_stdout
 
           # Check light files copied
-          local_archived = File.join(brand_path, 'archived', '60-69', 'b65-test-project')
+          local_archived = File.join(brand_path, 'archived', 'b50-b99', 'b65-test-project')
           expect(File.exist?(File.join(local_archived, 'subtitle.srt'))).to be true
           expect(File.exist?(File.join(local_archived, 'image.jpg'))).to be true
 
@@ -160,7 +160,7 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
           it 'previews sync without copying files' do
             expect { sync_from_ssd.sync(dry_run: true) }.to output(/DRY-RUN MODE/).to_stdout
 
-            local_archived = File.join(brand_path, 'archived', '60-69', 'b65-test-project')
+            local_archived = File.join(brand_path, 'archived', 'b50-b99', 'b65-test-project')
             expect(File.exist?(File.join(local_archived, 'subtitle.srt'))).to be false
             expect(File.exist?(File.join(local_archived, 'image.jpg'))).to be false
           end
@@ -267,27 +267,27 @@ RSpec.describe Appydave::Tools::Dam::SyncFromSsd do
         it 'creates proper directory structure for each project' do
           sync_from_ssd.sync
 
-          expect(Dir.exist?(File.join(brand_path, 'archived', '40-49', 'b40-project-one'))).to be true
-          expect(Dir.exist?(File.join(brand_path, 'archived', '40-49', 'b41-project-two'))).to be true
+          expect(Dir.exist?(File.join(brand_path, 'archived', 'b00-b49', 'b40-project-one'))).to be true
+          expect(Dir.exist?(File.join(brand_path, 'archived', 'b00-b49', 'b41-project-two'))).to be true
         end
       end
     end
   end
 
   describe '#determine_range' do
-    it 'determines range for FliVideo pattern b40-b49' do
+    it 'determines range for FliVideo pattern b40' do
       range = sync_from_ssd.send(:determine_range, 'b40-test-project')
-      expect(range).to eq('40-49')
+      expect(range).to eq('b00-b49')
     end
 
-    it 'determines range for FliVideo pattern b65-b69' do
+    it 'determines range for FliVideo pattern b65' do
       range = sync_from_ssd.send(:determine_range, 'b65-guy-monroe')
-      expect(range).to eq('60-69')
+      expect(range).to eq('b50-b99')
     end
 
-    it 'determines range for FliVideo pattern b99-b99' do
+    it 'determines range for FliVideo pattern b99' do
       range = sync_from_ssd.send(:determine_range, 'b99-final-project')
-      expect(range).to eq('90-99')
+      expect(range).to eq('b50-b99')
     end
 
     it 'returns default range for non-FliVideo pattern' do

@@ -111,8 +111,7 @@ module Appydave
           Aws::S3::Client.new(
             credentials: credentials,
             region: brand_info.aws.region,
-            http_wire_trace: false,
-            ssl_verify_peer: false
+            http_wire_trace: false
           )
         end
 

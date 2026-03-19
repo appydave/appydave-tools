@@ -1,55 +1,39 @@
 # Next Round Brief
 
 **Created:** 2026-03-19
-**Updated:** 2026-03-19 (after three-lens audit)
+**Updated:** 2026-03-19 (after fr2-gpt-context-help assessment)
 
 ---
 
-## Recommended Next Campaign: gpt_context Fixes + FR-2 + Jump Verification
+## Recommended Next Campaign: bugfix-and-security
 
 ### Goal
 
-Fix the two small blockers in `gpt_context/file_collector.rb` (B015, B019), then implement FR-2 (GPT Context AI help system). In parallel, verify whether BUG-1 (Jump get/remove) is still live before planning a Jump campaign.
+Fix two BLOCKER-level bugs (B016, B017) and one dead-code guard (B021) before building any new S3 or archive features.
 
 ### Background
 
-**Three-lens audit findings changed the priority order:**
+Quality audit after fr2-gpt-context-help surfaced these as blockers:
 
-1. FR-2 has two small pre-conditions in `file_collector.rb` that must be fixed first:
-   - `puts @working_directory` at line 15 (B019 — 1 line delete)
-   - `FileUtils.cd` without `ensure` (B015 — wrap in block form)
-   Both are ~5 minutes of work. Do them as the first commit of the FR-2 campaign.
+1. **B017** — `ssl_verify_peer: false` hardcoded unconditionally in `S3Operations` and `ShareOperations`. Removes MITM protection on all S3 operations including credential transmission. Must fix before any S3 feature work.
+2. **B016** — `ManifestGenerator.determine_range` returns `"b50-b99"` format; `SyncFromSsd.determine_range` returns `"60-69"` format. Incompatible SSD path construction means projects can be silently missed during archive/restore. Must fix before any archive feature work.
+3. **B021** — `bin/gpt_context.rb` line 115 guard checks `options.format.nil?` as third AND condition. `format` defaults to `'content'` in Options — never nil. Dead condition; guard can only fire on include/exclude emptiness. 5-minute fix.
 
-2. BUG-1 (Jump get/remove) is mislabeled in the original backlog. Static analysis shows `Jump::Config#find` and `Commands::Remove` have correct dual-key guards. The bug may already be fixed or may be environmental. **Verify live before planning any Jump campaign.**
+### Suggested Work Units
 
-3. New high-priority bugs found by the audit (B016, B017) should be assessed for inclusion in the next campaign or scheduled shortly after.
+1. **Fix B017** — Remove `ssl_verify_peer: false` from `S3Operations` and `ShareOperations`. No env flag needed — AWS SDK handles SSL correctly by default.
+2. **Fix B016** — Align range string format between `ManifestGenerator` and `SyncFromSsd`. Read actual SSD folder structure on disk first to determine which format matches reality; update the other to match.
+3. **Fix B021** — Remove `&& options.format.nil?` from guard at `bin/gpt_context.rb:115`. Update or add spec to verify no-args behavior.
 
-### Suggested Work Units (FR-2 Campaign)
+### Optional (bundle if small)
 
-1. **Fix B019** — Delete `puts @working_directory` from `file_collector.rb:15` (1-line fix)
-2. **Fix B015** — Wrap `FileUtils.cd` in block form in `file_collector.rb` (3-line fix)
-3. **Implement FR-2** — Read `docs/specs/fr-002-gpt-context-help-system.md`. Option A from the spec (enhanced OptionParser with banner, separators, `--version`) is the correct approach. No changes to lib/ needed — this is a `bin/gpt_context.rb` enhancement.
-4. **Verify BUG-1** — Run `bin/jump.rb get <key>` live. If broken: find actual failure site. If fixed: write regression spec for `Jump::Config#find` round-trip and close.
-
-### Pre-Campaign Blockers: None
-
-Neither fix requires architectural changes. FR-2 is contained to `bin/gpt_context.rb`. The Jump verification is read-only unless the bug is confirmed.
-
-### What Agents Need to Know
-
-- Read `docs/planning/AGENTS.md` — test/lint patterns, commit format, quality gates
-- FR-2 spec: `docs/specs/fr-002-gpt-context-help-system.md`
-- gpt_context source: `lib/appydave/tools/gpt_context/` + `bin/gpt_context.rb`
-- Jump source: `lib/appydave/tools/jump/` (Config, Search, Commands/*)
-- Jump tests: `spec/appydave/tools/jump/` + `spec/support/jump_test_helpers.rb`
-- BUG-1 call chain: `CLI#run_get` → `Search#get` → `Config#find` → `locations.find { |loc| loc.key == key }`
-
-### Also Schedule Soon (from audit)
-
-- B016 — ManifestGenerator vs SyncFromSsd range string mismatch (data integrity — schedule next)
-- B017 — ssl_verify_peer: false in S3Operations (security — schedule next)
-- B018 — Jump Commands layer specs (no specs for Remove/Add/Update)
+- **B018** — Jump Commands layer specs (Remove/Add/Update) — no code changes, just test coverage
+- **B022** — Expand cli_spec.rb with functional tests for -i, -e, -f, -o flags
 
 ### Mode Recommendation
 
-**Extend** — stack, patterns, and quality gates are known from prior campaigns. Use Extend, not Plan.
+**Extend** — stack, patterns, and quality gates known. Inherit AGENTS.md.
+
+### Pre-Campaign Blockers: None
+
+All three fixes are standalone. B016 requires reading SSD disk structure before writing code (per AGENTS.md: read actual files before designing data shapes).

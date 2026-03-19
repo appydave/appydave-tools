@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-19 (updated after three-lens audit)
-**Total**: 20 | Pending: 14 | Done: 6 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-19 (fr2-gpt-context-help assessment + 3 new items from quality audit)
+**Total**: 23 | Pending: 16 | Done: 7 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -10,11 +10,13 @@
 ### High Priority
 - [ ] B015 — BUG-2: FileCollector uses FileUtils.cd without ensure (process dir not restored on exception) | Priority: high
 - [ ] B016 — BUG-3: ManifestGenerator + SyncFromSsd produce incompatible SSD range strings (data integrity) | Priority: high
-- [ ] B002 — FR-2: GPT Context AI-friendly help system | Priority: high
 - [x] B006 — BUG-1: Jump CLI get/remove key lookup | Completed: verified fixed 2026-03-19, regression spec added
 - [ ] B017 — Security: ssl_verify_peer disabled unconditionally in S3Operations + ShareOperations | Priority: high
 
 ### Medium Priority
+- [ ] B021 — Fix: gpt_context no-args guard checks format.nil? which is always false (dead condition) | Priority: medium
+- [ ] B022 — Tests: expand cli_spec.rb with functional tests (-i, -e, -f, -o flags, exit codes) | Priority: medium
+- [ ] B023 — Tests: add file_collector_spec coverage for JSON format, aider format, error paths | Priority: medium
 - [ ] B018 — Tests: add specs for Jump Commands::Remove, Commands::Add, Commands::Update | Priority: medium
 - [ ] B019 — Fix: remove debug puts @working_directory from gpt_context/file_collector.rb | Priority: medium
 - [ ] B001 — FR-1: GPT Context token counting | Priority: medium
@@ -37,6 +39,7 @@
 - [x] B005 — NFR-2: Jump Claude Code Skill | Completed: 2025-12-14
 - [x] B013 — Arch: Extract GitHelper module (90 lines duplication) | Completed: dam-enhancement-sprint (Jan 2025)
 - [x] B014 — Arch: Create BrandResolver to centralize brand transformation | Completed: dam-enhancement-sprint (Jan 2025)
+- [x] B002 — FR-2: GPT Context AI-friendly help system | Completed: fr2-gpt-context-help (2026-03-19)
 
 ---
 

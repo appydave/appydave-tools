@@ -85,8 +85,7 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       allow(Aws::S3::Client).to receive(:new).with(
         credentials: mock_credentials,
         region: 'us-east-1',
-        http_wire_trace: false,
-        ssl_verify_peer: false
+        http_wire_trace: false
       ).and_return(mock_s3_client)
 
       # Don't inject s3_client to test the creation logic

@@ -5,14 +5,14 @@
 **Target**: `--help` shows structured sections; `--version` works; specs pass; rubocop clean
 
 ## Summary
-- Total: 1 | Complete: 0 | In Progress: 0 | Pending: 1 | Failed: 0
+- Total: 1 | Complete: 1 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
 
 ## In Progress
-- [~] fr2-gpt-context-help — Implement AI-friendly help system in bin/gpt_context.rb per docs/specs/fr-002-gpt-context-help-system.md
 
 ## Complete
+- [x] fr2-gpt-context-help — Implement AI-friendly help system in bin/gpt_context.rb. 754 examples, 0 failures. v0.76.0 published. Also fixed pre-existing rubocop offenses in bin/dam and split jump_test_helpers (JumpTestLocations → own file).
 
 ## Failed / Needs Retry
 
