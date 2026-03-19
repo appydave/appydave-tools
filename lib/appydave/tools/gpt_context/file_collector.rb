@@ -12,35 +12,28 @@ module Appydave
           @exclude_patterns = options.exclude_patterns
           @format = options.format
           @working_directory = File.expand_path(options.working_directory)
-          puts @working_directory
           @line_limit = options.line_limit
         end
 
         def build
-          FileUtils.cd(@working_directory) if @working_directory && Dir.exist?(@working_directory)
+          return build_formats unless @working_directory && Dir.exist?(@working_directory)
 
-          formats = @format.split(',')
-          result = formats.map do |fmt|
-            case fmt
-            when 'tree'
-              build_tree
-            when 'content'
-              build_content
-            when 'json'
-              build_json
-            when 'aider'
-              build_aider
-            else
-              ''
-            end
-          end.join("\n\n")
-
-          FileUtils.cd(Dir.home) if @working_directory
-
-          result
+          FileUtils.cd(@working_directory) { build_formats }
         end
 
         private
+
+        def build_formats
+          @format.split(',').map do |fmt|
+            case fmt
+            when 'tree'    then build_tree
+            when 'content' then build_content
+            when 'json'    then build_json
+            when 'aider'   then build_aider
+            else ''
+            end
+          end.join("\n\n")
+        end
 
         def build_content
           concatenated_content = []

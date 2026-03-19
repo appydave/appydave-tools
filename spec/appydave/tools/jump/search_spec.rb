@@ -150,6 +150,32 @@ RSpec.describe Appydave::Tools::Jump::Search do
     end
   end
 
+  # Regression: BUG-1 — jump get / jump remove failed to find entries that jump search found.
+  # Root cause was environmental (stale config format); dual-key guards in Config#find and
+  # Config#remove are correct. This block locks the consistent-lookup contract.
+  describe 'key lookup consistency (BUG-1 regression)' do
+    it 'get finds every key that search finds' do
+      result = search.search('ad-tools')
+      found_key = result[:results].first[:key]
+
+      get_result = search.get(found_key)
+
+      expect(get_result[:success]).to be true
+      expect(get_result[:results].first[:key]).to eq(found_key)
+    end
+
+    it 'get and search return the same location data for the same exact key' do
+      search_result = search.search('flivideo')
+      search_location = search_result[:results].first
+
+      get_result = search.get('flivideo')
+      get_location = get_result[:results].first
+
+      expect(get_location[:key]).to eq(search_location[:key])
+      expect(get_location[:path]).to eq(search_location[:path])
+    end
+  end
+
   describe '#list' do
     it 'returns all locations' do
       result = search.list

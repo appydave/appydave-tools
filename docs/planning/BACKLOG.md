@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
 **Last updated**: 2026-03-19 (updated after three-lens audit)
-**Total**: 20 | Pending: 15 | Done: 5 | Deferred: 0 | Rejected: 0
+**Total**: 20 | Pending: 14 | Done: 6 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -11,7 +11,7 @@
 - [ ] B015 — BUG-2: FileCollector uses FileUtils.cd without ensure (process dir not restored on exception) | Priority: high
 - [ ] B016 — BUG-3: ManifestGenerator + SyncFromSsd produce incompatible SSD range strings (data integrity) | Priority: high
 - [ ] B002 — FR-2: GPT Context AI-friendly help system | Priority: high
-- [ ] B006 — BUG-1: Jump CLI get/remove key lookup — verify live before coding (may be fixed already) | Priority: high
+- [x] B006 — BUG-1: Jump CLI get/remove key lookup | Completed: verified fixed 2026-03-19, regression spec added
 - [ ] B017 — Security: ssl_verify_peer disabled unconditionally in S3Operations + ShareOperations | Priority: high
 
 ### Medium Priority
