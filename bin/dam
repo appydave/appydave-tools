@@ -515,63 +515,6 @@ class VatCLI
     brands.key?(brand_key) || brands.shortcut?(brand_key)
   end
 
-  # Add local sync status to matched projects data
-  # Mutates the matched_projects hash to add :local_status key
-  # @param matched_projects [Hash] Map of project_id => S3 data
-  # @param brand_key [String] Brand key (e.g., 'appydave', 'ss')
-  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-  def add_local_sync_status!(matched_projects, brand_key)
-    matched_projects.each do |project_id, data|
-      project_path = Appydave::Tools::Dam::Config.project_path(brand_key, project_id)
-      s3_staging_path = File.join(project_path, 's3-staging')
-
-      if !Dir.exist?(project_path)
-        data[:local_status] = :no_project # Project directory doesn't exist
-      elsif !Dir.exist?(s3_staging_path)
-        data[:local_status] = :no_files # Project exists but no downloads yet
-      else
-        # Count local files in s3-staging
-        local_files = Dir.glob(File.join(s3_staging_path, '**', '*'))
-                         .select { |f| File.file?(f) }
-                         .reject { |f| File.basename(f).include?('Zone.Identifier') } # Exclude Windows metadata
-
-        s3_file_count = data[:file_count]
-        local_file_count = local_files.size
-
-        data[:local_status] = if local_file_count.zero?
-                                :no_files
-                              elsif local_file_count == s3_file_count
-                                :synced # Fully synced
-                              else
-                                :partial # Some files downloaded
-                              end
-
-        data[:local_file_count] = local_file_count
-      end
-    end
-  end
-  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-
-  # Format local sync status for display
-  # @param status [Symbol] :synced, :no_files, :partial, :no_project
-  # @param local_count [Integer, nil] Number of local files
-  # @param s3_count [Integer] Number of S3 files
-  # @return [String] Formatted status string
-  def format_local_status(status, local_count, s3_count)
-    case status
-    when :synced
-      '✓ Synced'
-    when :no_files
-      '⚠ None'
-    when :partial
-      "⚠ #{local_count}/#{s3_count}"
-    when :no_project
-      '✗ Missing'
-    else
-      'Unknown'
-    end
-  end
-
   def parse_share_args(args)
     # Extract --expires flag
     expires = '7d' # default
@@ -1478,7 +1421,7 @@ class VatCLI
     File.write(manifest_path, JSON.pretty_generate(manifest))
 
     # Add local sync status to matched projects
-    add_local_sync_status!(matched_projects, brand_key)
+    Appydave::Tools::Dam::LocalSyncStatus.enrich!(matched_projects, brand_key)
 
     # Display table
     display_s3_scan_table(matched_projects, orphaned_projects, bucket, prefix, region)
@@ -1508,7 +1451,7 @@ class VatCLI
     matched_projects.sort.each do |project_id, data|
       files = data[:file_count].to_s.rjust(5)
       size = Appydave::Tools::Dam::FileHelper.format_size(data[:total_bytes]).rjust(10)
-      local_status = format_local_status(data[:local_status], data[:local_file_count], data[:file_count])
+      local_status = Appydave::Tools::Dam::LocalSyncStatus.format(data[:local_status], data[:local_file_count], data[:file_count])
       modified = data[:last_modified] ? Time.parse(data[:last_modified]).strftime('%Y-%m-%d %H:%M') : 'N/A'
 
       puts format('%-36s %5s %10s  %-9s  %s', project_id, files, size, local_status, modified)

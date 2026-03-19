@@ -77,6 +77,7 @@ require 'appydave/tools/dam/ssd_status'
 require 'appydave/tools/dam/repo_status'
 require 'appydave/tools/dam/repo_sync'
 require 'appydave/tools/dam/repo_push'
+require 'appydave/tools/dam/local_sync_status'
 
 require 'appydave/tools/jump/path_validator'
 require 'appydave/tools/jump/location'
