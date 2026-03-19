@@ -308,6 +308,11 @@ include_context 'with vat filesystem and brands', brands: %w[appydave]
 - `ssl_verify_peer: false` is not safe for AWS — HTTPS alone doesn't prevent MITM without peer verification
 - ManifestGenerator `determine_range` is the canonical format; SyncFromSsd must match it
 
+### From bugfix-and-security (2026-03-19)
+- **`options.format` defaults to `'tree,content'`** in GptContext::Options — not `'content'`. It is never nil. Do not use `options.format.nil?` as a guard.
+- **Use `$CHILD_STATUS` not `$?` in specs** — RuboCop flags `$?` as a special global variable. Use `$CHILD_STATUS` (from the English module, auto-available in RSpec) for exit status assertions.
+- **`exit` with no code exits 0** — Ruby's bare `exit` call produces exit status 0. Write specs accordingly.
+
 ### From fr2-gpt-context-help (2026-03-19)
 - `opts.on_tail` vs `opts.on` matters for option ordering in OptionParser
 - Subprocess specs (`ruby #{script} --flag`) are correct for CLI integration tests

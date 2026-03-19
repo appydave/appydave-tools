@@ -170,7 +170,7 @@ module Appydave
           return { skipped: 1, files: 0, bytes: 0, reason: 'Flat folder exists (stale manifest?)' } if Dir.exist?(flat_path)
 
           # Determine local destination path (archived structure)
-          # Extract range from project ID (e.g., b65 → 60-69 range)
+          # Extract range from project ID (e.g., b65 → b50-b99 range)
           range = determine_range(project_id)
           local_dir = File.join(brand_path, 'archived', range, project_id)
 

@@ -1,39 +1,42 @@
 # Next Round Brief
 
 **Created:** 2026-03-19
-**Updated:** 2026-03-19 (after fr2-gpt-context-help assessment)
+**Updated:** 2026-03-19 (after bugfix-and-security assessment)
 
 ---
 
-## Recommended Next Campaign: bugfix-and-security
+## Recommended Next Campaign: test-coverage-gaps
 
 ### Goal
 
-Fix two BLOCKER-level bugs (B016, B017) and one dead-code guard (B021) before building any new S3 or archive features.
+Protect the B017 SSL security fix with a regression test, expand functional test coverage across gpt_context CLI and DAM range logic, and add the missing Jump Commands layer specs.
 
 ### Background
 
-Quality audit after fr2-gpt-context-help surfaced these as blockers:
+Quality audit after bugfix-and-security found:
 
-1. **B017** — `ssl_verify_peer: false` hardcoded unconditionally in `S3Operations` and `ShareOperations`. Removes MITM protection on all S3 operations including credential transmission. Must fix before any S3 feature work.
-2. **B016** — `ManifestGenerator.determine_range` returns `"b50-b99"` format; `SyncFromSsd.determine_range` returns `"60-69"` format. Incompatible SSD path construction means projects can be silently missed during archive/restore. Must fix before any archive feature work.
-3. **B021** — `bin/gpt_context.rb` line 115 guard checks `options.format.nil?` as third AND condition. `format` defaults to `'content'` in Options — never nil. Dead condition; guard can only fire on include/exclude emptiness. 5-minute fix.
+1. **B024** — `configure_ssl_options` has zero unit tests. The B017 SSL fix (removing unconditional `ssl_verify_peer: false`) has no regression protection. If reverted, all tests still pass. Must fix.
+2. **B022** — `cli_spec.rb` only tests `--help`, `--version`, no-args. No functional tests for `-i`, `-e`, `-f`, `-o`. Core behaviour untested at CLI level.
+3. **B026** — `determine_range` tests narrow (b40, b65, b99 only). Missing: b00, b9, a40. Both sync_from_ssd_spec and manifest_generator_spec need these.
+4. **B027** — gpt_context no-args spec only checks output string. Does not verify file collection stops.
+5. **B018** — Jump Commands (Remove/Add/Update) — zero dedicated specs.
+6. **B025** — Stale comment sync_from_ssd.rb line 173 (says 60-69, should say b50-b99).
 
-### Suggested Work Units
+### Suggested Work Units (parallel — all test-only except B025)
 
-1. **Fix B017** — Remove `ssl_verify_peer: false` from `S3Operations` and `ShareOperations`. No env flag needed — AWS SDK handles SSL correctly by default.
-2. **Fix B016** — Align range string format between `ManifestGenerator` and `SyncFromSsd`. Read actual SSD folder structure on disk first to determine which format matches reality; update the other to match.
-3. **Fix B021** — Remove `&& options.format.nil?` from guard at `bin/gpt_context.rb:115`. Update or add spec to verify no-args behavior.
-
-### Optional (bundle if small)
-
-- **B018** — Jump Commands layer specs (Remove/Add/Update) — no code changes, just test coverage
-- **B022** — Expand cli_spec.rb with functional tests for -i, -e, -f, -o flags
+1. **fix-b024-ssl-tests** — Add `configure_ssl_options` unit tests to s3_operations_spec and share_operations_spec. Verify empty hash on default path; `{ssl_verify_peer: false}` when ENV override set. Stub ENV directly (`allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return('true')`).
+2. **fix-b022-cli-tests** — Add functional subprocess tests to cli_spec.rb for -i, -e, -f, -o flags. Write to Tempfile, verify content. Use `Dir.mktmpdir` and clean up after.
+3. **fix-b026-b025-range-tests** — Add edge cases (b00, b9, a40) to sync_from_ssd_spec and manifest_generator_spec. Fix stale comment sync_from_ssd.rb line 173 while in the file.
+4. **fix-b027-noargs-test** — Strengthen no-args spec: `expect(Appydave::Tools::GptContext::FileCollector).not_to receive(:new)` when no patterns given.
+5. **fix-b018-jump-specs** — Add spec files for Jump Commands::Remove, Commands::Add, Commands::Update. Read existing Jump CLI spec first for setup pattern. Use JumpTestLocations + `with jump filesystem` context.
 
 ### Mode Recommendation
 
-**Extend** — stack, patterns, and quality gates known. Inherit AGENTS.md.
+**Extend** — same stack, same patterns, test-only work. Inherit AGENTS.md.
 
-### Pre-Campaign Blockers: None
+### Pre-Campaign Notes
 
-All three fixes are standalone. B016 requires reading SSD disk structure before writing code (per AGENTS.md: read actual files before designing data shapes).
+- Check if `climate_control` gem is in Gemfile before using ClimateControl — use direct ENV stubbing if not available
+- For B022 functional tests: subprocess writes to file, assert content includes `# file:` headers
+- For B027: stub at the class level, not instance — `expect(described_class).not_to receive(:new)`
+- For B018: read `spec/appydave/tools/jump/` existing specs before writing new command specs

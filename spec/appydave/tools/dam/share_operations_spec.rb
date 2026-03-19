@@ -230,6 +230,34 @@ RSpec.describe Appydave::Tools::Dam::ShareOperations do
     end
   end
 
+  describe '#configure_ssl_options' do
+    subject(:ssl_options) { share_ops.send(:configure_ssl_options) }
+
+    let(:share_ops) { create_share_operations }
+
+    context 'when AWS_SDK_RUBY_SKIP_SSL_VERIFICATION is not set' do
+      before { allow(ENV).to receive(:[]).and_call_original }
+      before { allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return(nil) }
+
+      it 'returns empty hash (SSL verification enabled by default)' do
+        expect(ssl_options).to eq({})
+      end
+
+      it 'does not include ssl_verify_peer key' do
+        expect(ssl_options).not_to have_key(:ssl_verify_peer)
+      end
+    end
+
+    context 'when AWS_SDK_RUBY_SKIP_SSL_VERIFICATION is "true"' do
+      before { allow(ENV).to receive(:[]).and_call_original }
+      before { allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return('true') }
+
+      it 'returns ssl_verify_peer: false' do
+        expect(ssl_options).to eq({ ssl_verify_peer: false })
+      end
+    end
+  end
+
   describe '#file_exists_in_s3?' do
     let(:share_ops) { create_share_operations }
     let(:s3_key) { 'staging/v-test/test-project/video.mp4' }

@@ -1,26 +1,28 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-19 (fr2-gpt-context-help assessment + 3 new items from quality audit)
-**Total**: 23 | Pending: 16 | Done: 7 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-19 (bugfix-and-security assessment + 4 new items from quality audit)
+**Total**: 27 | Pending: 17 | Done: 10 | Deferred: 0 | Rejected: 0
 
 ---
 
 ## Pending
 
 ### High Priority
+- [ ] B024 — Tests: add configure_ssl_options unit tests to s3_operations_spec + share_operations_spec (protects B017 security fix) | Priority: high
 - [ ] B015 — BUG-2: FileCollector uses FileUtils.cd without ensure (process dir not restored on exception) | Priority: high
-- [ ] B016 — BUG-3: ManifestGenerator + SyncFromSsd produce incompatible SSD range strings (data integrity) | Priority: high
 - [x] B006 — BUG-1: Jump CLI get/remove key lookup | Completed: verified fixed 2026-03-19, regression spec added
-- [ ] B017 — Security: ssl_verify_peer disabled unconditionally in S3Operations + ShareOperations | Priority: high
 
 ### Medium Priority
-- [ ] B021 — Fix: gpt_context no-args guard checks format.nil? which is always false (dead condition) | Priority: medium
 - [ ] B022 — Tests: expand cli_spec.rb with functional tests (-i, -e, -f, -o flags, exit codes) | Priority: medium
+- [ ] B026 — Tests: add determine_range edge cases (b00, b9, a40) to sync_from_ssd_spec + manifest_generator_spec | Priority: medium
+- [ ] B027 — Tests: strengthen gpt_context no-args spec to verify file collection actually stops | Priority: medium
 - [ ] B023 — Tests: add file_collector_spec coverage for JSON format, aider format, error paths | Priority: medium
 - [ ] B018 — Tests: add specs for Jump Commands::Remove, Commands::Add, Commands::Update | Priority: medium
 - [ ] B019 — Fix: remove debug puts @working_directory from gpt_context/file_collector.rb | Priority: medium
 - [ ] B001 — FR-1: GPT Context token counting | Priority: medium
 - [ ] B012 — Arch: add integration tests for brand resolution end-to-end | Priority: medium
+
+- [ ] B025 — Fix: stale comment in sync_from_ssd.rb line 173 (says 60-69, should say b50-b99) | Priority: low
 
 ### Low Priority
 - [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low
@@ -40,6 +42,9 @@
 - [x] B013 — Arch: Extract GitHelper module (90 lines duplication) | Completed: dam-enhancement-sprint (Jan 2025)
 - [x] B014 — Arch: Create BrandResolver to centralize brand transformation | Completed: dam-enhancement-sprint (Jan 2025)
 - [x] B002 — FR-2: GPT Context AI-friendly help system | Completed: fr2-gpt-context-help (2026-03-19)
+- [x] B016 — BUG-3: ManifestGenerator + SyncFromSsd incompatible SSD range strings | Completed: bugfix-and-security (2026-03-19)
+- [x] B017 — Security: ssl_verify_peer disabled unconditionally in S3Operations + ShareOperations + S3Scanner | Completed: bugfix-and-security (2026-03-19)
+- [x] B021 — Fix: gpt_context no-args guard had dead format.nil? condition | Completed: bugfix-and-security (2026-03-19)
 
 ---
 

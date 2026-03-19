@@ -621,5 +621,20 @@ RSpec.describe Appydave::Tools::Dam::ManifestGenerator do
       range = manifest_generator.send(:determine_range, 'boy-baker')
       expect(range).to eq('000-099')
     end
+
+    it 'determines range for boundary b00' do
+      range = manifest_generator.send(:determine_range, 'b00-first-project')
+      expect(range).to eq('b00-b49')
+    end
+
+    it 'determines range for single-digit b9' do
+      range = manifest_generator.send(:determine_range, 'b9-project')
+      expect(range).to eq('b00-b49')
+    end
+
+    it 'determines range for non-b letter prefix a40' do
+      range = manifest_generator.send(:determine_range, 'a40-test-project')
+      expect(range).to eq('a00-a49')
+    end
   end
 end
