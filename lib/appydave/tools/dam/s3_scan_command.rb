@@ -6,7 +6,6 @@ module Appydave
       # Encapsulates S3 scan logic: single-brand and all-brands scanning
       class S3ScanCommand
         # Scan a single brand's S3 bucket and update its manifest
-        # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
         def scan_single(brand_key)
           puts "🔄 Scanning S3 for #{brand_key}..."
           puts ''
@@ -98,10 +97,8 @@ module Appydave
           puts "   • Manifest: #{manifest_path}"
           puts ''
         end
-        # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity
 
         # Scan all brands' S3 buckets
-        # rubocop:disable Metrics/MethodLength
         def scan_all
           Appydave::Tools::Configuration::Config.configure
           brands_config = Appydave::Tools::Configuration::Config.brands
@@ -141,12 +138,11 @@ module Appydave
           puts ''
           puts "Total brands scanned: #{successful.size}/#{results.size}"
         end
-        # rubocop:enable Metrics/MethodLength
 
         private
 
         # Display S3 scan results in table format
-        # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity, Style/FormatStringToken
+        # rubocop:disable Style/FormatStringToken
         def display_table(matched_projects, orphaned_projects, bucket, prefix, region)
           puts '✅ S3 Projects Report'
           puts ''
@@ -188,7 +184,7 @@ module Appydave
             puts "     #{console_url}"
           end
         end
-        # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity, Style/FormatStringToken
+        # rubocop:enable Style/FormatStringToken
       end
     end
   end
