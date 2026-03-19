@@ -58,6 +58,34 @@ RSpec.describe Appydave::Tools::Jump::Commands::Update do
 
         expect(result[:warning]).to be_nil
       end
+
+      it 'does not modify non-updated fields on the updated record' do
+        original = config.find('ad-tools')
+        original_path = original.path
+        original_jump = original.jump
+        original_tags = original.tags
+
+        cmd = described_class.new(config, 'ad-tools', { description: 'Changed' }, path_validator: path_validator)
+        cmd.run
+
+        updated = config.find('ad-tools')
+        expect(updated.path).to eq(original_path)
+        expect(updated.jump).to eq(original_jump)
+        expect(updated.tags).to eq(original_tags)
+      end
+
+      it 'does not modify the sibling record fields' do
+        original_flivideo = config.find('flivideo')
+        original_path = original_flivideo.path
+        original_jump = original_flivideo.jump
+
+        cmd = described_class.new(config, 'ad-tools', { description: 'Changed' }, path_validator: path_validator)
+        cmd.run
+
+        flivideo = config.find('flivideo')
+        expect(flivideo.path).to eq(original_path)
+        expect(flivideo.jump).to eq(original_jump)
+      end
     end
 
     context 'when updated path does not exist' do

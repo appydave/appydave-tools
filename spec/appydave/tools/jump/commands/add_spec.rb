@@ -40,6 +40,19 @@ RSpec.describe Appydave::Tools::Jump::Commands::Add do
         expect(result[:location][:key]).to eq('new-project')
       end
 
+      it 'returns location data matching all input attrs' do
+        cmd = described_class.new(config, valid_attrs, path_validator: path_validator)
+        result = cmd.run
+
+        location = result[:location]
+        expect(location[:key]).to eq('new-project')
+        expect(location[:path]).to eq('~/dev/new-project')
+        expect(location[:jump]).to eq('jnew')
+        expect(location[:type]).to eq('tool')
+        expect(location[:tags]).to eq(%w[ruby])
+        expect(location[:description]).to eq('A new project')
+      end
+
       it 'persists the location to the config' do
         cmd = described_class.new(config, valid_attrs, path_validator: path_validator)
         cmd.run

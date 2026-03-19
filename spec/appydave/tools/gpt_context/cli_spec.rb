@@ -49,6 +49,7 @@ RSpec.describe 'gpt_context CLI help' do
         `ruby #{script} -i '*.rb' -b #{tmpdir} -o #{outfile} 2>&1`
 
         expect(File.read(outfile)).to include('# file: test.rb')
+        expect(File.read(outfile)).to include('# test content')
       end
     end
 
@@ -63,6 +64,8 @@ RSpec.describe 'gpt_context CLI help' do
         content = File.read(outfile)
         expect(content).to include('# file: test.rb')
         expect(content).not_to include('readme.md')
+        expect(content).to include('# ruby file')
+        expect(content).not_to include('# markdown file')
       end
     end
   end
@@ -79,6 +82,8 @@ RSpec.describe 'gpt_context CLI help' do
         content = File.read(outfile)
         expect(content).to include('# file: keep.rb')
         expect(content).not_to include('# file: exclude.rb')
+        expect(content).to include('# keep')
+        expect(content).not_to include('# exclude')
       end
     end
 
@@ -90,6 +95,7 @@ RSpec.describe 'gpt_context CLI help' do
         `ruby #{script} -i '*.rb' -e 'nomatch.rb' -b #{tmpdir} -o #{outfile} 2>&1`
 
         expect(File.read(outfile)).to include('# file: keep.rb')
+        expect(File.read(outfile)).to include('# keep')
       end
     end
   end
