@@ -1,3 +1,11 @@
+## [0.76.12](https://github.com/appydave/appydave-tools/compare/v0.76.11...v0.76.12) (2026-03-19)
+
+
+### Bug Fixes
+
+* remove ENV BRAND_PATH dead code from bin/dam (10 assignments, never read in lib) ([5c11027](https://github.com/appydave/appydave-tools/commit/5c1102703558e0626c09cd0243dcac8259a11298))
+* strengthen s3_scan_command_spec field assertions; remove LocalSyncStatus stub ([7f1fc5a](https://github.com/appydave/appydave-tools/commit/7f1fc5a860a0fe3fae80d9fc6c87705deb5206c2))
+
 ## [0.76.11](https://github.com/appydave/appydave-tools/compare/v0.76.10...v0.76.11) (2026-03-19)
 
 
