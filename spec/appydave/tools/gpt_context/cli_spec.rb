@@ -36,7 +36,7 @@ RSpec.describe 'gpt_context CLI help' do
     it 'does not produce file content output when no patterns provided' do
       output = `ruby #{script} 2>&1`
       expect(output).not_to include('# file:')
-      expect(output).not_to include('clipboard')
+      expect(output).not_to include('No output target provided')
     end
   end
 
