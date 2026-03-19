@@ -1,3 +1,16 @@
+# [0.76.0](https://github.com/appydave/appydave-tools/compare/v0.75.0...v0.76.0) (2026-03-19)
+
+
+### Bug Fixes
+
+* fix pre-existing rubocop offenses in bin/dam and split jump test helpers to avoid OneClassPerFile ([491b980](https://github.com/appydave/appydave-tools/commit/491b980c335b7e3d205a5368cd0a7b96e5b5a82f))
+* remove debug puts and fix unguarded FileUtils.cd in FileCollector; close BUG-1 ([13d5f87](https://github.com/appydave/appydave-tools/commit/13d5f8793d5185cb9795cab86a5270726763c30e))
+
+
+### Features
+
+* add AI-friendly help system to GPT Context ([c0b8843](https://github.com/appydave/appydave-tools/commit/c0b884323654a248d660ea137712e7c0e5fc172c))
+
 # [0.75.0](https://github.com/appydave/appydave-tools/compare/v0.74.1...v0.75.0) (2026-02-08)
 
 
