@@ -1,3 +1,10 @@
+## [0.76.11](https://github.com/appydave/appydave-tools/compare/v0.76.10...v0.76.11) (2026-03-19)
+
+
+### Bug Fixes
+
+* use full BrandsConfig constant in s3_scan_command_spec to prevent CI verification failure ([3bd417d](https://github.com/appydave/appydave-tools/commit/3bd417d5d58dff89af736567ba7f85fd1d786fb6))
+
 ## [0.76.10](https://github.com/appydave/appydave-tools/compare/v0.76.9...v0.76.10) (2026-03-19)
 
 
