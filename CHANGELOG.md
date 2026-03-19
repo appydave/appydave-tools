@@ -1,3 +1,10 @@
+## [0.76.7](https://github.com/appydave/appydave-tools/compare/v0.76.6...v0.76.7) (2026-03-19)
+
+
+### Bug Fixes
+
+* extract S3ArgParser module from VatCLI; add spec ([9bbd709](https://github.com/appydave/appydave-tools/commit/9bbd7099c26b774b68103f4d37d0a25f22f4abc2))
+
 ## [0.76.6](https://github.com/appydave/appydave-tools/compare/v0.76.5...v0.76.6) (2026-03-19)
 
 
