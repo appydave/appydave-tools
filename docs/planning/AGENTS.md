@@ -232,6 +232,14 @@ Appydave::Tools::Configuration::Config.configure
 ### From Jump Location Tool (Dec 2025)
 
 - **Dependency injection for path validators** is required for CI compatibility. Path existence checks fail in CI — inject via parameter, not hardcoded.
-- **Known bug: `jump get` and `jump remove` key lookup** uses different algorithm than `jump search`. Bug is confirmed but root cause not pinpointed (see BUG-1 in BACKLOG.md). Do not fix `jump search` to match broken commands — fix the lookup logic in `get`/`remove`.
-- **Jump report commands** got `--limit` and `--skip-unassigned` flags after initial implementation (recent commits). Jump tool scope grows incrementally.
-- **Jump tests at baseline:** ~68 tests at initial implementation (Dec 13). More added since.
+- **BUG-1 status (as of 2026-03-19 audit):** Static analysis shows `Jump::Config#find` and `Commands::Remove` both have correct dual-key guards (`loc.key == key` on Location objects; `loc['key'] == key || loc[:key] == key` on raw hashes). The bug may be environmental or already fixed. Always verify live before writing fix code.
+- **Jump Commands layer is undertested:** `Commands::Remove`, `Commands::Add`, `Commands::Update` have zero dedicated specs. Auto-regenerate CLI spec does not substitute for command-layer unit tests verifying `--force` guards, error codes, and suggestion logic (see B018).
+- **Jump report commands** got `--limit` and `--skip-unassigned` flags after initial implementation. Jump tool scope grows incrementally.
+
+### From Three-Lens Audit (2026-03-19)
+
+- **`file_collector.rb` has two landmines before FR-2:** `puts @working_directory` at line 15 pollutes stdout; `FileUtils.cd` without `ensure` leaves process in wrong directory on exception. Fix both before adding any code to this class.
+- **ManifestGenerator and SyncFromSsd produce incompatible range strings (B016).** `determine_range('b65')` returns `"b50-b99"` in one and `"60-69"` in the other. This is a data integrity bug for SSD archive path construction. Do not add new archive features before this is resolved.
+- **`ssl_verify_peer: false` is set unconditionally in S3Operations and ShareOperations (B017).** Not safe despite the comment. Remove before adding any new S3 functionality.
+- **`Config.configure` fires inside nested call chains** (e.g., `brand_path` → `BrandResolver.to_config_key` → `configure` = 3 calls for one operation). Memoized, so no performance cost, but pattern will spread if not watched. Do not add new `Config.configure` calls; reference from the existing top-level call.
+- **BUG-1 is NOT in `name_manager/`.** Jump's `name_manager/project_name.rb` is a different unrelated class. BUG-1 root is in `lib/appydave/tools/jump/` (Config, Search, Commands).
