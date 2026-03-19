@@ -1,3 +1,10 @@
+## [0.76.3](https://github.com/appydave/appydave-tools/compare/v0.76.2...v0.76.3) (2026-03-19)
+
+
+### Bug Fixes
+
+* add field isolation assertions to update_spec non-updated fields ([da678f6](https://github.com/appydave/appydave-tools/commit/da678f68f5ff0384020639069b459d98e0558968))
+
 ## [0.76.2](https://github.com/appydave/appydave-tools/compare/v0.76.1...v0.76.2) (2026-03-19)
 
 
