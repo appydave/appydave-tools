@@ -10,7 +10,7 @@ Requirements tracking for AppyDave Tools development.
 |---|-------------|-------|--------|
 | 1 | FR-1: GPT Context token counting (see below) | 2025-12-06 | Pending |
 | 2 | FR-2: GPT Context AI-friendly help system (see below) | 2025-12-07 | Pending |
-| 3 | NFR-1: Improve test coverage for DAM commands | 2025-12-06 | Pending |
+| 3 | NFR-1: Improve test coverage for DAM commands | 2025-12-06 | ✅ Addressed in DAM sprint (Jan 2025) — +648 lines, 5 new spec files |
 | 4 | FR-3: Jump Location Tool (see spec) | 2025-12-13 | ✅ Implemented 2025-12-13 |
 | 5 | NFR-2: Claude Code Skill for Jump Tool (see below) | 2025-12-14 | ✅ Implemented 2025-12-14 |
 | 6 | BUG-1: Jump CLI get/remove commands fail to find entries (see below) | 2025-12-15 | Pending |
