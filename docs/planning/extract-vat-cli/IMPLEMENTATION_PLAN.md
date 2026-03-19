@@ -9,8 +9,8 @@
 
 ## Pending
 - [x] extract-format-bytes — Replaced 4 callers (plan said 3; orphaned-projects loop in display_s3_scan_table was a 4th). format_bytes deleted. rubocop 0 offenses. Commit: 3cd362f.
-- [~] extract-local-sync-status — Extract `add_local_sync_status!` + `format_local_status` → new `LocalSyncStatus` module; add spec; update callers in bin/dam
-- [ ] extract-s3-scan-command — Extract `scan_single_brand_s3` + `scan_all_brands_s3` + `display_s3_scan_table` → new `S3ScanCommand` class; add spec; **depends on extract-local-sync-status completing first**
+- [x] extract-local-sync-status — LocalSyncStatus module created, 7 specs added (838 total), both methods gone from VatCLI. Side-fix: restored youtube_automation_config require incorrectly removed in prior commit. v0.76.5.
+- [~] extract-s3-scan-command — Extract `scan_single_brand_s3` + `scan_all_brands_s3` + `display_s3_scan_table` → new `S3ScanCommand` class; add spec; **depends on extract-local-sync-status completing first**
 - [ ] extract-s3-arg-parser — Extract `parse_s3_args` + `valid_brand?` + `parse_share_args` + `show_share_usage_and_exit` + `parse_discover_args` → new `S3ArgParser` class; add spec
 
 ## In Progress
