@@ -5,12 +5,12 @@
 **Target**: 4 items complete; 847+ examples passing; rubocop 0 offenses; no regressions
 
 ## Summary
-- Total: 4 | Complete: 2 | In Progress: 2 | Pending: 0 | Failed: 0
+- Total: 4 | Complete: 3 | In Progress: 1 | Pending: 0 | Failed: 0
 
 ## Pending
 
 ## In Progress
-- [~] B036 — tests-s3-scan-command — Rebuild S3ScanCommand spec from D-grade to B; 8–10 examples covering happy path, manifest missing, empty results, orphaned projects
+- [x] B036 — tests-s3-scan-command — 10 behaviour examples replacing 2 smoke tests (happy path, manifest missing, empty results, orphaned projects, scan_all partial). 861 examples, 0 failures. 86.43% coverage. v0.76.10. Commit: de9d118.
 - [~] B037 — tests-local-sync-status — Add :partial case, local_file_count assertion, Zone.Identifier exclusion, unknown format guard
 
 ## Complete

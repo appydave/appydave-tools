@@ -18,7 +18,7 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
     instance_double('BrandInfo', key: 'appydave', aws: mock_brand_aws)
   end
   let(:mock_brands_config) do
-    cfg = instance_double('BrandsConfig')
+    cfg = instance_double(Appydave::Tools::Configuration::Models::BrandsConfig)
     allow(cfg).to receive(:get_brand).with(brand_key).and_return(mock_brand_info_appydave)
     allow(cfg).to receive(:brands).and_return([mock_brand_info_appydave])
     cfg
@@ -44,6 +44,7 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
     allow(Appydave::Tools::Dam::S3Scanner).to receive(:new).with(brand_key).and_return(mock_s3_scanner)
     allow(Appydave::Tools::Configuration::Config).to receive(:configure)
     allow(Appydave::Tools::Configuration::Config).to receive(:brands).and_return(mock_brands_config)
+    allow(Appydave::Tools::Dam::Config).to receive(:expand_brand).with(brand_key).and_return('v-appydave')
     allow(Appydave::Tools::Dam::Config).to receive(:brand_path).with(brand_key).and_return(appydave_path)
     allow(Appydave::Tools::Dam::LocalSyncStatus).to receive(:enrich!)
     allow(scanner).to receive(:puts)
