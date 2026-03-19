@@ -155,6 +155,7 @@ class VatCLI
   # S3 Upload
   def s3_up_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-up')
+    ENV['BRAND_PATH'] = options[:brand_path]
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.upload(dry_run: options[:dry_run])
   rescue StandardError => e
@@ -165,6 +166,7 @@ class VatCLI
   # S3 Download
   def s3_down_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-down')
+    ENV['BRAND_PATH'] = options[:brand_path]
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.download(dry_run: options[:dry_run])
   rescue StandardError => e
@@ -175,6 +177,7 @@ class VatCLI
   # S3 Status
   def s3_status_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-status')
+    ENV['BRAND_PATH'] = options[:brand_path]
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.status
   rescue StandardError => e
@@ -185,6 +188,7 @@ class VatCLI
   # S3 Cleanup Remote
   def s3_cleanup_remote_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-cleanup-remote')
+    ENV['BRAND_PATH'] = options[:brand_path]
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
@@ -195,6 +199,7 @@ class VatCLI
   # S3 Cleanup Local
   def s3_cleanup_local_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-cleanup-local')
+    ENV['BRAND_PATH'] = options[:brand_path]
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.cleanup_local(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
@@ -205,7 +210,7 @@ class VatCLI
   # Share file via pre-signed URL
   def s3_share_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_share(args)
-
+    ENV['BRAND_PATH'] = options[:brand_path]
     share_ops = Appydave::Tools::Dam::ShareOperations.new(options[:brand], options[:project])
     share_ops.generate_links(files: options[:file], expires: options[:expires], download: options[:download])
   rescue StandardError => e
@@ -216,6 +221,7 @@ class VatCLI
   # Discover files in S3 for a project
   def s3_discover_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_discover(args)
+    ENV['BRAND_PATH'] = options[:brand_path]
     files = fetch_s3_files(options[:brand_key], options[:project_id])
 
     return if handle_empty_files?(files, options[:brand_key], options[:project_id])
@@ -229,6 +235,7 @@ class VatCLI
   # Archive project to SSD
   def archive_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 'archive')
+    ENV['BRAND_PATH'] = options[:brand_path]
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.archive(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e

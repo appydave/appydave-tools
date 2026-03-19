@@ -32,14 +32,12 @@ module Appydave
             end
 
             brand_key = brand_arg # Use the shortcut/key (e.g., 'appydave')
-            brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg) # Expand for path resolution
             project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
           end
 
-          # Set ENV for compatibility with ConfigLoader
-          ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
+          brand_path = Appydave::Tools::Dam::Config.brand_path(brand_key)
 
-          { brand: brand_key, project: project_id, dry_run: dry_run, force: force }
+          { brand: brand_key, project: project_id, dry_run: dry_run, force: force, brand_path: brand_path }
         end
 
         def parse_share(args)
@@ -67,10 +65,9 @@ module Appydave
           brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
           project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
 
-          # Set ENV for compatibility with ConfigLoader
-          ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
+          brand_path = Appydave::Tools::Dam::Config.brand_path(brand)
 
-          { brand: brand_key, project: project_id, file: file_arg, expires: expires, download: download }
+          { brand: brand_key, project: project_id, file: file_arg, expires: expires, download: download, brand_path: brand_path }
         end
 
         def parse_discover(args)
@@ -89,10 +86,9 @@ module Appydave
           brand = Appydave::Tools::Dam::Config.expand_brand(brand_arg)
           project_id = Appydave::Tools::Dam::ProjectResolver.resolve(brand_arg, project_arg)
 
-          # Set ENV for compatibility with ConfigLoader
-          ENV['BRAND_PATH'] = Appydave::Tools::Dam::Config.brand_path(brand)
+          brand_path = Appydave::Tools::Dam::Config.brand_path(brand)
 
-          { brand_key: brand_key, project_id: project_id, shareable: shareable }
+          { brand_key: brand_key, project_id: project_id, shareable: shareable, brand_path: brand_path }
         end
 
         def valid_brand?(brand_key)
