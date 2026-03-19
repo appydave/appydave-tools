@@ -59,10 +59,6 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
         allow(mock_s3_scanner).to receive(:scan_all_projects).and_return(s3_result)
       end
 
-      it 'updates the manifest without raising' do
-        expect { scanner.scan_single(brand_key) }.not_to raise_error
-      end
-
       it 'writes updated s3 data into the manifest file' do
         scanner.scan_single(brand_key)
         updated = JSON.parse(File.read(manifest_path), symbolize_names: true)
@@ -75,11 +71,11 @@ RSpec.describe Appydave::Tools::Dam::S3ScanCommand do
         )
       end
 
-      it 'enriches matched projects with local sync status and sets :no_files when s3-staging is empty' do
+      it 'calls LocalSyncStatus.enrich! with matched projects after writing manifest' do
+        allow(Appydave::Tools::Dam::LocalSyncStatus).to receive(:enrich!).and_call_original
         scanner.scan_single(brand_key)
-        # LocalSyncStatus.enrich! runs for real; s3-staging exists but is empty → :no_files
-        # Assertion: no exception raised during enrichment
-        expect(File.exist?(manifest_path)).to be true
+        expect(Appydave::Tools::Dam::LocalSyncStatus).to have_received(:enrich!)
+          .with({ 'b65-test-project' => s3_result['b65-test-project'] }, brand_key)
       end
     end
 
