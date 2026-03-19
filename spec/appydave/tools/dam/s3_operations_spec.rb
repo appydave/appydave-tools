@@ -609,8 +609,10 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     let(:s3_ops) { create_s3_operations }
 
     context 'when AWS_SDK_RUBY_SKIP_SSL_VERIFICATION is not set' do
-      before { allow(ENV).to receive(:[]).and_call_original }
-      before { allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return(nil) }
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return(nil)
+      end
 
       it 'returns empty hash (SSL verification enabled by default)' do
         expect(ssl_options).to eq({})
@@ -622,8 +624,10 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     context 'when AWS_SDK_RUBY_SKIP_SSL_VERIFICATION is "true"' do
-      before { allow(ENV).to receive(:[]).and_call_original }
-      before { allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return('true') }
+      before do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with('AWS_SDK_RUBY_SKIP_SSL_VERIFICATION').and_return('true')
+      end
 
       it 'returns ssl_verify_peer: false' do
         expect(ssl_options).to eq({ ssl_verify_peer: false })
