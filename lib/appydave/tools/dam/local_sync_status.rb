@@ -10,7 +10,6 @@ module Appydave
         # Mutates matched_projects hash to add :local_status and :local_file_count keys
         # @param matched_projects [Hash] Map of project_id => S3 data hash
         # @param brand_key [String] Brand key (e.g., 'appydave')
-        # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         def enrich!(matched_projects, brand_key)
           matched_projects.each do |project_id, data|
             project_path = Appydave::Tools::Dam::Config.project_path(brand_key, project_id)
@@ -41,7 +40,6 @@ module Appydave
             end
           end
         end
-        # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
         # Format local sync status symbol for display
         # @param status [Symbol] :synced, :no_files, :partial, :no_project
