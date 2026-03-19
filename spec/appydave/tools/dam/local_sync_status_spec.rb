@@ -10,6 +10,8 @@ RSpec.describe Appydave::Tools::Dam::LocalSyncStatus do
     let(:matched_projects) { { project_id => { file_count: 3, total_bytes: 1000 } } }
 
     context 'when project directory does not exist' do
+      before { appydave_path } # ensure brand directory exists
+
       it 'sets :no_project status' do
         described_class.enrich!(matched_projects, 'appydave')
         expect(matched_projects[project_id][:local_status]).to eq(:no_project)
