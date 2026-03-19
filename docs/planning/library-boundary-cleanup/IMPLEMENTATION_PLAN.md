@@ -5,17 +5,17 @@
 **Target**: 4 items complete; 847+ examples passing; rubocop 0 offenses; no regressions
 
 ## Summary
-- Total: 4 | Complete: 1 | In Progress: 1 | Pending: 2 | Failed: 0
+- Total: 4 | Complete: 2 | In Progress: 2 | Pending: 0 | Failed: 0
 
 ## Pending
-- [ ] B036 — tests-s3-scan-command — Rebuild S3ScanCommand spec from D-grade to B; 8–10 examples covering happy path, manifest missing, empty results, orphaned projects (DEPENDS ON B034)
-- [ ] B037 — tests-local-sync-status — Add :partial case, local_file_count assertion, Zone.Identifier exclusion, unknown format guard
 
 ## In Progress
-- [~] B035 — extract-env-side-effect — Remove `ENV['BRAND_PATH']` side-effect from S3ArgParser; return `brand_path:` in result hash; update VatCLI callers
+- [~] B036 — tests-s3-scan-command — Rebuild S3ScanCommand spec from D-grade to B; 8–10 examples covering happy path, manifest missing, empty results, orphaned projects
+- [~] B037 — tests-local-sync-status — Add :partial case, local_file_count assertion, Zone.Identifier exclusion, unknown format guard
 
 ## Complete
 - [x] B034 — extract-exit-calls — UsageError added to errors.rb; exit 1 replaced in s3_scan_command.rb (1) and s3_arg_parser.rb (4); show_share_usage_and_exit renamed. 847 examples, 0 failures. v0.76.8. Commit: 87bb43a.
+- [x] B035 — extract-env-side-effect — ENV['BRAND_PATH'] removed from s3_arg_parser.rb (3 locations); brand_path: returned in all 3 result hashes; 8 VatCLI callers updated. 847 examples, 0 failures. v0.76.9. Commit: 762da4b.
 
 ## Complete
 

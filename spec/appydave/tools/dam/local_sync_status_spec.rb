@@ -38,6 +38,52 @@ RSpec.describe Appydave::Tools::Dam::LocalSyncStatus do
         described_class.enrich!(matched_projects, 'appydave')
         expect(matched_projects[project_id][:local_status]).to eq(:synced)
       end
+
+      it 'sets local_file_count correctly' do
+        described_class.enrich!(matched_projects, 'appydave')
+        expect(matched_projects[project_id][:local_file_count]).to eq(3)
+      end
+    end
+
+    context 'when local s3-staging has fewer files than S3 count' do
+      before do
+        staging = File.join(appydave_path, project_id, 's3-staging')
+        FileUtils.mkdir_p(staging)
+        FileUtils.touch(File.join(staging, 'file1.mp4'))
+        FileUtils.touch(File.join(staging, 'file2.mp4'))
+      end
+
+      it 'sets local_status to :partial' do
+        described_class.enrich!(matched_projects, 'appydave')
+        expect(matched_projects[project_id][:local_status]).to eq(:partial)
+      end
+
+      it 'sets local_file_count to the number of local files' do
+        described_class.enrich!(matched_projects, 'appydave')
+        expect(matched_projects[project_id][:local_file_count]).to eq(2)
+      end
+    end
+
+    context 'when s3-staging contains Zone.Identifier files' do
+      before do
+        staging = File.join(appydave_path, project_id, 's3-staging')
+        FileUtils.mkdir_p(staging)
+        FileUtils.touch(File.join(staging, 'file1.mp4'))
+        FileUtils.touch(File.join(staging, 'file1.mp4:Zone.Identifier'))
+        FileUtils.touch(File.join(staging, 'file2.mp4'))
+      end
+
+      it 'excludes Zone.Identifier files from local_file_count' do
+        matched = { project_id => { file_count: 2 } }
+        described_class.enrich!(matched, 'appydave')
+        expect(matched[project_id][:local_file_count]).to eq(2)
+      end
+
+      it 'reports :synced when real file count matches S3 count' do
+        matched = { project_id => { file_count: 2 } }
+        described_class.enrich!(matched, 'appydave')
+        expect(matched[project_id][:local_status]).to eq(:synced)
+      end
     end
   end
 
@@ -56,6 +102,10 @@ RSpec.describe Appydave::Tools::Dam::LocalSyncStatus do
 
     it 'formats :no_project' do
       expect(described_class.format(:no_project, nil, 3)).to eq('✗ Missing')
+    end
+
+    it 'returns Unknown for unrecognised status' do
+      expect(described_class.format(:unknown_status, nil, 0)).to eq('Unknown')
     end
   end
 end
