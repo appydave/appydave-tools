@@ -433,14 +433,19 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     let(:s3_ops) { create_s3_operations }
 
     it 'reports when no files in S3' do
-      allow(s3_ops).to receive(:list_s3_files).and_return([])
+      # Stub at client level — cleanup delegates to S3Archiver (shared mock_s3_client)
+      empty_response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: nil)
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(empty_response)
 
       expect { s3_ops.cleanup(force: false, dry_run: false) }.to output(/❌ No files found in S3/).to_stdout
     end
 
     it 'requires --force flag to proceed' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect do
         s3_ops.cleanup(force: false, dry_run: false)
@@ -448,8 +453,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'performs dry-run cleanup without deleting' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).not_to receive(:delete_object)
 
@@ -459,8 +467,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'deletes files from S3 with force flag' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).to receive(:delete_object).with(
         bucket: 'test-bucket',
