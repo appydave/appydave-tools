@@ -1,3 +1,10 @@
+## [0.77.2](https://github.com/appydave/appydave-tools/compare/v0.77.1...v0.77.2) (2026-03-20)
+
+
+### Bug Fixes
+
+* extract S3Base with shared infrastructure and helpers from S3Operations ([e2c3f66](https://github.com/appydave/appydave-tools/commit/e2c3f66c96599170d987c308dd90e3524e6be4b6))
+
 ## [0.77.1](https://github.com/appydave/appydave-tools/compare/v0.77.0...v0.77.1) (2026-03-20)
 
 
