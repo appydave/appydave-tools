@@ -1,3 +1,10 @@
+## [0.76.14](https://github.com/appydave/appydave-tools/compare/v0.76.13...v0.76.14) (2026-03-20)
+
+
+### Bug Fixes
+
+* add brand resolution integration spec covering BrandResolver, Config, ProjectResolver chain ([af571e7](https://github.com/appydave/appydave-tools/commit/af571e7669397c3e4964a77b4275d36476caaf5a))
+
 ## [0.76.13](https://github.com/appydave/appydave-tools/compare/v0.76.12...v0.76.13) (2026-03-19)
 
 
