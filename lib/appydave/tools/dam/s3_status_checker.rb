@@ -7,7 +7,6 @@ module Appydave
       # Inherits shared infrastructure and helpers from S3Base.
       class S3StatusChecker < S3Base
         # Show sync status
-        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def status
           project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
@@ -93,11 +92,9 @@ module Appydave
           puts "S3 files: #{s3_files.size}, Local files: #{local_files.size}"
           puts "S3 size: #{file_size_human(total_s3_size)}, Local size: #{file_size_human(total_local_size)}"
         end
-        # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
         # Calculate 3-state S3 sync status
         # @return [String] One of: '↑ upload', '↓ download', '✓ synced', 'none'
-        # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         def calculate_sync_status
           project_dir = project_directory_path
           staging_dir = File.join(project_dir, 's3-staging')
@@ -151,7 +148,6 @@ module Appydave
             '✓ synced'
           end
         end
-        # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
 
         # Calculate S3 sync timestamps (last upload/download times)
         # @return [Hash] { last_upload: Time|nil, last_download: Time|nil }
