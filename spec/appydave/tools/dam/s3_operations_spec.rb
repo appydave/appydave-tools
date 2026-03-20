@@ -170,8 +170,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'uploads files to S3 with correct key format' do
-      # File doesn't exist in S3 yet
-      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
+      # File doesn't exist in S3 yet — stub at client level (get_s3_file_info calls head_object)
+      allow(mock_s3_client).to receive(:head_object).and_raise(Aws::S3::Errors::NotFound.new(nil, 'Not Found'))
 
       expect(mock_s3_client).to receive(:put_object) do |args|
         expect(args[:bucket]).to eq('test-bucket')
@@ -184,12 +184,12 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     it 'skips files with matching MD5' do
       local_file = File.join(staging_dir, 'test-file.txt')
       local_md5 = Digest::MD5.hexdigest('test content')
-      # File exists in S3 with same content (non-multipart ETag)
-      allow(s3_ops).to receive(:get_s3_file_info).and_return({
-                                                               'ETag' => "\"#{local_md5}\"",
-                                                               'Size' => File.size(local_file),
-                                                               'LastModified' => Time.now
-                                                             })
+      # File exists in S3 with same content (non-multipart ETag) — stub at client level
+      head_response = instance_double(Aws::S3::Types::HeadObjectOutput,
+                                      content_length: File.size(local_file),
+                                      etag: "\"#{local_md5}\"",
+                                      last_modified: Time.now)
+      allow(mock_s3_client).to receive(:head_object).and_return(head_response)
 
       expect(mock_s3_client).not_to receive(:put_object)
 
@@ -198,12 +198,12 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
     it 'skips files with matching size for multipart uploads' do
       local_file = File.join(staging_dir, 'test-file.txt')
-      # File exists in S3 with multipart ETag (contains dash)
-      allow(s3_ops).to receive(:get_s3_file_info).and_return({
-                                                               'ETag' => '"abc123def456-5"',
-                                                               'Size' => File.size(local_file),
-                                                               'LastModified' => Time.now
-                                                             })
+      # File exists in S3 with multipart ETag (contains dash) — stub at client level
+      head_response = instance_double(Aws::S3::Types::HeadObjectOutput,
+                                      content_length: File.size(local_file),
+                                      etag: '"abc123def456-5"',
+                                      last_modified: Time.now)
+      allow(mock_s3_client).to receive(:head_object).and_return(head_response)
 
       expect(mock_s3_client).not_to receive(:put_object)
 
@@ -215,8 +215,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       zone_file = File.join(staging_dir, 'video.mp4:Zone.Identifier')
       File.write(zone_file, 'test zone data')
 
-      # File doesn't exist in S3 yet
-      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
+      # File doesn't exist in S3 yet — stub at client level
+      allow(mock_s3_client).to receive(:head_object).and_raise(Aws::S3::Errors::NotFound.new(nil, 'Not Found'))
 
       # Should not attempt to upload Zone.Identifier file
       expect(mock_s3_client).to receive(:put_object).once do |args|
@@ -232,8 +232,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       ds_store = File.join(staging_dir, '.DS_Store')
       File.write(ds_store, 'mac metadata')
 
-      # File doesn't exist in S3 yet
-      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
+      # File doesn't exist in S3 yet — stub at client level
+      allow(mock_s3_client).to receive(:head_object).and_raise(Aws::S3::Errors::NotFound.new(nil, 'Not Found'))
 
       # Should not attempt to upload .DS_Store file
       expect(mock_s3_client).to receive(:put_object).once do |args|
@@ -735,8 +735,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
     it 'constructs correct path with projects_subfolder for upload' do
       s3_ops = create_subfolder_s3_operations
-      # File doesn't exist in S3 yet
-      allow(s3_ops).to receive(:get_s3_file_info).and_return(nil)
+      # File doesn't exist in S3 yet — stub at client level
+      allow(mock_s3_client).to receive(:head_object).and_raise(Aws::S3::Errors::NotFound.new(nil, 'Not Found'))
 
       expect(mock_s3_client).to receive(:put_object) do |args|
         expect(args[:key]).to eq('staging/v-test/test-project/subfolder-test.txt')
