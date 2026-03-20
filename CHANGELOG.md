@@ -1,3 +1,10 @@
+## [0.77.3](https://github.com/appydave/appydave-tools/compare/v0.77.2...v0.77.3) (2026-03-20)
+
+
+### Bug Fixes
+
+* extract S3Uploader from S3Operations; upload delegates to focused class ([9e0dea9](https://github.com/appydave/appydave-tools/commit/9e0dea9e1437ed2b08ed64f016fe939edc164bc6))
+
 ## [0.77.2](https://github.com/appydave/appydave-tools/compare/v0.77.1...v0.77.2) (2026-03-20)
 
 
