@@ -249,14 +249,19 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     let(:s3_ops) { create_s3_operations }
 
     it 'reports when no files in S3' do
-      allow(s3_ops).to receive(:list_s3_files).and_return([])
+      # Stub at client level — download delegates to S3Downloader (shared mock_s3_client)
+      empty_response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: nil)
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(empty_response)
 
       expect { s3_ops.download(dry_run: false) }.to output(/❌ No files found in S3/).to_stdout
     end
 
     it 'performs dry-run download without making S3 calls' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).not_to receive(:get_object)
 
@@ -266,8 +271,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'downloads files from S3 to staging directory' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).to receive(:get_object) do |args|
         expect(args[:bucket]).to eq('test-bucket')
@@ -287,8 +295,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       File.write(local_file, 'existing content')
       local_md5 = Digest::MD5.hexdigest('existing content')
 
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => "\"#{local_md5}\"" }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: File.size(local_file), etag: "\"#{local_md5}\"", last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).not_to receive(:get_object)
 
@@ -299,8 +310,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       # Remove the entire project directory
       FileUtils.rm_rf(project_dir)
 
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).to receive(:get_object) do |args|
         FileUtils.mkdir_p(File.dirname(args[:response_target]))
@@ -316,8 +330,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
     end
 
     it 'shows download timing in output' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).to receive(:get_object) do |args|
         FileUtils.mkdir_p(File.dirname(args[:response_target]))
@@ -747,8 +764,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
     it 'constructs correct path with projects_subfolder for download' do
       s3_ops = create_subfolder_s3_operations
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).to receive(:get_object) do |args|
         expect(args[:response_target]).to match(%r{projects/test-project/s3-staging/video\.mp4$})
@@ -772,8 +792,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       FileUtils.rm_rf(subfolder_project_dir)
 
       s3_ops = create_subfolder_s3_operations
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect(mock_s3_client).to receive(:get_object) do |args|
         FileUtils.mkdir_p(File.dirname(args[:response_target]))
