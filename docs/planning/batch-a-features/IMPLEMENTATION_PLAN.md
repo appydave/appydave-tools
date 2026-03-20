@@ -5,17 +5,17 @@
 **Target**: All 4 complete, 860+ examples passing, rubocop 0 offenses
 
 ## Summary
-- Total: 4 | Complete: 0 | In Progress: 4 | Pending: 0 | Failed: 0
+- Total: 4 | Complete: 4 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
 
 ## In Progress
-- [~] B001 — gpt-context-token-counting — Add --tokens flag to gpt_context; print estimated token count + threshold warnings
-- [~] B009 — dam-progress-indicators — Add before/after progress messages to s3_up, s3_down, s3_status, archive, sync_ssd in bin/dam
-- [~] B010 — dam-column-widths — Terminal-width-aware separator lines + path truncation in project_listing.rb
-- [~] B012 — brand-resolution-integration-tests — Integration spec covering brand→project resolution chain end-to-end
 
 ## Complete
+- [x] B012 — brand-resolution-integration-tests — 10 examples: Config.brand_path, BrandResolver.expand, ProjectResolver.resolve + detect_from_pwd. Note: resolve raises RuntimeError not typed exception. 870 examples. v0.76.14. Commit: af571e7.
+- [x] B001 — gpt-context-token-counting — --tokens/-t flag added; warn (not $stderr.puts — Style/StderrPuts) to stderr; thresholds at 100k+200k. 870 examples. v0.77.0. Commit: 2c6b9c4.
+- [x] B010 — dam-column-widths — 9 separator lines terminal-width-aware; truncate_path helper added; 4 shorten_path calls updated; require 'io/console' added. Bundled into B001 commit. v0.77.0.
+- [x] B009 — dam-progress-indicators — 5 commands updated (s3_up, s3_down, s3_status, archive, sync_ssd) with verb/dry_run-aware progress messages. 870 examples. v0.77.1. Commit: 3fec530.
 
 ## Failed / Needs Retry
 

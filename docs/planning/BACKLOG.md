@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-20 (env-dead-code-cleanup campaign complete)
-**Total**: 40 | Pending: 7 | Done: 32 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-20 (batch-a-features campaign complete)
+**Total**: 41 | Pending: 4 | Done: 36 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -10,11 +10,10 @@
 ### Medium Priority
 - [ ] B001 — FR-1: GPT Context token counting | Priority: medium
 - [ ] B012 — Arch: add integration tests for brand resolution end-to-end | Priority: medium
-- [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low (now unblocked)
+- [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low (unblocked after B020)
 - [ ] B008 — Performance: cache git/S3 status with 5-min TTL | Priority: low
-- [ ] B009 — UX: progress indicators for dam operations > 5s | Priority: low
-- [ ] B010 — UX: auto-adjust dam table column widths to terminal width | Priority: low
-- [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: low (now unblocked)
+- [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: medium (next major campaign)
+- [ ] B040 — Fix: ProjectResolver.resolve raises RuntimeError not typed exception (found in B012) | Priority: low
 
 ---
 
@@ -52,6 +51,10 @@
 - [x] B037 — Tests: LocalSyncStatus :partial, local_file_count, Zone.Identifier exclusion, unknown format | Completed: library-boundary-cleanup (2026-03-19), v0.76.11
 - [x] B038 — Cleanup: remove ENV['BRAND_PATH'] dead code from bin/dam (10 assignments) | Completed: env-dead-code-cleanup (2026-03-20), v0.76.13
 - [x] B039 — Tests: strengthen s3_scan_command_spec field assertions + remove LocalSyncStatus stub | Completed: env-dead-code-cleanup (2026-03-20), v0.76.12
+- [x] B012 — Arch: brand resolution integration tests (BrandResolver→Config→ProjectResolver chain) | Completed: batch-a-features (2026-03-20), v0.76.14
+- [x] B001 — FR-1: GPT Context token counting (--tokens flag, warn to stderr, 100k/200k thresholds) | Completed: batch-a-features (2026-03-20), v0.77.0
+- [x] B010 — UX: terminal-width-aware separator lines + truncate_path in project_listing | Completed: batch-a-features (2026-03-20), v0.77.0
+- [x] B009 — UX: progress indicators for dam S3 operations (upload, download, status, archive, sync-ssd) | Completed: batch-a-features (2026-03-20), v0.77.1
 
 ---
 
