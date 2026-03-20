@@ -1,3 +1,10 @@
+## [0.77.6](https://github.com/appydave/appydave-tools/compare/v0.77.5...v0.77.6) (2026-03-20)
+
+
+### Bug Fixes
+
+* extract S3Archiver from S3Operations; S3Operations is now a thin delegation facade (B020 complete) ([41419e5](https://github.com/appydave/appydave-tools/commit/41419e5e365f62a8e7a16f3ce16e74c41a80d4a4))
+
 ## [0.77.5](https://github.com/appydave/appydave-tools/compare/v0.77.4...v0.77.5) (2026-03-20)
 
 
