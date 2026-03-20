@@ -5,18 +5,18 @@
 **Target**: 870 examples passing, rubocop 0, S3Operations ≤ 80 lines, each focused class standalone
 
 ## Summary
-- Total: 5 | Complete: 0 | In Progress: 0 | Pending: 5 | Failed: 0
+- Total: 5 | Complete: 5 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
-- [ ] WU1-s3-base — Extract shared infrastructure into S3Base class; S3Operations inherits from it; all 870 tests pass with no public API change
-- [ ] WU2-s3-uploader — Create S3Uploader < S3Base; move upload + helpers; S3Operations.upload delegates
-- [ ] WU3-s3-downloader — Create S3Downloader < S3Base; move download + helpers; S3Operations.download delegates
-- [ ] WU4-s3-status-checker — Create S3StatusChecker < S3Base; move status/calculate_sync_status/sync_timestamps + helpers; S3Operations delegates
-- [ ] WU5-s3-archiver — Create S3Archiver < S3Base; move archive/cleanup/cleanup_local + helpers; S3Operations becomes thin facade; add s3_base require to lib/appydave/tools.rb
 
 ## In Progress
 
 ## Complete
+- [x] WU1-s3-base — Extract shared infrastructure into S3Base class; S3Operations inherits from it; all 870 tests pass with no public API change (v0.77.2)
+- [x] WU2-s3-uploader — Create S3Uploader < S3Base; move upload + helpers; S3Operations.upload delegates (v0.77.3)
+- [x] WU3-s3-downloader — Create S3Downloader < S3Base; move download + helpers; S3Operations.download delegates (v0.77.4)
+- [x] WU4-s3-status-checker — Create S3StatusChecker < S3Base; move status/calculate_sync_status/sync_timestamps; S3Operations delegates (v0.77.5)
+- [x] WU5-s3-archiver — Create S3Archiver < S3Base; move archive/cleanup/cleanup_local + helpers; S3Operations is thin facade (v0.77.6)
 
 ## Failed / Needs Retry
 
