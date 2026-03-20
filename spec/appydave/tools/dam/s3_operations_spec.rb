@@ -352,7 +352,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
     it 'reports when no files in S3 or locally' do
       FileUtils.rm_rf(Dir.glob("#{staging_dir}/*"))
-      allow(s3_ops).to receive(:list_s3_files).and_return([])
+      empty_response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: nil)
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(empty_response)
 
       expect { s3_ops.status }.to output(%r{ℹ️  No files in S3 or s3-staging/}).to_stdout
     end
@@ -362,8 +363,11 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       File.write(local_file, 'synced content')
       local_md5 = Digest::MD5.hexdigest('synced content')
 
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => "\"#{local_md5}\"" }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: "\"#{local_md5}\"", last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect { s3_ops.status }.to output(/video.mp4.*\[synced\]/).to_stdout
     end
@@ -372,15 +376,21 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       local_file = File.join(staging_dir, 'video.mp4')
       File.write(local_file, 'different content')
 
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/video.mp4', 'Size' => 1024, 'ETag' => '"different_md5"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/video.mp4',
+                               size: 1024, etag: '"different_md5"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect { s3_ops.status }.to output(/video.mp4.*\[modified\]/).to_stdout
     end
 
     it 'shows S3-only files' do
-      s3_files = [{ 'Key' => 'staging/v-test/test-project/remote-only.mp4', 'Size' => 1024, 'ETag' => '"abc123"' }]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj = instance_double(Aws::S3::Types::Object,
+                               key: 'staging/v-test/test-project/remote-only.mp4',
+                               size: 1024, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect { s3_ops.status }.to output(/remote-only.mp4.*\[S3 only\]/).to_stdout
     end
@@ -389,7 +399,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       local_file = File.join(staging_dir, 'local-only.srt')
       File.write(local_file, 'local content')
 
-      allow(s3_ops).to receive(:list_s3_files).and_return([])
+      empty_response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: nil)
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(empty_response)
 
       expect { s3_ops.status }.to output(/local-only.srt.*\[local only\]/).to_stdout
     end
@@ -398,7 +409,6 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       # Remove the default test-file.txt first
       FileUtils.rm_rf(Dir.glob("#{staging_dir}/*"))
 
-      # Create mixed scenario
       local_synced = File.join(staging_dir, 'synced.mp4')
       File.write(local_synced, 'synced content')
       local_md5 = Digest::MD5.hexdigest('synced content')
@@ -406,11 +416,14 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
       local_only = File.join(staging_dir, 'local.srt')
       File.write(local_only, 'local content')
 
-      s3_files = [
-        { 'Key' => 'staging/v-test/test-project/synced.mp4', 'Size' => 1024, 'ETag' => "\"#{local_md5}\"" },
-        { 'Key' => 'staging/v-test/test-project/s3-only.mp4', 'Size' => 2048, 'ETag' => '"abc123"' }
-      ]
-      allow(s3_ops).to receive(:list_s3_files).and_return(s3_files)
+      s3_obj1 = instance_double(Aws::S3::Types::Object,
+                                key: 'staging/v-test/test-project/synced.mp4',
+                                size: 1024, etag: "\"#{local_md5}\"", last_modified: nil)
+      s3_obj2 = instance_double(Aws::S3::Types::Object,
+                                key: 'staging/v-test/test-project/s3-only.mp4',
+                                size: 2048, etag: '"abc123"', last_modified: nil)
+      response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: [s3_obj1, s3_obj2])
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(response)
 
       expect { s3_ops.status }.to output(/S3 files: 2, Local files: 2/).to_stdout
     end
@@ -781,7 +794,8 @@ RSpec.describe Appydave::Tools::Dam::S3Operations do
 
     it 'constructs correct path with projects_subfolder for status' do
       s3_ops = create_subfolder_s3_operations
-      allow(s3_ops).to receive(:list_s3_files).and_return([])
+      empty_response = instance_double(Aws::S3::Types::ListObjectsV2Output, contents: nil)
+      allow(mock_s3_client).to receive(:list_objects_v2).and_return(empty_response)
 
       expect do
         s3_ops.status
