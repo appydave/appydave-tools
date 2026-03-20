@@ -1,3 +1,10 @@
+## [0.77.4](https://github.com/appydave/appydave-tools/compare/v0.77.3...v0.77.4) (2026-03-20)
+
+
+### Bug Fixes
+
+* extract S3Downloader from S3Operations; download delegates to focused class ([4d97cdf](https://github.com/appydave/appydave-tools/commit/4d97cdf18ea56ca9b658c8858efd9041dcb7ca5b))
+
 ## [0.77.3](https://github.com/appydave/appydave-tools/compare/v0.77.2...v0.77.3) (2026-03-20)
 
 
