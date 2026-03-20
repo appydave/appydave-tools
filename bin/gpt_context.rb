@@ -79,6 +79,10 @@ OptionParser.new do |opts|
     options.prompt = message
   end
 
+  opts.on('-t', '--tokens', 'Show estimated token count after collecting context') do
+    options.show_tokens = true
+  end
+
   opts.separator ''
   opts.separator 'OUTPUT FORMATS'
   opts.separator '    tree     - Directory tree structure'
@@ -131,6 +135,23 @@ options.working_directory ||= Dir.pwd
 
 gatherer = Appydave::Tools::GptContext::FileCollector.new(options)
 content = gatherer.build
+
+if options.show_tokens
+  token_estimate = (content.length / 4.0).ceil
+  char_count = content.length
+  warn ''
+  warn '── Token Estimate ──────────────────────────'
+  warn "  Characters : #{char_count.to_s.rjust(10)}"
+  warn "  Tokens (~4c): #{token_estimate.to_s.rjust(10)}"
+  warn ''
+  if token_estimate > 200_000
+    warn '  ⚠️  WARNING: Exceeds 200k tokens — may not fit most LLM context windows'
+  elsif token_estimate > 100_000
+    warn '  ⚠️  NOTICE: Exceeds 100k tokens — check your LLM context limit'
+  end
+  warn '────────────────────────────────────────────'
+  warn ''
+end
 
 if %w[info debug].include?(options.debug)
   puts '-' * 80

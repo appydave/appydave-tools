@@ -13,6 +13,7 @@ module Appydave
         :output_target,
         :working_directory,
         :prompt,
+        :show_tokens,
         keyword_init: true
       ) do
         def initialize(**args)
@@ -23,6 +24,7 @@ module Appydave
           self.debug ||= 'none'
           self.output_target ||= []
           self.prompt ||= nil
+          self.show_tokens ||= false
         end
       end
     end

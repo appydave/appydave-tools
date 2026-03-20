@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'io/console'
+
 # rubocop:disable Style/FormatStringToken
 # Disabled: Using simple unannotated tokens (%s) for straightforward string formatting
 # Annotated tokens (%<foo>s) add unnecessary complexity for simple table formatting
@@ -28,13 +30,13 @@ module Appydave
                        'GIT              S3 SYNC      PATH                                      SSD BACKUP                       ' \
                        'WORKFLOW     ACTIVE'
               puts header
-              puts '-' * 200
+              puts '-' * [terminal_width, 200].min
             else
               header = 'BRAND                              KEY          PROJECTS         SIZE        LAST MODIFIED    ' \
                        'GIT              PATH                                      SSD BACKUP                       ' \
                        'WORKFLOW     ACTIVE'
               puts header
-              puts '-' * 189
+              puts '-' * [terminal_width, 189].min
             end
 
             brand_data.each do |data|
@@ -50,7 +52,7 @@ module Appydave
                   format_date(data[:modified]),
                   data[:git_status],
                   data[:s3_sync],
-                  shorten_path(data[:path]),
+                  truncate_path(shorten_path(data[:path]), 35),
                   data[:ssd_backup] || 'N/A',
                   data[:workflow] || 'N/A',
                   data[:active_count] || 0
@@ -64,7 +66,7 @@ module Appydave
                   format_size(data[:size]),
                   format_date(data[:modified]),
                   data[:git_status],
-                  shorten_path(data[:path]),
+                  truncate_path(shorten_path(data[:path]), 35),
                   data[:ssd_backup] || 'N/A',
                   data[:workflow] || 'N/A',
                   data[:active_count] || 0
@@ -85,7 +87,7 @@ module Appydave
                 'GIT',
                 'S3 SYNC'
               )
-              puts '-' * 133
+              puts '-' * [terminal_width, 133].min
             else
               puts format(
                 '%-30s %-15s %10s %12s %20s    %-15s',
@@ -96,7 +98,7 @@ module Appydave
                 'LAST MODIFIED',
                 'GIT'
               )
-              puts '-' * 122
+              puts '-' * [terminal_width, 122].min
             end
             # rubocop:enable Style/RedundantFormat
 
@@ -193,7 +195,7 @@ module Appydave
                 'S3 ↑ UPLOAD',
                 'S3 ↓ DOWNLOAD'
               )
-              puts '-' * 280
+              puts '-' * [terminal_width, 280].min
             else
               puts format(
                 '%-45s %12s %15s  %-15s  %-65s  %-18s  %-18s  %-30s',
@@ -206,7 +208,7 @@ module Appydave
                 'LIGHT FILES',
                 'SSD BACKUP'
               )
-              puts '-' * 239
+              puts '-' * [terminal_width, 239].min
             end
             # rubocop:enable Style/RedundantFormat
 
@@ -224,7 +226,7 @@ module Appydave
                   age_display,
                   data[:git_status],
                   data[:s3_sync],
-                  shorten_path(data[:path]),
+                  truncate_path(shorten_path(data[:path]), 65),
                   data[:heavy_files] || 'N/A',
                   data[:light_files] || 'N/A',
                   data[:ssd_backup] || 'N/A',
@@ -238,7 +240,7 @@ module Appydave
                   format_size(data[:size]),
                   age_display,
                   data[:git_status],
-                  shorten_path(data[:path]),
+                  truncate_path(shorten_path(data[:path]), 65),
                   data[:heavy_files] || 'N/A',
                   data[:light_files] || 'N/A',
                   data[:ssd_backup] || 'N/A'
@@ -257,7 +259,7 @@ module Appydave
                 'GIT',
                 'S3'
               )
-              puts '-' * 130
+              puts '-' * [terminal_width, 130].min
             else
               puts format(
                 '%-45s %12s %15s  %-15s',
@@ -266,7 +268,7 @@ module Appydave
                 'AGE',
                 'GIT'
               )
-              puts '-' * 117
+              puts '-' * [terminal_width, 117].min
             end
             # rubocop:enable Style/RedundantFormat
 
@@ -342,7 +344,7 @@ module Appydave
           match_count = matches.size
           puts "#{match_count} project#{'s' if match_count != 1} matching '#{pattern}' in #{brand}:"
           puts 'PROJECT                                               SIZE             AGE'
-          puts '-' * 100
+          puts '-' * [terminal_width, 100].min
 
           # Print table rows
           project_data.each do |data|
@@ -653,6 +655,20 @@ module Appydave
         # Shorten path by replacing home directory with ~
         def self.shorten_path(path)
           path.sub(Dir.home, '~')
+        end
+
+        # Truncate path to max_width, preserving the tail with ellipsis prefix
+        def self.truncate_path(path, max_width = 35)
+          return path if path.nil? || path.length <= max_width
+
+          "...#{path[-(max_width - 3)..]}"
+        end
+
+        # Return terminal width, defaulting to 120 if unavailable
+        def self.terminal_width
+          IO.console&.winsize&.last || 120
+        rescue StandardError
+          120
         end
       end
     end
