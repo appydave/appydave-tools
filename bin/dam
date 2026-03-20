@@ -155,6 +155,8 @@ class VatCLI
   # S3 Upload
   def s3_up_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-up')
+    verb = options[:dry_run] ? '🔍 Dry run:' : '⬆️  Uploading'
+    puts "#{verb} #{options[:project]} (#{options[:brand]}) → S3..."
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.upload(dry_run: options[:dry_run])
   rescue StandardError => e
@@ -165,6 +167,8 @@ class VatCLI
   # S3 Download
   def s3_down_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-down')
+    verb = options[:dry_run] ? '🔍 Dry run:' : '⬇️  Downloading'
+    puts "#{verb} #{options[:project]} (#{options[:brand]}) from S3..."
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.download(dry_run: options[:dry_run])
   rescue StandardError => e
@@ -175,6 +179,7 @@ class VatCLI
   # S3 Status
   def s3_status_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 's3-status')
+    puts "🔍 Checking S3 status: #{options[:project]} (#{options[:brand]})..."
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.status
   rescue StandardError => e
@@ -228,6 +233,8 @@ class VatCLI
   # Archive project to SSD
   def archive_command(args)
     options = Appydave::Tools::Dam::S3ArgParser.parse_s3(args, 'archive')
+    verb = options[:dry_run] ? '🔍 Dry run:' : '📦 Archiving'
+    puts "#{verb} #{options[:project]} (#{options[:brand]}) → SSD..."
     s3_ops = Appydave::Tools::Dam::S3Operations.new(options[:brand], options[:project])
     s3_ops.archive(force: options[:force], dry_run: options[:dry_run])
   rescue StandardError => e
@@ -321,6 +328,7 @@ class VatCLI
       # Sync specific brand
       Appydave::Tools::Dam::Config.expand_brand(brand_arg)
 
+      puts "🔄 Syncing #{brand_arg} from SSD..."
       syncer = Appydave::Tools::Dam::SyncFromSsd.new(brand_arg)
       syncer.sync(dry_run: dry_run)
     else
