@@ -1,16 +1,13 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-20 (s3-operations-split campaign complete)
-**Total**: 41 | Pending: 3 | Done: 37 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-20 (B007 complete)
+**Total**: 41 | Pending: 2 | Done: 38 | Deferred: 0 | Rejected: 0
 
 ---
 
 ## Pending
 
 ### Medium Priority
-- [ ] B001 — FR-1: GPT Context token counting | Priority: medium
-- [ ] B012 — Arch: add integration tests for brand resolution end-to-end | Priority: medium
-- [ ] B007 — Performance: parallel git/S3 status checks for dam list | Priority: low (unblocked — B020 complete)
 - [ ] B008 — Performance: cache git/S3 status with 5-min TTL | Priority: low
 - [ ] B040 — Fix: ProjectResolver.resolve raises RuntimeError not typed exception (found in B012) | Priority: low
 
@@ -55,6 +52,7 @@
 - [x] B010 — UX: terminal-width-aware separator lines + truncate_path in project_listing | Completed: batch-a-features (2026-03-20), v0.77.0
 - [x] B009 — UX: progress indicators for dam S3 operations (upload, download, status, archive, sync-ssd) | Completed: batch-a-features (2026-03-20), v0.77.1
 - [x] B020 — Arch: split S3Operations into S3Base + S3Uploader + S3Downloader + S3StatusChecker + S3Archiver; S3Operations thin facade | Completed: s3-operations-split (2026-03-20), v0.77.6
+- [x] B007 — Performance: parallel git/S3 status checks for dam list (Thread.new per project + per check) | Completed: 2026-03-20, v0.77.7
 
 ---
 
