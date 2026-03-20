@@ -1,3 +1,10 @@
+# [0.77.0](https://github.com/appydave/appydave-tools/compare/v0.76.14...v0.77.0) (2026-03-20)
+
+
+### Features
+
+* add --tokens flag to gpt_context for estimated token count output ([2c6b9c4](https://github.com/appydave/appydave-tools/commit/2c6b9c489f82e037b98713bfdc750fa8f65e70ea))
+
 ## [0.76.14](https://github.com/appydave/appydave-tools/compare/v0.76.13...v0.76.14) (2026-03-20)
 
 
