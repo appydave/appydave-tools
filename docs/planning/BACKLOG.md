@@ -1,7 +1,7 @@
 # Project Backlog — AppyDave Tools
 
-**Last updated**: 2026-03-19 (library-boundary-cleanup campaign complete)
-**Total**: 40 | Pending: 9 | Done: 30 | Deferred: 0 | Rejected: 0
+**Last updated**: 2026-03-20 (env-dead-code-cleanup campaign complete)
+**Total**: 40 | Pending: 7 | Done: 32 | Deferred: 0 | Rejected: 0
 
 ---
 
@@ -15,8 +15,6 @@
 - [ ] B009 — UX: progress indicators for dam operations > 5s | Priority: low
 - [ ] B010 — UX: auto-adjust dam table column widths to terminal width | Priority: low
 - [ ] B020 — Arch: split S3Operations (1,030 lines, mixed I/O + logic) | Priority: low (now unblocked)
-- [ ] B038 — Cleanup: remove ENV['BRAND_PATH'] dead code from bin/dam (10 assignments, never read in lib/) | Priority: low
-- [ ] B039 — Tests: strengthen s3_scan_command_spec data-value assertions + remove LocalSyncStatus stub | Priority: low
 
 ---
 
@@ -52,6 +50,8 @@
 - [x] B035 — Fix: remove ENV['BRAND_PATH'] side effect from S3ArgParser; return brand_path: in result hash | Completed: library-boundary-cleanup (2026-03-19), v0.76.9
 - [x] B036 — Tests: rebuild S3ScanCommand spec from D to B (10 behaviour examples) | Completed: library-boundary-cleanup (2026-03-19), v0.76.10
 - [x] B037 — Tests: LocalSyncStatus :partial, local_file_count, Zone.Identifier exclusion, unknown format | Completed: library-boundary-cleanup (2026-03-19), v0.76.11
+- [x] B038 — Cleanup: remove ENV['BRAND_PATH'] dead code from bin/dam (10 assignments) | Completed: env-dead-code-cleanup (2026-03-20), v0.76.13
+- [x] B039 — Tests: strengthen s3_scan_command_spec field assertions + remove LocalSyncStatus stub | Completed: env-dead-code-cleanup (2026-03-20), v0.76.12
 
 ---
 

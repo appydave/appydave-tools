@@ -5,13 +5,13 @@
 **Target**: Both items complete; 861+ examples passing; rubocop 0 offenses; no regressions
 
 ## Summary
-- Total: 2 | Complete: 0 | In Progress: 2 | Pending: 0 | Failed: 0
+- Total: 2 | Complete: 2 | In Progress: 0 | Pending: 0 | Failed: 0
 
 ## Pending
 
 ## In Progress
-- [~] B038 — remove-env-dead-code — Remove all 10 `ENV['BRAND_PATH'] =` assignments from bin/dam
-- [~] B039 — strengthen-s3-scan-spec — Replace `not_to be_empty` with field-value assertions; remove LocalSyncStatus stub
+- [x] B038 — remove-env-dead-code — All 10 ENV['BRAND_PATH'] assignments removed from bin/dam; 0 cascade removals (options still used for other keys). CI fix needed: git add . staged s3_scan_command_spec.rb with pre-existing RSpec/RepeatedExample offense — fixed via second commit. 860 examples, 0 failures. Commits: 5c11027, 5711e4e.
+- [x] B039 — strengthen-s3-scan-spec — Field-value assertions on both not_to be_empty checks; LocalSyncStatus stub removed (runs for real against fixture filesystem, returns :no_files). 861 examples, 0 failures. v0.76.12. Commit: 7f1fc5a.
 
 ## Complete
 

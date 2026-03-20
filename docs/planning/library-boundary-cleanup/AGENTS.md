@@ -19,13 +19,32 @@
 
 ## ⚠️ Pre-Commit Check (Mandatory Every Commit)
 
-Before running `kfix`, always run:
-```bash
-git status
-```
-Confirm ONLY the files you intentionally changed are staged. If unexpected files appear, run `git diff` to investigate before proceeding. Never commit files you didn't intentionally change.
+`kfix` and `kfeat` run `git add .` internally — they stage EVERYTHING in the working tree unconditionally. You cannot selectively stage files.
 
-**Why:** Prior campaign accidentally staged a pre-existing uncommitted change when running `kfix`. Required a follow-up fix commit.
+**The only safe approach: ensure the working tree contains ONLY your intended changes before calling kfix.**
+
+```bash
+git status          # What files are modified/untracked?
+git diff            # What are the actual changes?
+```
+
+If unintended files appear (e.g. planning docs, other specs):
+- `git stash -- path/to/file` to temporarily stash a specific file
+- OR `git checkout -- path/to/file` to discard an unintended change
+- OR `git clean -n` to preview, then `git clean -f path/to/file` for untracked files
+
+Once the working tree contains ONLY the files you intended to change, call:
+```bash
+kfix "your message here"
+```
+
+kfix/kfeat then:
+1. `git add .` — stages everything (working tree must be clean of unintended files)
+2. `git commit -m "fix: ..."` — commits
+3. `git pull` + `git push` — syncs and pushes
+4. Waits for CI (`gh run watch`) — blocks until green or red
+5. On success: `git pull` again to pick up semantic-release version bump + CHANGELOG
+6. Prints the new version tag
 
 ---
 
@@ -648,7 +667,7 @@ end
 ### From library-boundary-cleanup (2026-03-20)
 
 - **`instance_double` string form fails CI on Ubuntu.** Always use full constant: `instance_double(Fully::Qualified::ClassName)`. String form passes locally but Ubuntu CI enforces constant lookup. A CI failure after a green local run is almost always this.
-- **`git add .` is the recurring staging bug.** Three campaigns have had accidental staging from `git add .`. Stage specific files by name: `git add lib/appydave/tools/dam/local_sync_status.rb spec/...`. Never `git add .` or `git add -A` in this repo.
+- **Dirty working tree + kfix = accidental staging.** `kfix` runs `git add .` internally — it stages everything. Ensure the working tree contains ONLY intended changes before calling kfix. Three prior campaigns have been burned by this.
 - **`ENV['BRAND_PATH']` in bin/dam is dead code.** 10 assignments in bin/dam, 0 reads in lib/. S3Operations receives brand_path as a constructor parameter. Tracked as B038 for cleanup.
 
 ### From extract-vat-cli (2026-03-19)
