@@ -1,3 +1,10 @@
+## [0.77.7](https://github.com/appydave/appydave-tools/compare/v0.77.6...v0.77.7) (2026-03-20)
+
+
+### Bug Fixes
+
+* parallelize git and S3 status checks in dam list (B007) ([5a6fab1](https://github.com/appydave/appydave-tools/commit/5a6fab1a9a01fda20b81315b640464e393dc1540))
+
 ## [0.77.6](https://github.com/appydave/appydave-tools/compare/v0.77.5...v0.77.6) (2026-03-20)
 
 
