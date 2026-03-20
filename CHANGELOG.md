@@ -1,3 +1,10 @@
+## [0.77.1](https://github.com/appydave/appydave-tools/compare/v0.77.0...v0.77.1) (2026-03-20)
+
+
+### Bug Fixes
+
+* add progress indicators to dam S3 commands (upload, download, status, archive, sync-ssd) ([3fec530](https://github.com/appydave/appydave-tools/commit/3fec53012d23f35d6888165b4c9d1b978c87828b))
+
 # [0.77.0](https://github.com/appydave/appydave-tools/compare/v0.76.14...v0.77.0) (2026-03-20)
 
 
