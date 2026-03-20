@@ -1,3 +1,11 @@
+## [0.77.5](https://github.com/appydave/appydave-tools/compare/v0.77.4...v0.77.5) (2026-03-20)
+
+
+### Bug Fixes
+
+* extract S3StatusChecker from S3Operations; status/calculate_sync_status/sync_timestamps delegate to focused class ([6766897](https://github.com/appydave/appydave-tools/commit/6766897421e37c5b3695db7a3e11f3696a1b2f09))
+* remove redundant rubocop disable directives from S3StatusChecker (CI rubocop 1.85.1) ([9f15b34](https://github.com/appydave/appydave-tools/commit/9f15b34c7ab3e139d208d1a5692fc15a42bcfe1a))
+
 ## [0.77.4](https://github.com/appydave/appydave-tools/compare/v0.77.3...v0.77.4) (2026-03-20)
 
 
