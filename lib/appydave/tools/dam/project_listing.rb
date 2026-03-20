@@ -167,9 +167,12 @@ module Appydave
           brand_info = Appydave::Tools::Configuration::Config.brands.get_brand(brand_arg)
           is_git_repo = Dir.exist?(File.join(brand_path, '.git'))
 
+          # Run all projects in parallel threads — each project's git + S3 checks are I/O-bound
           project_data = projects.map do |project|
-            collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: detailed, s3: s3)
-          end
+            Thread.new do
+              collect_project_data(brand_arg, brand_path, brand_info, project, is_git_repo, detailed: detailed, s3: s3)
+            end
+          end.map(&:value)
 
           # Print common header
           puts "Projects in #{brand}:"
@@ -547,15 +550,12 @@ module Appydave
           size = FileHelper.calculate_directory_size(project_path)
           modified = File.mtime(project_path)
 
-          # Check if project has uncommitted changes (if brand is git repo)
-          git_status = if is_git_repo
-                         calculate_project_git_status(brand_path, project)
-                       else
-                         'N/A'
-                       end
+          # Run git and S3 checks concurrently — both are I/O-bound (shell + network)
+          git_thread = is_git_repo ? Thread.new { calculate_project_git_status(brand_path, project) } : nil
+          s3_thread = s3 ? Thread.new { calculate_project_s3_sync_status(brand_arg, brand_info, project) } : nil
 
-          # Calculate 3-state S3 sync status - only if requested (performance optimization)
-          s3_sync = s3 ? calculate_project_s3_sync_status(brand_arg, brand_info, project) : 'N/A'
+          git_status = git_thread ? git_thread.value : 'N/A'
+          s3_sync = s3_thread ? s3_thread.value : 'N/A'
 
           result = {
             name: project,
