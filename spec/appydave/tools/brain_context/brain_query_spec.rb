@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Appydave::Tools::BrainQuery do
+  subject { described_class.new(options) }
+
   let(:options) { Appydave::Tools::BrainContextOptions.new }
-  let(:subject) { described_class.new(options) }
 
   before do
     # Ensure brains-index.json exists
-    expect(File.exist?(options.brains_index_path)).to be true
+    skip 'brains-index.json not found' unless File.exist?(options.brains_index_path)
   end
 
   describe '#find' do

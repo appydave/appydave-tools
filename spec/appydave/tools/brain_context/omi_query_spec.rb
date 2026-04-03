@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe Appydave::Tools::OmiQuery do
+  subject { described_class.new(options) }
+
   let(:options) do
     opts = Appydave::Tools::BrainContextOptions.new
     opts.omi = true
     opts
   end
-  let(:subject) { described_class.new(options) }
 
   before do
     # Ensure OMI directory exists
-    expect(Dir.exist?(options.omi_dir)).to be true
+    skip 'OMI directory not found' unless Dir.exist?(options.omi_dir)
   end
 
   describe '#find' do
@@ -50,7 +51,7 @@ RSpec.describe Appydave::Tools::OmiQuery do
       end
 
       it 'supports multiple routing values' do
-        options.omi_routings = ['brain-update', 'todo-item']
+        options.omi_routings = %w[brain-update todo-item]
         options.enriched_only = true
         paths = subject.find
 
