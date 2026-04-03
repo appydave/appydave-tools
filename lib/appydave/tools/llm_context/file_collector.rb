@@ -13,6 +13,7 @@ module Appydave
           @format = options.format
           @working_directory = File.expand_path(options.working_directory)
           @line_limit = options.line_limit
+          @file_paths = options.file_paths
         end
 
         def build
@@ -22,6 +23,22 @@ module Appydave
         end
 
         private
+
+        def collect_files
+          if @file_paths.any?
+            # Use file paths directly (from stdin)
+            @file_paths.reject { |f| excluded?(f) || File.directory?(f) }
+          else
+            # Use glob patterns
+            files = []
+            @include_patterns.each do |pattern|
+              Dir.glob(pattern).each do |file_path|
+                files << file_path unless excluded?(file_path) || File.directory?(file_path)
+              end
+            end
+            files
+          end
+        end
 
         def build_formats
           @format.split(',').map do |fmt|
@@ -38,13 +55,9 @@ module Appydave
         def build_content
           concatenated_content = []
 
-          @include_patterns.each do |pattern|
-            Dir.glob(pattern).each do |file_path|
-              next if excluded?(file_path) || File.directory?(file_path)
-
-              content = "# file: #{file_path}\n\n#{read_file_content(file_path)}"
-              concatenated_content << content
-            end
+          collect_files.each do |file_path|
+            content = "# file: #{file_path}\n\n#{read_file_content(file_path)}"
+            concatenated_content << content
           end
 
           concatenated_content.join("\n\n")
@@ -60,13 +73,9 @@ module Appydave
         def build_tree
           tree_view = {}
 
-          @include_patterns.each do |pattern|
-            Dir.glob(pattern).each do |file_path|
-              next if excluded?(file_path)
-
-              path_parts = file_path.split('/')
-              insert_into_tree(tree_view, path_parts)
-            end
+          collect_files.each do |file_path|
+            path_parts = file_path.split('/')
+            insert_into_tree(tree_view, path_parts)
           end
 
           build_tree_pretty(tree_view).rstrip
@@ -96,22 +105,14 @@ module Appydave
             'content' => []
           }
 
-          # Building tree structure in JSON
-          @include_patterns.each do |pattern|
-            Dir.glob(pattern).each do |file_path|
-              next if excluded?(file_path)
+          collect_files.each do |file_path|
+            path_parts = file_path.split('/')
+            insert_into_tree(json_output['tree'], path_parts)
 
-              path_parts = file_path.split('/')
-              insert_into_tree(json_output['tree'], path_parts)
-
-              # Building content structure in JSON
-              next if excluded?(file_path) || File.directory?(file_path)
-
-              json_output['content'] << {
-                'file' => file_path,
-                'content' => read_file_content(file_path)
-              }
-            end
+            json_output['content'] << {
+              'file' => file_path,
+              'content' => read_file_content(file_path)
+            }
           end
 
           JSON.pretty_generate(json_output)
@@ -120,15 +121,7 @@ module Appydave
         def build_aider
           return '' unless @options.prompt
 
-          files = []
-          @include_patterns.each do |pattern|
-            Dir.glob(pattern).each do |file_path|
-              next if excluded?(file_path) || File.directory?(file_path)
-
-              files << file_path
-            end
-          end
-
+          files = collect_files
           "aider --message \"#{@options.prompt}\" #{files.join(' ')}"
         end
 

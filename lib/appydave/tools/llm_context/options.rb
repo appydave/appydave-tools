@@ -14,6 +14,8 @@ module Appydave
         :working_directory,
         :prompt,
         :show_tokens,
+        :file_paths,
+        :stdin,
         keyword_init: true
       ) do
         def initialize(**args)
@@ -25,6 +27,8 @@ module Appydave
           self.output_target ||= []
           self.prompt ||= nil
           self.show_tokens ||= false
+          self.file_paths ||= []
+          self.stdin ||= false
         end
       end
     end

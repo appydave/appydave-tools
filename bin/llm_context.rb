@@ -80,6 +80,10 @@ def setup_options(opts, options)
   opts.on('-t', '--tokens', 'Show estimated token count after collecting context') do
     options.show_tokens = true
   end
+
+  opts.on('--stdin', 'Read file paths from stdin (one per line) instead of using patterns') do
+    options.stdin = true
+  end
 end
 
 def setup_help_sections(opts)
@@ -96,6 +100,10 @@ def setup_help_sections(opts)
   opts.separator '    temp      - Write to system temp dir, copy path to clipboard'
   opts.separator '    filename  - Write to specified file path'
   opts.separator ''
+  opts.separator 'INPUT MODES'
+  opts.separator '    Patterns (default): -i <glob> and -e <exclude_glob>'
+  opts.separator '    Stdin:             --stdin (read file paths from stdin, one per line)'
+  opts.separator ''
   opts.separator 'EXAMPLES'
   opts.separator '    # Gather Ruby library code for AI context'
   opts.separator "    llm_context -i 'lib/**/*.rb' -e 'spec/**/*' -d"
@@ -108,6 +116,9 @@ def setup_help_sections(opts)
   opts.separator ''
   opts.separator '    # Write to system temp dir and copy path to clipboard'
   opts.separator "    llm_context -i 'lib/**/*.rb' -o temp"
+  opts.separator ''
+  opts.separator '    # Read file paths from stdin'
+  opts.separator "    find lib -name '*.rb' | llm_context --stdin -o temp"
   opts.separator ''
   opts.separator '    # Generate aider command'
   opts.separator "    llm_context -i 'lib/**/*.rb' -f aider -p 'Add logging'"
@@ -140,10 +151,16 @@ end
 
 parser.parse!
 
-if options.include_patterns.empty? && options.exclude_patterns.empty?
+# Handle stdin file paths
+if options.stdin
+  options.file_paths = $stdin.readlines.map(&:chomp).reject(&:empty?)
+  options.working_directory = Dir.pwd unless options.working_directory
+end
+
+if options.include_patterns.empty? && options.exclude_patterns.empty? && options.file_paths.empty?
   script_name = File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME))
 
-  puts 'No options provided to LLM Context. Please specify patterns to include or exclude.'
+  puts 'No options provided to LLM Context. Please specify patterns to include or exclude, or use --stdin.'
   puts "For help, run: #{script_name} --help"
   exit
 end
