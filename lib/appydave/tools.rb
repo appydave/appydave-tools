@@ -40,8 +40,6 @@ require 'appydave/tools/llm_context/output_handler'
 require 'appydave/tools/brain_context/options'
 require 'appydave/tools/brain_context/brain_finder'
 require 'appydave/tools/brain_context/omi_finder'
-require 'appydave/tools/brain_context/content_builder'
-require 'appydave/tools/brain_context/output_handler'
 
 require 'appydave/tools/configuration/openai'
 require 'appydave/tools/configuration/configurable'

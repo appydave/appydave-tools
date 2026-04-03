@@ -4,4 +4,4 @@
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 require 'appydave/tools'
 
-load File.expand_path('../bin/brain_context.rb', __dir__)
+load File.expand_path('../bin/query_brain.rb', __dir__)

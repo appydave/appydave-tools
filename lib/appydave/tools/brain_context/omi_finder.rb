@@ -1,7 +1,7 @@
 require 'date'
 
 module Appydave::Tools
-  class OmiFinder
+  class OmiQuery
     def initialize(options)
       @options = options
     end

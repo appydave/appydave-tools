@@ -1,7 +1,7 @@
 require 'json'
 
 module Appydave::Tools
-  class BrainFinder
+  class BrainQuery
     def initialize(options)
       @options = options
       @index = nil
