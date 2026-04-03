@@ -1,3 +1,15 @@
+# [0.80.0](https://github.com/appydave/appydave-tools/compare/v0.79.0...v0.80.0) (2026-04-03)
+
+
+### Bug Fixes
+
+* resolve RSpec linting violations in test suite ([0bb643c](https://github.com/appydave/appydave-tools/commit/0bb643c374934227ab6831f87b4b8e7fd6d2444d))
+
+
+### Features
+
+* add brain_context CLI tool for querying brains + OMI ([7498e25](https://github.com/appydave/appydave-tools/commit/7498e25d8fa3094ee97ddfb67980d414f70efbab))
+
 # [0.79.0](https://github.com/appydave/appydave-tools/compare/v0.78.0...v0.79.0) (2026-04-03)
 
 
