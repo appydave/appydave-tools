@@ -1,3 +1,10 @@
+# [0.79.0](https://github.com/appydave/appydave-tools/compare/v0.78.0...v0.79.0) (2026-04-03)
+
+
+### Features
+
+* add --stdin support to llm_context for piping file paths ([8890cfe](https://github.com/appydave/appydave-tools/commit/8890cfebb80cfda81b679da3e52a185bbb1c9141))
+
 # [0.78.0](https://github.com/appydave/appydave-tools/compare/v0.77.7...v0.78.0) (2026-04-03)
 
 
