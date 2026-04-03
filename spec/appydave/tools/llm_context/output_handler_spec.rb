@@ -92,7 +92,7 @@ RSpec.describe Appydave::Tools::LlmContext::OutputHandler do
         # First call to clipboard should be the file path, second should be the content
         expect(clipboard_calls.size).to eq(2)
         expect(clipboard_calls[0]).to match(/llm_context-\d{8}-\d{6}-\d{3}\.txt/) # temp file path
-        expect(clipboard_calls[1]).to eq(content)                               # actual content
+        expect(clipboard_calls[1]).to eq(content) # actual content
 
         # Clean up
         FileUtils.rm_f(clipboard_calls[0])

@@ -14,12 +14,8 @@ $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 
 require 'appydave/tools'
 
-options = Appydave::Tools::LlmContext::Options.new(
-  working_directory: nil
-)
-
-OptionParser.new do |opts|
-  opts.banner = <<~BANNER
+def build_banner
+  <<~BANNER
     LLM Context Gatherer - Collect project files for AI context
 
     SYNOPSIS
@@ -30,7 +26,9 @@ OptionParser.new do |opts|
         Outputs to clipboard (default), file, or stdout.
 
   BANNER
+end
 
+def setup_options(opts, options)
   opts.separator 'OPTIONS'
   opts.separator ''
 
@@ -82,7 +80,9 @@ OptionParser.new do |opts|
   opts.on('-t', '--tokens', 'Show estimated token count after collecting context') do
     options.show_tokens = true
   end
+end
 
+def setup_help_sections(opts)
   opts.separator ''
   opts.separator 'OUTPUT FORMATS'
   opts.separator '    tree     - Directory tree structure'
@@ -112,7 +112,9 @@ OptionParser.new do |opts|
   opts.separator '    # Generate aider command'
   opts.separator "    llm_context -i 'lib/**/*.rb' -f aider -p 'Add logging'"
   opts.separator ''
+end
 
+def setup_version_and_help(opts)
   opts.on('-v', '--version', 'Show version') do
     puts "llm_context version #{Appydave::Tools::VERSION}"
     exit
@@ -122,7 +124,21 @@ OptionParser.new do |opts|
     puts opts
     exit
   end
-end.parse!
+end
+
+# Main execution
+options = Appydave::Tools::LlmContext::Options.new(
+  working_directory: nil
+)
+
+parser = OptionParser.new do |opts|
+  opts.banner = build_banner
+  setup_options(opts, options)
+  setup_help_sections(opts)
+  setup_version_and_help(opts)
+end
+
+parser.parse!
 
 if options.include_patterns.empty? && options.exclude_patterns.empty?
   script_name = File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME))

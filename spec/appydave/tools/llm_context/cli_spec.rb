@@ -184,8 +184,8 @@ RSpec.describe 'llm_context CLI help' do
 
     it 'has temp output option in help' do
       output = `ruby #{script} --help 2>&1`
-      expect(output).to include('temp'), "Expected temp output option in help"
-      expect(output).to include('system temp dir'), "Expected temp directory mention in help"
+      expect(output).to include('temp'), 'Expected temp output option in help'
+      expect(output).to include('system temp dir'), 'Expected temp directory mention in help'
     end
   end
 end
