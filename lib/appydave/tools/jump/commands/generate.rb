@@ -358,6 +358,7 @@ module Appydave
 
           def write_or_return(content, path, default_filename)
             if path
+              path = File.expand_path(path)
               backup_result = backup_existing_file(path)
               FileUtils.mkdir_p(File.dirname(path))
               File.write(path, content)

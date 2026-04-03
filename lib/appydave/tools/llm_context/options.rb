@@ -2,7 +2,7 @@
 
 module Appydave
   module Tools
-    module GptContext
+    module LlmContext
       # Struct with keyword_init: true to allow named parameters
       Options = Struct.new(
         :include_patterns,

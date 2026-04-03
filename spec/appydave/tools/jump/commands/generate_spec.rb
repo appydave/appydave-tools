@@ -116,6 +116,20 @@ RSpec.describe Appydave::Tools::Jump::Commands::Generate do
         expect(File.exist?(output_path)).to be true
         expect(File.read(output_path)).to include('alias jd=')
       end
+
+      it 'expands tilde in output path and writes to home directory' do
+        tilde_path = '~/custom/aliases-jump.zsh'
+        cmd = described_class.new(config, 'aliases', output_path: tilde_path, path_validator: path_validator)
+
+        # The expanded path should be used for writing
+        expanded_path = File.expand_path(tilde_path)
+        result = cmd.run
+
+        expect(result[:success]).to be true
+        expect(result[:path]).to eq(expanded_path)
+        expect(File.exist?(expanded_path)).to be true
+        expect(File.read(expanded_path)).to include('alias jd=')
+      end
     end
 
     context 'with help target' do

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.describe Appydave::Tools::GptContext::FileCollector do
+RSpec.describe Appydave::Tools::LlmContext::FileCollector do
   subject(:collector) { described_class.new(options) }
 
   let(:temp_dir) { Dir.mktmpdir }
   let(:options) do
-    Appydave::Tools::GptContext::Options.new(
+    Appydave::Tools::LlmContext::Options.new(
       include_patterns: include_patterns,
       exclude_patterns: exclude_patterns,
       format: format,
@@ -145,7 +145,7 @@ RSpec.describe Appydave::Tools::GptContext::FileCollector do
 
     context 'when prompt is set' do
       let(:options) do
-        Appydave::Tools::GptContext::Options.new(
+        Appydave::Tools::LlmContext::Options.new(
           include_patterns: include_patterns,
           exclude_patterns: exclude_patterns,
           format: format,
@@ -178,7 +178,7 @@ RSpec.describe Appydave::Tools::GptContext::FileCollector do
 
   describe '#build with nonexistent working directory' do
     let(:options) do
-      Appydave::Tools::GptContext::Options.new(
+      Appydave::Tools::LlmContext::Options.new(
         include_patterns: ['**/*.nonexistent_xyz_12345'],
         exclude_patterns: [],
         format: 'content',

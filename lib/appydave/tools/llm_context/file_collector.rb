@@ -2,8 +2,8 @@
 
 module Appydave
   module Tools
-    # Build GPT context from various sources
-    module GptContext
+    # Build LLM context from various sources
+    module LlmContext
       # Gathers file names and content based on include and exclude patterns
       class FileCollector
         def initialize(options)

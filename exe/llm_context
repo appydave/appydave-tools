@@ -3,4 +3,4 @@
 
 require 'appydave/tools'
 
-load File.expand_path('../bin/gpt_context.rb', __dir__)
+load File.expand_path('../bin/llm_context.rb', __dir__)

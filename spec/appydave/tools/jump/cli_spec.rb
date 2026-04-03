@@ -135,6 +135,23 @@ RSpec.describe Appydave::Tools::Jump::CLI do
       end
     end
 
+    context 'when aliases-output-path contains a tilde' do
+      let(:aliases_output_path) { '~/custom/aliases-jump.zsh' }
+      let(:expanded_aliases_path) { File.expand_path(aliases_output_path) }
+
+      after do
+        FileUtils.rm_rf(expanded_aliases_path)
+      end
+
+      it 'expands tilde and writes to the correct home directory path' do
+        cli.run(['add', '--key', 'new-project', '--path', '~/dev/new-path'])
+
+        expect(File.exist?(expanded_aliases_path)).to be true
+        content = File.read(expanded_aliases_path)
+        expect(content).to include('jnew-project')
+      end
+    end
+
     context 'with existing aliases file' do
       it 'backs up before regeneration' do
         # Create an existing aliases file

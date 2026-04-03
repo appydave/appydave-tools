@@ -27,6 +27,8 @@ Two-phase validation for the 75-commit DAM enhancement sprint (9e49668 → 4228b
 - **Shareable individually** - Tools can be featured in standalone videos
 - **Language flexible** - Currently Ruby, could be rewritten if needed
 
+**System context**: See [CONTEXT.md](CONTEXT.md) for purpose, domain concepts, design rationale, and scope boundaries.
+
 ## Documentation Discovery Protocol
 
 **CRITICAL: When user asks about recent changes, work completed, or project history:**
@@ -162,7 +164,7 @@ bin/console         # Interactive Ruby console for experimentation
 
 | Command | Gem Command | Description | Status |
 |---------|-------------|-------------|--------|
-| **GPT Context** | `gpt_context` | Collect project files for AI context | ⭐ PRIMARY |
+| **LLM Context** | `llm_context` | Collect project files for AI context | ⭐ PRIMARY |
 | **YouTube Manager** | `youtube_manager` | CRUD operations on YouTube video metadata | ✅ ACTIVE |
 | **Subtitle Processor** | `subtitle_processor` | Transform SRT files (clean/merge) | ✅ ACTIVE |
 | **DAM (Digital Asset Management)** | `vat` | Multi-tenant video project storage orchestration | ✅ ACTIVE |
@@ -173,30 +175,33 @@ bin/console         # Interactive Ruby console for experimentation
 
 ---
 
-#### 1. GPT Context Gatherer (`bin/gpt_context.rb`) ⭐ PRIMARY TOOL
+#### 1. LLM Context Gatherer (`bin/llm_context.rb`) ⭐ PRIMARY TOOL
 Collect and organize project files for AI context:
 
 ```bash
 # Basic usage - gather files with debug output and file output
-bin/gpt_context.rb -i '**/*.rb' -e 'spec/**/*' -d -o context.txt
+bin/llm_context.rb -i '**/*.rb' -e 'spec/**/*' -d -o context.txt
 
 # Multiple formats and patterns
-bin/gpt_context.rb -i 'lib/**/*.rb' -i 'bin/**/*.rb' -f tree,content -d
+bin/llm_context.rb -i 'lib/**/*.rb' -i 'bin/**/*.rb' -f tree,content -d
+
+# Save to tempfile, copy path to clipboard
+bin/llm_context.rb -i '**/*.rb' -o temp
 
 # Advanced web project filtering
-bin/gpt_context.rb -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -e '**/_generated/**/*' -d -f tree -o typescript.txt
+bin/llm_context.rb -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -e '**/_generated/**/*' -d -f tree -o typescript.txt
 
 # Tree view only for project structure
-bin/gpt_context.rb -i '**/*' -e '**/node_modules/**/*' -e '.git/**/*' -f tree -d
+bin/llm_context.rb -i '**/*' -e '**/node_modules/**/*' -e '.git/**/*' -f tree -d
 
 # Line-limited content gathering
-bin/gpt_context.rb -i '**/*.rb' -l 20 -f content -d
+bin/llm_context.rb -i '**/*.rb' -l 20 -f content -d
 
 # Multiple output targets
-bin/gpt_context.rb -i 'docs/**/*' -f tree,content -o clipboard -o docs-context.txt
+bin/llm_context.rb -i 'docs/**/*' -f tree,content -o clipboard -o docs-context.txt
 ```
 
-See detailed usage guide: [docs/usage/gpt-context.md](./docs/usage/gpt-context.md)
+See detailed usage guide: [docs/usage/llm-context.md](./docs/usage/llm-context.md)
 
 #### 2. YouTube Manager (`bin/youtube_manager.rb`)
 Manage YouTube video metadata via YouTube API:

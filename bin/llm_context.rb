@@ -5,25 +5,25 @@
 # https://chatgpt.com/c/670df475-04f4-8002-a758-f5711bf433eb
 
 # Usage:
-#   ./bin/gpt_context.rb -d -i 'lib/openai_101/tools/**/*.rb'
-#   ./bin/gpt_context.rb -d -i 'lib/openai_101/tools/**/*' -e 'node_modules/**/*' -e 'package-lock.json' -e 'lib/openai_101/tools/prompts/*.txt'
+#   ./bin/llm_context.rb -d -i 'lib/openai_101/tools/**/*.rb'
+#   ./bin/llm_context.rb -d -i 'lib/openai_101/tools/**/*' -e 'node_modules/**/*' -e 'package-lock.json' -e 'lib/openai_101/tools/prompts/*.txt'
 #
-#   Get GPT Context Gatherer code
-#   ./bin/gpt_context.rb -i 'bin/**/*gather*.rb' -i 'lib/openai_101/tools/**/*gather*.rb'
+#   Get LLM Context Gatherer code
+#   ./bin/llm_context.rb -i 'bin/**/*gather*.rb' -i 'lib/openai_101/tools/**/*gather*.rb'
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
 
 require 'appydave/tools'
 
-options = Appydave::Tools::GptContext::Options.new(
+options = Appydave::Tools::LlmContext::Options.new(
   working_directory: nil
 )
 
 OptionParser.new do |opts|
   opts.banner = <<~BANNER
-    GPT Context Gatherer - Collect project files for AI context
+    LLM Context Gatherer - Collect project files for AI context
 
     SYNOPSIS
-        gpt_context [options]
+        llm_context [options]
 
     DESCRIPTION
         Collects and packages codebase files for AI assistant context.
@@ -69,7 +69,7 @@ OptionParser.new do |opts|
   end
 
   opts.on('-o', '--output TARGET',
-          'Output target: clipboard, filename, or stdout',
+          'Output target: clipboard, temp, filename, or stdout',
           'Default: clipboard. Repeatable for multiple targets.') do |target|
     options.output_target << target
   end
@@ -91,22 +91,30 @@ OptionParser.new do |opts|
   opts.separator '    aider    - Aider CLI command format (requires -p)'
   opts.separator '    files    - File paths only'
   opts.separator ''
+  opts.separator 'OUTPUT TARGETS'
+  opts.separator '    clipboard - Copy to system clipboard (default)'
+  opts.separator '    temp      - Write to system temp dir, copy path to clipboard'
+  opts.separator '    filename  - Write to specified file path'
+  opts.separator ''
   opts.separator 'EXAMPLES'
   opts.separator '    # Gather Ruby library code for AI context'
-  opts.separator "    gpt_context -i 'lib/**/*.rb' -e 'spec/**/*' -d"
+  opts.separator "    llm_context -i 'lib/**/*.rb' -e 'spec/**/*' -d"
   opts.separator ''
   opts.separator '    # Project structure overview'
-  opts.separator "    gpt_context -i '**/*' -f tree -e 'node_modules/**/*'"
+  opts.separator "    llm_context -i '**/*' -f tree -e 'node_modules/**/*'"
   opts.separator ''
   opts.separator '    # Save to file with tree and content'
-  opts.separator "    gpt_context -i 'src/**/*.ts' -f tree,content -o context.txt"
+  opts.separator "    llm_context -i 'src/**/*.ts' -f tree,content -o context.txt"
+  opts.separator ''
+  opts.separator '    # Write to system temp dir and copy path to clipboard'
+  opts.separator "    llm_context -i 'lib/**/*.rb' -o temp"
   opts.separator ''
   opts.separator '    # Generate aider command'
-  opts.separator "    gpt_context -i 'lib/**/*.rb' -f aider -p 'Add logging'"
+  opts.separator "    llm_context -i 'lib/**/*.rb' -f aider -p 'Add logging'"
   opts.separator ''
 
   opts.on('-v', '--version', 'Show version') do
-    puts "gpt_context version #{Appydave::Tools::VERSION}"
+    puts "llm_context version #{Appydave::Tools::VERSION}"
     exit
   end
 
@@ -119,7 +127,7 @@ end.parse!
 if options.include_patterns.empty? && options.exclude_patterns.empty?
   script_name = File.basename($PROGRAM_NAME, File.extname($PROGRAM_NAME))
 
-  puts 'No options provided to GPT Context. Please specify patterns to include or exclude.'
+  puts 'No options provided to LLM Context. Please specify patterns to include or exclude.'
   puts "For help, run: #{script_name} --help"
   exit
 end
@@ -133,7 +141,7 @@ pp options if options.debug == 'params'
 
 options.working_directory ||= Dir.pwd
 
-gatherer = Appydave::Tools::GptContext::FileCollector.new(options)
+gatherer = Appydave::Tools::LlmContext::FileCollector.new(options)
 content = gatherer.build
 
 if options.show_tokens
@@ -159,7 +167,7 @@ if %w[info debug].include?(options.debug)
   puts '-' * 80
 end
 
-output_handler = Appydave::Tools::GptContext::OutputHandler.new(content, options)
+output_handler = Appydave::Tools::LlmContext::OutputHandler.new(content, options)
 output_handler.execute
 
 pp options if options.debug == 'debug'

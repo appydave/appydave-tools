@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe 'gpt_context CLI help' do
-  let(:script) { File.expand_path('../../../../bin/gpt_context.rb', __dir__) }
+RSpec.describe 'llm_context CLI help' do
+  let(:script) { File.expand_path('../../../../bin/llm_context.rb', __dir__) }
 
   describe '--help' do
     subject(:output) { `ruby #{script} --help 2>&1` }
@@ -17,12 +17,16 @@ RSpec.describe 'gpt_context CLI help' do
     it 'includes OUTPUT FORMATS section' do
       expect(output).to include('OUTPUT FORMATS')
     end
+
+    it 'includes OUTPUT TARGETS section' do
+      expect(output).to include('OUTPUT TARGETS')
+    end
   end
 
   describe '--version' do
     it 'shows version number' do
       output = `ruby #{script} --version 2>&1`
-      expect(output).to match(/gpt_context version \d+\.\d+\.\d+/)
+      expect(output).to match(/llm_context version \d+\.\d+\.\d+/)
     end
   end
 
@@ -176,6 +180,12 @@ RSpec.describe 'gpt_context CLI help' do
         expect(content).to include('hello.rb')
         expect(content).to include('puts "hello"')
       end
+    end
+
+    it 'has temp output option in help' do
+      output = `ruby #{script} --help 2>&1`
+      expect(output).to include('temp'), "Expected temp output option in help"
+      expect(output).to include('system temp dir'), "Expected temp directory mention in help"
     end
   end
 end

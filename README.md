@@ -85,7 +85,7 @@ OPENAI_ACCESS_TOKEN=sk-your-actual-api-key
 
 ## The Tools
 
-### 🤖 GPT Context Gatherer
+### 🤖 LLM Context Gatherer
 
 **The problem:** AI assistants need context about your code, but copying files is tedious.
 
@@ -93,18 +93,21 @@ OPENAI_ACCESS_TOKEN=sk-your-actual-api-key
 
 ```bash
 # Gather all Ruby files, skip tests, save to clipboard
-gpt_context -i '**/*.rb' -e 'spec/**/*' -d
+llm_context -i '**/*.rb' -e 'spec/**/*' -d
 
 # Get project structure as a tree
-gpt_context -i '**/*' -f tree -d
+llm_context -i '**/*' -f tree -d
+
+# Save to tempfile and copy path to clipboard
+llm_context -i '**/*.rb' -o temp
 
 # Multiple file types with custom output
-gpt_context -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -o context.txt
+llm_context -i 'apps/**/*.ts' -i 'apps/**/*.tsx' -e '**/node_modules/**/*' -o context.txt
 ```
 
 **Use cases:** Working with ChatGPT, Claude, or any AI assistant on your codebase.
 
-[Full documentation →](./docs/usage/gpt-context.md)
+[Full documentation →](./docs/usage/llm-context.md)
 
 ---
 
