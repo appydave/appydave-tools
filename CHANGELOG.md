@@ -1,3 +1,15 @@
+# [0.78.0](https://github.com/appydave/appydave-tools/compare/v0.77.7...v0.78.0) (2026-04-03)
+
+
+### Bug Fixes
+
+* resolve rubocop block length violation in llm_context CLI ([305b65a](https://github.com/appydave/appydave-tools/commit/305b65aca92204b877ed25841a8041e9c5a08683))
+
+
+### Features
+
+* update gpt_gatherer to llm_gatherer ([acfbf1c](https://github.com/appydave/appydave-tools/commit/acfbf1c09d40b45d2ca211d5f3921af1127f068c))
+
 ## [0.77.7](https://github.com/appydave/appydave-tools/compare/v0.77.6...v0.77.7) (2026-03-20)
 
 
