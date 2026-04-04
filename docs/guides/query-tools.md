@@ -25,12 +25,12 @@ The tools are **composable**: query tools select files, `llm_context` loads them
 ## What Is Being Queried
 
 ### query_brain
-Reads `~/dev/ad/brains/audit/brains-index.json` — a pre-built index of all brain folders. Does **not** scan brain files at query time. The index contains per-brain metadata: name, category, activity_level, tags, status, file_count.
+Reads `/Users/davidcruwys/dev/ad/brains/audit/brains-index.json` — a pre-built index of all brain folders. Does **not** scan brain files at query time. The index contains per-brain metadata: name, category, activity_level, tags, status, file_count.
 
-Brain folders live at `~/dev/ad/brains/<brain-name>/`. Each has an `INDEX.md` and optional content files.
+Brain folders live at `/Users/davidcruwys/dev/ad/brains/<brain-name>/`. Each has an `INDEX.md` and optional content files.
 
 ### query_omi
-Scans `~/dev/raw-intake/omi/*.md` and reads YAML frontmatter from each file. Enriched files (processed by Gemini extraction) have rich frontmatter. Raw files (unprocessed transcripts) have minimal frontmatter. Default behaviour: **enriched files only**.
+Scans `/Users/davidcruwys/dev/raw-intake/omi/*.md` and reads YAML frontmatter from each file. Enriched files (processed by Gemini extraction) have rich frontmatter. Raw files (unprocessed transcripts) have minimal frontmatter. Default behaviour: **enriched files only**.
 
 ### llm_context
 Takes file paths (from stdin or arguments) and assembles content for LLM consumption. Two formats: `tree` (file listing) and `content` (file listing + full file content).

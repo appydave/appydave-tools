@@ -1,0 +1,104 @@
+# Random context discovery queries
+# Each entry runs a query tool command and checks result count.
+# Entries with result counts in [min_results, max_results] are eligible for random selection.
+#
+# Format:
+#   label:       Natural language question shown to the user
+#   command:     Shell command to run (query_brain or query_omi)
+#   min_results: Minimum results to be considered a "good" match (default: 1)
+#   max_results: Maximum results to be considered a "good" match (default: 15)
+#
+# The OMI skill can extend this file by appending new entries under queries:.
+
+queries:
+  # --- Brain queries ---
+  - label: "What do I know about paperclip?"
+    command: "query_brain --find paperclip"
+    min_results: 1
+    max_results: 20
+
+  - label: "What do I know about OMI?"
+    command: "query_brain --find omi"
+    min_results: 1
+    max_results: 20
+
+  - label: "What do I know about BMAD method?"
+    command: "query_brain --find bmad"
+    min_results: 1
+    max_results: 20
+
+  - label: "What do I know about agentic engineering?"
+    command: "query_brain --find agentic-engineering"
+    min_results: 1
+    max_results: 30
+
+  - label: "What are my active high-priority brains?"
+    command: "query_brain --active"
+    min_results: 5
+    max_results: 50
+
+  - label: "What do I know about Claude / Anthropic?"
+    command: "query_brain --find anthropic"
+    min_results: 1
+    max_results: 20
+
+  - label: "Browse my agent systems knowledge"
+    command: "query_brain --category agent-systems"
+    min_results: 1
+    max_results: 30
+
+  - label: "Browse my agent frameworks knowledge"
+    command: "query_brain --category agent-frameworks"
+    min_results: 1
+    max_results: 30
+
+  - label: "What do I know about context engineering?"
+    command: "query_brain --find context-engineering"
+    min_results: 1
+    max_results: 20
+
+  - label: "What do I know about FliVideo?"
+    command: "query_brain --find flivideo"
+    min_results: 1
+    max_results: 20
+
+  # --- OMI queries ---
+  - label: "Recent things I learned (TIL)"
+    command: "query_omi --routing til --limit 5"
+    min_results: 1
+    max_results: 5
+
+  - label: "One brain-update session to process"
+    command: "query_omi --routing brain-update --limit 1"
+    min_results: 1
+    max_results: 1
+
+  - label: "Recent brain-update sessions"
+    command: "query_omi --routing brain-update --limit 5"
+    min_results: 1
+    max_results: 5
+
+  - label: "What todo items came up recently?"
+    command: "query_omi --routing todo-item --days 14"
+    min_results: 1
+    max_results: 10
+
+  - label: "Recent OMI conversations about paperclip"
+    command: "query_omi --brain paperclip --limit 3"
+    min_results: 1
+    max_results: 3
+
+  - label: "Recent OMI conversations about BMAD"
+    command: "query_omi --brain bmad --limit 3"
+    min_results: 1
+    max_results: 3
+
+  - label: "What was I planning recently?"
+    command: "query_omi --activity planning --days 14 --limit 5"
+    min_results: 1
+    max_results: 5
+
+  - label: "What was I learning recently?"
+    command: "query_omi --activity learning --days 14 --limit 5"
+    min_results: 1
+    max_results: 5

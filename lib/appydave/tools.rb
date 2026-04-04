@@ -41,6 +41,9 @@ require 'appydave/tools/brain_context/options'
 require 'appydave/tools/brain_context/brain_finder'
 require 'appydave/tools/brain_context/omi_finder'
 
+require 'appydave/tools/random_context/query_entry'
+require 'appydave/tools/random_context/randomizer'
+
 require 'appydave/tools/configuration/openai'
 require 'appydave/tools/configuration/configurable'
 require 'appydave/tools/configuration/config'
