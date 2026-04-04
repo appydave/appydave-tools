@@ -38,8 +38,8 @@ module Appydave
           end
         end
 
-        def format_tokens(n)
-          "#{(n / 1000.0).round.to_i}k tokens"
+        def format_tokens(count)
+          "#{(count / 1000.0).round.to_i}k tokens"
         end
 
         def route(target)
