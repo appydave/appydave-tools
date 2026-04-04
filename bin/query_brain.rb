@@ -22,6 +22,10 @@ def setup_options(options)
       options.active = true
     end
 
+    opts.on('--meta', 'Return metadata as JSON instead of file paths') do
+      options.meta = true
+    end
+
     opts.on('--files-only', 'Exclude INDEX.md, only include content files') do
       options.include_index = false
     end
@@ -47,9 +51,12 @@ setup_options(options)
 
 # Query
 finder = Appydave::Tools::BrainQuery.new(options)
-paths = finder.find
 
-# Output file paths, one per line
-paths.each { |p| puts p }
+if options.meta
+  require 'json'
+  puts JSON.pretty_generate(finder.find_meta)
+else
+  finder.find.each { |p| puts p }
+end
 
 exit 0

@@ -147,6 +147,58 @@ RSpec.describe Appydave::Tools::OmiQuery do
     end
   end
 
+  describe '#find_meta' do
+    context 'with no filters' do
+      it 'returns an array of hashes' do
+        meta = subject.find_meta
+
+        expect(meta).to be_an(Array)
+        expect(meta.first).to be_a(Hash)
+      end
+
+      it 'includes expected metadata fields' do
+        entry = subject.find_meta.first
+
+        expect(entry.keys).to include('file', 'extraction_summary', 'matched_brains', 'activity', 'routing')
+      end
+
+      it 'includes entities fields' do
+        entry = subject.find_meta.first
+
+        expect(entry.keys).to include('entities_tools', 'entities_projects', 'entities_concepts')
+      end
+    end
+
+    context 'with routing filter' do
+      it 'returns only matching routing entries' do
+        options.omi_routings = ['brain-update']
+        meta = subject.find_meta
+
+        expect(meta).not_to be_empty
+        expect(meta.all? { |e| e['routing']&.include?('brain-update') }).to be true
+      end
+    end
+
+    context 'with limit' do
+      it 'respects limit on metadata results' do
+        options.limit = 3
+        meta = subject.find_meta
+
+        expect(meta.length).to be <= 3
+      end
+    end
+
+    context 'with brain filter' do
+      it 'returns metadata for sessions mentioning the brain' do
+        options.brain_names = ['agentic-os']
+        meta = subject.find_meta
+
+        expect(meta).not_to be_empty
+        expect(meta.all? { |e| e['matched_brains'].include?('agentic-os') }).to be true
+      end
+    end
+  end
+
   describe 'file paths' do
     it 'returns absolute paths' do
       options.omi_routings = ['brain-update']

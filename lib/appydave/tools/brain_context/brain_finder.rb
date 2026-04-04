@@ -34,6 +34,19 @@ module Appydave
         paths.uniq.sort
       end
 
+      def find_meta
+        return [] unless @options.brain_query?
+
+        load_index!
+        entries = []
+
+        entries.concat(active_meta_entries) if @options.active
+        @options.brain_names.each { |name| entries.concat(meta_entries_by_name(name)) }
+        @options.categories.each { |cat| entries.concat(meta_entries_by_category(cat)) }
+
+        entries.uniq { |e| e['name'] }.sort_by { |e| e['name'] }
+      end
+
       private
 
       def load_index!
@@ -149,6 +162,74 @@ module Appydave
           end
         end
         brain_entries_to_paths(brain_entries)
+      end
+
+      # --- find_meta helpers ---
+
+      def active_meta_entries
+        result = []
+        @index['categories'].each do |category_name, category_data|
+          category_data['brains'].each do |brain_name, brain_data|
+            result << build_meta_entry(brain_name, category_name, brain_data) if brain_data['activity_level'] == 'high'
+          end
+        end
+        result
+      end
+
+      def meta_entries_by_category(category)
+        category_key = @index['categories'].keys.find { |k| k.casecmp(category).zero? }
+        return [] unless category_key
+
+        @index['categories'][category_key]['brains'].map do |brain_name, brain_data|
+          build_meta_entry(brain_name, category_key, brain_data)
+        end
+      end
+
+      def meta_entries_by_name(name)
+        # Exact match
+        brain_name, category, data = find_brain_with_context(name)
+        return [build_meta_entry(brain_name, category, data)] if data
+
+        # Alias match
+        if @alias_map&.[](name.downcase)
+          brain_name, category, data = find_brain_with_context(@alias_map[name.downcase])
+          return [build_meta_entry(brain_name, category, data)] if data
+        end
+
+        # Substring match
+        matches = []
+        @index['categories'].each do |category_name, category_data|
+          category_data['brains'].each do |bname, bdata|
+            matches << build_meta_entry(bname, category_name, bdata) if bname.downcase.include?(name.downcase)
+          end
+        end
+        return matches if matches.any?
+
+        # Tag match
+        tag = name.downcase.gsub('_', '-')
+        (@index['tag_index']&.[](tag) || []).filter_map do |bname|
+          brain_name, category, data = find_brain_with_context(bname)
+          build_meta_entry(brain_name, category, data) if data
+        end
+      end
+
+      def find_brain_with_context(brain_name)
+        @index['categories'].each do |category_name, category_data|
+          data = category_data['brains'][brain_name]
+          return [brain_name, category_name, data] if data
+        end
+        [nil, nil, nil]
+      end
+
+      def build_meta_entry(name, category, data)
+        {
+          'name'           => name,
+          'category'       => category,
+          'activity_level' => data['activity_level'],
+          'status'         => data['status'],
+          'tags'           => data['tags'] || [],
+          'file_count'     => data['file_count'] || 0
+        }
       end
     end
   end

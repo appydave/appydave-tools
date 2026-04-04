@@ -4,7 +4,7 @@ module Appydave
   module Tools
     # Options struct for brain/OMI query tools
     class BrainContextOptions
-      attr_accessor :brain_names, :categories, :active,
+      attr_accessor :brain_names, :categories, :active, :meta,
                     :omi, :omi_routings, :omi_activities,
                     :date_from, :date_to, :enriched_only, :days, :limit,
                     :include_index, :output_targets, :formats, :line_limit,
@@ -14,6 +14,7 @@ module Appydave
         @brain_names = []
         @categories = []
         @active = false
+        @meta = false
 
         @omi = false
         @omi_routings = []

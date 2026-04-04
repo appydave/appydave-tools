@@ -29,6 +29,10 @@ def setup_options(options)
       options.days = n
     end
 
+    opts.on('--meta', 'Return metadata as JSON instead of file paths') do
+      options.meta = true
+    end
+
     opts.on('--limit N', Integer, 'Return at most N results (most recent)') do |n|
       options.limit = n
     end
@@ -54,9 +58,12 @@ setup_options(options)
 
 # Query
 finder = Appydave::Tools::OmiQuery.new(options)
-paths = finder.find
 
-# Output file paths, one per line
-paths.each { |p| puts p }
+if options.meta
+  require 'json'
+  puts JSON.pretty_generate(finder.find_meta)
+else
+  finder.find.each { |p| puts p }
+end
 
 exit 0

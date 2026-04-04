@@ -14,35 +14,58 @@ module Appydave
         return [] unless @options.omi_query?
 
         resolve_days!
-
-        paths = []
-        Dir.glob(File.join(@options.omi_dir, '*.md')).each do |file_path|
-          next unless include_file?(file_path)
-
-          paths << file_path
-        end
-
-        paths = paths.sort
+        paths = each_matching.map { |file_path, _frontmatter| file_path }
         paths = paths.last(@options.limit) if @options.limit
         paths
       end
 
+      def find_meta
+        return [] unless @options.omi_query?
+
+        resolve_days!
+        entries = each_matching.map do |file_path, frontmatter|
+          build_omi_meta(file_path, frontmatter)
+        end
+        entries = entries.last(@options.limit) if @options.limit
+        entries
+      end
+
       private
 
-      def include_file?(file_path)
-        frontmatter = extract_frontmatter(file_path)
-        return false unless frontmatter
+      def each_matching
+        results = []
+        Dir.glob(File.join(@options.omi_dir, '*.md')).sort.each do |file_path|
+          frontmatter = extract_frontmatter(file_path)
+          next unless frontmatter
+          next unless passes_filters?(frontmatter)
 
-        # Skip raw (non-enriched) files
+          results << [file_path, frontmatter]
+        end
+        results
+      end
+
+      def passes_filters?(frontmatter)
         return false if @options.enriched_only && (!frontmatter['signal'] || !frontmatter['extraction_summary'])
-
-        # Apply filters
         return false unless routing_matches?(frontmatter)
         return false unless activity_matches?(frontmatter)
         return false unless date_matches?(frontmatter)
         return false unless brain_matches?(frontmatter)
 
         true
+      end
+
+      def build_omi_meta(file_path, frontmatter)
+        {
+          'file'               => File.basename(file_path),
+          'extracted_at'       => frontmatter['extracted_at'],
+          'extraction_summary' => frontmatter['extraction_summary'],
+          'matched_brains'     => frontmatter['matched_brains'] || [],
+          'activity'           => frontmatter['activity'],
+          'routing'            => frontmatter['routing'],
+          'entities_tools'     => frontmatter['entities_tools'] || [],
+          'entities_projects'  => frontmatter['entities_projects'] || [],
+          'entities_concepts'  => frontmatter['entities_concepts'] || []
+        }
       end
 
       def extract_frontmatter(file_path)

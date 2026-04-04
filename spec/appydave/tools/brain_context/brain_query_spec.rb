@@ -114,6 +114,65 @@ RSpec.describe Appydave::Tools::BrainQuery do
     end
   end
 
+  describe '#find_meta' do
+    context 'when using --active flag' do
+      it 'returns an array of hashes' do
+        options.active = true
+        meta = subject.find_meta
+
+        expect(meta).to be_an(Array)
+        expect(meta.first).to be_a(Hash)
+      end
+
+      it 'includes expected metadata fields' do
+        options.active = true
+        entry = subject.find_meta.first
+
+        expect(entry.keys).to include('name', 'category', 'activity_level', 'tags', 'file_count', 'status')
+      end
+
+      it 'returns only high-activity brains' do
+        options.active = true
+        meta = subject.find_meta
+
+        expect(meta.all? { |e| e['activity_level'] == 'high' }).to be true
+      end
+    end
+
+    context 'when finding by name' do
+      it 'includes name and category in result' do
+        options.brain_names = ['omi']
+        entry = subject.find_meta.first
+
+        expect(entry['name']).to eq('omi')
+        expect(entry['category']).not_to be_nil
+      end
+
+      it 'includes tags array' do
+        options.brain_names = ['omi']
+        entry = subject.find_meta.first
+
+        expect(entry['tags']).to be_an(Array)
+      end
+    end
+
+    context 'when finding by category' do
+      it 'returns all brains in category with metadata' do
+        options.categories = ['agent-systems']
+        meta = subject.find_meta
+
+        expect(meta).not_to be_empty
+        expect(meta.all? { |e| e['category'] == 'agent-systems' }).to be true
+      end
+    end
+
+    context 'when no query specified' do
+      it 'returns empty array' do
+        expect(subject.find_meta).to eq([])
+      end
+    end
+  end
+
   describe 'file paths' do
     it 'returns absolute paths' do
       options.brain_names = ['omi']
