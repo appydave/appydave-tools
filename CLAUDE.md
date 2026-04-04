@@ -170,6 +170,8 @@ bin/console         # Interactive Ruby console for experimentation
 | **DAM (Digital Asset Management)** | `vat` | Multi-tenant video project storage orchestration | ✅ ACTIVE |
 | **Configuration** | `ad_config` | Manage JSON configs (channels, paths, sequences) | ✅ ACTIVE |
 | **Move Images** | N/A (dev only) | Organize video asset images | ✅ ACTIVE |
+| **Brain Query** | `query_brain` | Query brain knowledge index by name/tag/category | ✅ ACTIVE |
+| **OMI Query** | `query_omi` | Query OMI transcripts by routing/brain/activity | ✅ ACTIVE |
 | **Prompt Tools** | `prompt_tools` | OpenAI Completion API wrapper | ⚠️ DEPRECATED API |
 | **YouTube Automation** | `youtube_automation` | Prompt sequence runner | ⚠️ INTERNAL USE |
 
@@ -434,7 +436,92 @@ bin/move_images.rb -f b40 thumb b40
 
 **Note:** This is a development/workflow tool specific to video project organization. Not installed as a gem command.
 
-#### 8. Bank Reconciliation (`bin/bank_reconciliation.rb`) 🗄️ DEPRECATED
+#### 8. Brain Query (`bin/query_brain`)
+Query the brain knowledge index to locate relevant brain files for LLM context pipelines:
+
+```bash
+# Find brains by name, alias, or tag
+query_brain --find paperclip
+query_brain --find bmad --find method
+
+# Find all brains in a category
+query_brain --category tools
+query_brain --category workflows
+
+# Find high-activity brains
+query_brain --active
+
+# Exclude INDEX.md from results
+query_brain --find paperclip --files-only
+
+# Return JSON metadata instead of file paths
+query_brain --active --meta
+query_brain --find bmad --meta
+```
+
+**Options:**
+- `--find TERM` — find by name, alias, or tag (repeatable)
+- `--category CAT` — all brains in a category (repeatable)
+- `--active` — all high-activity brains
+- `--files-only` — exclude INDEX.md from results
+- `--meta` — return JSON metadata instead of file paths
+
+**Pipeline examples:**
+```bash
+# Feed brain files directly into LLM context
+query_brain --find paperclip | xargs llm_context.rb -i
+
+# Metadata pipeline (direct to LLM — no llm_context needed)
+query_brain --active --meta
+```
+
+#### 9. OMI Query (`bin/query_omi`)
+Query OMI wearable transcript sessions by routing type, brain reference, or activity:
+
+```bash
+# Find sessions mentioning a brain
+query_omi --brain paperclip
+query_omi --brain bmad
+
+# Filter by routing type
+query_omi --routing brain-update
+query_omi --routing til
+query_omi --routing todo-item
+query_omi --routing personal
+query_omi --routing archive
+
+# Filter by activity
+query_omi --activity planning
+query_omi --activity meeting
+query_omi --activity debugging
+
+# Limit by recency
+query_omi --days 7
+query_omi --brain paperclip --days 30 --limit 10
+
+# Return JSON metadata instead of file paths
+query_omi --brain paperclip --meta
+query_omi --routing brain-update --limit 5 --meta
+```
+
+**Options:**
+- `--brain NAME` — sessions mentioning a brain
+- `--routing TYPE` — brain-update, til, todo-item, personal, archive
+- `--activity ACT` — planning, meeting, debugging, etc.
+- `--days N` — last N days
+- `--limit N` — most recent N results
+- `--meta` — return JSON metadata instead of file paths
+
+**Pipeline examples:**
+```bash
+# Feed recent brain-update sessions into LLM context
+query_omi --routing brain-update --limit 5 | xargs llm_context.rb -i
+
+# Metadata pipeline (direct to LLM — no llm_context needed)
+query_omi --brain paperclip --meta
+```
+
+#### 10. Bank Reconciliation (`bin/bank_reconciliation.rb`) 🗄️ DEPRECATED
 Bank transaction reconciliation tool - **DEPRECATED, DO NOT USE**
 
 **WARNING:** This tool contains deprecated code and should not be used for new work. Code has been moved to `lib/appydave/tools/deprecated/bank_reconciliation/`
