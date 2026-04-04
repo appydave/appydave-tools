@@ -1,3 +1,15 @@
+# [0.83.0](https://github.com/appydave/appydave-tools/compare/v0.82.0...v0.83.0) (2026-04-04)
+
+
+### Bug Fixes
+
+* rename format_tokens param n to count to satisfy Naming/MethodParameterName ([e49d615](https://github.com/appydave/appydave-tools/commit/e49d61517a89b05f6c21bd4c5852a3ec59a74a55))
+
+
+### Features
+
+* add --smart flag for auto-routing output by token size ([a9466e0](https://github.com/appydave/appydave-tools/commit/a9466e059b5164a83902580bbfac5031e3a2dfe3))
+
 # [0.82.0](https://github.com/appydave/appydave-tools/compare/v0.81.0...v0.82.0) (2026-04-04)
 
 
