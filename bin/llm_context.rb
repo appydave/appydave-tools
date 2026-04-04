@@ -81,6 +81,16 @@ def setup_options(opts, options)
     options.show_tokens = true
   end
 
+  opts.on('-s', '--smart', 'Auto-route: clipboard if ≤ threshold tokens, else temp file',
+          'Mutually exclusive with explicit -o clipboard or -o temp') do
+    options.smart = true
+  end
+
+  opts.on('--smart-limit N', Integer,
+          'Token threshold for --smart (default: 100000)') do |n|
+    options.smart_limit = n
+  end
+
   opts.on('--stdin', 'Read file paths from stdin (one per line) instead of using patterns') do
     options.stdin = true
   end
@@ -99,6 +109,7 @@ def setup_help_sections(opts)
   opts.separator '    clipboard - Copy to system clipboard (default)'
   opts.separator '    temp      - Write to system temp dir, copy path to clipboard'
   opts.separator '    filename  - Write to specified file path'
+  opts.separator '    --smart   - Auto-route: clipboard if ≤ 100k tokens, else temp file'
   opts.separator ''
   opts.separator 'INPUT MODES'
   opts.separator '    Patterns (default): -i <glob> and -e <exclude_glob>'
@@ -165,7 +176,12 @@ if options.include_patterns.empty? && options.exclude_patterns.empty? && options
   exit
 end
 
-if options.output_target.empty?
+if options.smart && (options.output_target & %w[clipboard temp]).any?
+  warn 'Error: --smart (-s) cannot be combined with explicit -o clipboard or -o temp'
+  exit 1
+end
+
+if options.output_target.empty? && !options.smart
   puts 'No output target provided. Will default to `clipboard`. You can set the output target using -o'
   options.output_target << 'clipboard'
 end

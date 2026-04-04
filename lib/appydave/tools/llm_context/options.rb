@@ -16,6 +16,8 @@ module Appydave
         :show_tokens,
         :file_paths,
         :stdin,
+        :smart,
+        :smart_limit,
         keyword_init: true
       ) do
         def initialize(**args)
@@ -29,6 +31,8 @@ module Appydave
           self.show_tokens ||= false
           self.file_paths ||= []
           self.stdin ||= false
+          self.smart ||= false
+          self.smart_limit ||= 100_000
         end
       end
     end
