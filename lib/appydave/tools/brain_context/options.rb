@@ -4,26 +4,25 @@ module Appydave
   module Tools
     # Options struct for brain/OMI query tools
     class BrainContextOptions
-      attr_accessor :brain_names, :tags, :categories, :activity_levels, :status,
-                    :omi, :omi_signals, :omi_routings, :omi_activities,
-                    :date_from, :date_to, :enriched_only,
+      attr_accessor :brain_names, :categories, :active,
+                    :omi, :omi_routings, :omi_activities,
+                    :date_from, :date_to, :enriched_only, :days, :limit,
                     :include_index, :output_targets, :formats, :line_limit,
                     :debug_level, :dry_run, :tokens, :base_dir, :omi_dir
 
       def initialize
         @brain_names = []
-        @tags = []
         @categories = []
-        @activity_levels = []
-        @status = 'active' # default: exclude deprecated
+        @active = false
 
         @omi = false
-        @omi_signals = []
         @omi_routings = []
         @omi_activities = []
         @date_from = nil
         @date_to = nil
-        @enriched_only = false
+        @enriched_only = true
+        @days = nil
+        @limit = nil
 
         @include_index = true
         @output_targets = ['clipboard'] # default to clipboard
@@ -46,7 +45,7 @@ module Appydave
       end
 
       def brain_query?
-        brain_names.any? || tags.any? || categories.any? || activity_levels.any?
+        brain_names.any? || categories.any? || active
       end
 
       def omi_query?

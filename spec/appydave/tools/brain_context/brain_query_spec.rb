@@ -6,7 +6,6 @@ RSpec.describe Appydave::Tools::BrainQuery do
   let(:options) { Appydave::Tools::BrainContextOptions.new }
 
   before do
-    # Ensure brains-index.json exists
     skip 'brains-index.json not found' unless File.exist?(options.brains_index_path)
   end
 
@@ -17,8 +16,8 @@ RSpec.describe Appydave::Tools::BrainQuery do
       end
     end
 
-    context 'when querying by brain name' do
-      it 'returns paths for existing brain' do
+    context 'when finding by name (--find)' do
+      it 'returns paths for an exact brain name' do
         options.brain_names = ['omi']
         paths = subject.find
 
@@ -26,42 +25,74 @@ RSpec.describe Appydave::Tools::BrainQuery do
         expect(paths.all? { |p| p.include?('omi') }).to be true
       end
 
-      it 'returns empty array for non-existent brain' do
-        options.brain_names = ['nonexistent-brain']
+      it 'returns empty array for non-existent term' do
+        options.brain_names = ['nonexistent-brain-xyz']
+        expect(subject.find).to eq([])
+      end
+
+      it 'finds brains by tag (unified search)' do
+        options.brain_names = ['agentic-engineering']
         paths = subject.find
 
-        expect(paths).to eq([])
+        expect(paths).not_to be_empty
+        brain_dirs = paths.map { |p| p.match(%r{brains/([^/]+)})&.[](1) }.uniq
+        expect(brain_dirs.length).to be > 1
+      end
+
+      it 'finds brains by partial name match' do
+        options.brain_names = ['paper']
+        paths = subject.find
+
+        expect(paths).not_to be_empty
+        expect(paths.any? { |p| p.include?('paperclip') }).to be true
       end
     end
 
-    context 'when querying by tag' do
-      it 'returns paths for brains with tag' do
-        options.tags = ['agentic-engineering']
+    context 'when finding by category (--category)' do
+      it 'returns all brains in a category' do
+        options.categories = ['agent-systems']
         paths = subject.find
 
         expect(paths).not_to be_empty
       end
 
-      it 'returns multiple brains for common tag' do
-        options.tags = ['agentic-engineering']
+      it 'combines multiple categories' do
+        options.categories = %w[agent-systems agent-frameworks]
         paths = subject.find
 
-        # Should include files from multiple brains
         brain_dirs = paths.map { |p| p.match(%r{brains/([^/]+)})&.[](1) }.uniq
-        expect(brain_dirs.length).to be > 1
+        expect(brain_dirs.length).to be > 5
       end
     end
 
-    context 'when including INDEX.md' do
+    context 'when using --active flag' do
+      it 'returns all high-activity brains' do
+        options.active = true
+        paths = subject.find
+
+        expect(paths).not_to be_empty
+        brain_dirs = paths.map { |p| p.match(%r{brains/([^/]+)})&.[](1) }.uniq
+        expect(brain_dirs.length).to be >= 10
+      end
+
+      it 'includes known high-activity brains' do
+        options.active = true
+        paths = subject.find
+
+        brain_dirs = paths.map { |p| p.match(%r{brains/([^/]+)})&.[](1) }.uniq
+        expect(brain_dirs).to include('omi', 'agentic-os', 'anthropic-claude')
+      end
+    end
+
+    context 'when controlling INDEX.md inclusion' do
       it 'includes INDEX.md files by default' do
         options.brain_names = ['omi']
-        options.include_index = true
         paths = subject.find
 
         expect(paths.any? { |p| p.end_with?('INDEX.md') }).to be true
       end
 
-      it 'excludes INDEX.md when files_only is true' do
+      it 'excludes INDEX.md when files_only is set' do
         options.brain_names = ['omi']
         options.include_index = false
         paths = subject.find
@@ -70,25 +101,15 @@ RSpec.describe Appydave::Tools::BrainQuery do
       end
     end
 
-    context 'when querying by category' do
-      it 'returns paths for brains in category' do
-        options.categories = ['agent-systems']
-        paths = subject.find
-
-        expect(paths).not_to be_empty
-      end
-    end
-
-    context 'when combining multiple query types' do
-      it 'combines results from brain_names and tags' do
+    context 'when combining query types' do
+      it 'combines --find and --category results' do
         options.brain_names = ['omi']
-        options.tags = ['agentic-engineering']
+        options.categories = ['agent-frameworks']
         paths = subject.find
 
-        expect(paths).not_to be_empty
-        # Should have both omi and agentic-engineering brains
         brain_dirs = paths.map { |p| p.match(%r{brains/([^/]+)})&.[](1) }.uniq
         expect(brain_dirs).to include('omi')
+        expect(brain_dirs.length).to be > 1
       end
     end
   end
@@ -103,14 +124,14 @@ RSpec.describe Appydave::Tools::BrainQuery do
 
     it 'returns unique paths' do
       options.brain_names = ['omi']
-      options.tags = ['agentic-engineering'] # might overlap
+      options.categories = ['agent-systems']
       paths = subject.find
 
       expect(paths.length).to eq(paths.uniq.length)
     end
 
     it 'returns sorted paths' do
-      options.brain_names = ['omi']
+      options.active = true
       paths = subject.find
 
       expect(paths).to eq(paths.sort)

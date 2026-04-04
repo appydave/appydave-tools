@@ -8,12 +8,11 @@ options = Appydave::Tools::BrainContextOptions.new
 options.omi = true
 
 def setup_options(options)
-  OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
+  OptionParser.new do |opts|
     opts.banner = 'Usage: query_omi [options]'
 
-    opts.on('--signal SIGNAL', %w[work life ambient],
-            'Filter by signal') do |signal|
-      options.omi_signals << signal
+    opts.on('--brain NAME', 'Find OMI sessions mentioning this brain') do |name|
+      options.brain_names << name
     end
 
     opts.on('--routing ROUTING',
@@ -26,20 +25,12 @@ def setup_options(options)
       options.omi_activities.concat(activity.split('|').map(&:strip))
     end
 
-    opts.on('--date-from DATE', 'Include files from date (YYYY-MM-DD)') do |date|
-      options.date_from = date
+    opts.on('--days N', Integer, 'Include sessions from the last N days') do |n|
+      options.days = n
     end
 
-    opts.on('--date-to DATE', 'Include files up to date (YYYY-MM-DD)') do |date|
-      options.date_to = date
-    end
-
-    opts.on('--enriched-only', 'Skip raw (non-enriched) transcripts') do
-      options.enriched_only = true
-    end
-
-    opts.on('--brain NAME', 'Find OMI files mentioning this brain') do |name|
-      options.brain_names << name
+    opts.on('--limit N', Integer, 'Return at most N results (most recent)') do |n|
+      options.limit = n
     end
 
     opts.on('-d', '--debug [MODE]', %w[none info params debug],

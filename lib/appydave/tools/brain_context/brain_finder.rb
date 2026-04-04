@@ -18,14 +18,12 @@ module Appydave
         load_index!
         paths = []
 
-        # Handle brain name queries
+        # Active brains: return all high-activity brains
+        paths.concat(find_active) if @options.active
+
+        # Handle brain name/tag/alias queries (unified)
         @options.brain_names.each do |name|
           paths.concat(find_by_name(name))
-        end
-
-        # Handle tag queries
-        @options.tags.each do |tag|
-          paths.concat(find_by_tag(tag))
         end
 
         # Handle category queries
@@ -33,10 +31,6 @@ module Appydave
           paths.concat(find_by_category(category))
         end
 
-        # Handle activity level filters
-        paths.select! { |p| matches_activity_level?(p) } if @options.activity_levels.any?
-
-        # Remove duplicates and return
         paths.uniq.sort
       end
 
@@ -80,11 +74,10 @@ module Appydave
             matches << brain_data if brain_name.downcase.include?(name.downcase)
           end
         end
-        return brain_entries_to_paths(matches) if matches.length == 1
         return brain_entries_to_paths(matches) if matches.any?
 
-        # Not found
-        []
+        # Step 4: Tag match (so --find works for tags too)
+        find_by_tag(name)
       end
 
       def find_by_tag(tag)
@@ -148,17 +141,14 @@ module Appydave
         entry['index_path'].split('/')[0]
       end
 
-      def matches_activity_level?(file_path)
-        # Extract brain name from path
-        brain_name = file_path.match(%r{#{Regexp.escape(@options.brains_root)}/([^/]+)})&.[](1)
-        return false unless brain_name
-
-        # Find the brain entry
-        entry = find_brain_in_index(brain_name)
-        return false unless entry
-
-        # Check if activity level matches filter
-        @options.activity_levels.include?(entry['activity_level'])
+      def find_active
+        brain_entries = []
+        @index['categories'].each_value do |category_data|
+          category_data['brains'].each_value do |brain_data|
+            brain_entries << brain_data if brain_data['activity_level'] == 'high'
+          end
+        end
+        brain_entries_to_paths(brain_entries)
       end
     end
   end

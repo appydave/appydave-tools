@@ -13,15 +13,18 @@ module Appydave
       def find
         return [] unless @options.omi_query?
 
-        paths = []
+        resolve_days!
 
+        paths = []
         Dir.glob(File.join(@options.omi_dir, '*.md')).each do |file_path|
           next unless include_file?(file_path)
 
           paths << file_path
         end
 
-        paths.sort
+        paths = paths.sort
+        paths = paths.last(@options.limit) if @options.limit
+        paths
       end
 
       private
@@ -30,11 +33,10 @@ module Appydave
         frontmatter = extract_frontmatter(file_path)
         return false unless frontmatter
 
-        # If enriched-only requested, skip raw files
+        # Skip raw (non-enriched) files
         return false if @options.enriched_only && (!frontmatter['signal'] || !frontmatter['extraction_summary'])
 
         # Apply filters
-        return false unless signal_matches?(frontmatter)
         return false unless routing_matches?(frontmatter)
         return false unless activity_matches?(frontmatter)
         return false unless date_matches?(frontmatter)
@@ -91,13 +93,10 @@ module Appydave
         [key, value]
       end
 
-      def signal_matches?(frontmatter)
-        return true if @options.omi_signals.empty?
+      def resolve_days!
+        return unless @options.days
 
-        signal = frontmatter['signal']
-        return false unless signal
-
-        @options.omi_signals.include?(signal)
+        @options.date_from = (Date.today - @options.days).to_s
       end
 
       def routing_matches?(frontmatter)

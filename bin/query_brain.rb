@@ -7,29 +7,19 @@ require 'appydave/tools'
 options = Appydave::Tools::BrainContextOptions.new
 
 def setup_options(options)
-  OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
+  OptionParser.new do |opts|
     opts.banner = 'Usage: query_brain [options]'
 
-    opts.on('--brain NAME', 'Query brain by name, alias, or fuzzy match') do |name|
-      options.brain_names << name
+    opts.on('--find TERM', 'Find brain by name, tag, or alias (repeatable)') do |term|
+      options.brain_names << term
     end
 
-    opts.on('--tag TAG', 'Query brains by tag') do |tag|
-      options.tags << tag
-    end
-
-    opts.on('--category CAT', 'Query all brains in category') do |cat|
+    opts.on('--category CAT', 'Find all brains in category (repeatable)') do |cat|
       options.categories << cat
     end
 
-    opts.on('--activity-min LEVEL', %w[high medium low none],
-            'Filter brains by minimum activity level') do |level|
-      options.activity_levels << level
-    end
-
-    opts.on('--status STATUS', %w[active stable deprecated],
-            'Filter brains by status (default: exclude deprecated)') do |status|
-      options.status = status
+    opts.on('--active', 'Return all high-activity brains') do
+      options.active = true
     end
 
     opts.on('--files-only', 'Exclude INDEX.md, only include content files') do
