@@ -1,3 +1,16 @@
+# [0.81.0](https://github.com/appydave/appydave-tools/compare/v0.80.0...v0.81.0) (2026-04-04)
+
+
+### Bug Fixes
+
+* 'cops' ([7378a1e](https://github.com/appydave/appydave-tools/commit/7378a1e86e7658eb31924254390abfd967f915ae))
+
+
+### Features
+
+* add --meta flag to query_brain and query_omi returning rich JSON metadata instead of file paths ([3320c5d](https://github.com/appydave/appydave-tools/commit/3320c5dac93ad60591a82e255b5d45ff53396d1d))
+* simplify query_brain and query_omi APIs with unified --find, --active, --days, --limit flags ([12c80e6](https://github.com/appydave/appydave-tools/commit/12c80e6dcee4bb6bbe801985bf75aaeb897f57b9))
+
 # [0.80.0](https://github.com/appydave/appydave-tools/compare/v0.79.0...v0.80.0) (2026-04-03)
 
 
