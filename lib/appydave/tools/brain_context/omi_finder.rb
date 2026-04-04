@@ -56,15 +56,15 @@ module Appydave
 
       def build_omi_meta(file_path, frontmatter)
         {
-          'file'               => File.basename(file_path),
-          'extracted_at'       => frontmatter['extracted_at'],
+          'file' => File.basename(file_path),
+          'extracted_at' => frontmatter['extracted_at'],
           'extraction_summary' => frontmatter['extraction_summary'],
-          'matched_brains'     => frontmatter['matched_brains'] || [],
-          'activity'           => frontmatter['activity'],
-          'routing'            => frontmatter['routing'],
-          'entities_tools'     => frontmatter['entities_tools'] || [],
-          'entities_projects'  => frontmatter['entities_projects'] || [],
-          'entities_concepts'  => frontmatter['entities_concepts'] || []
+          'matched_brains' => frontmatter['matched_brains'] || [],
+          'activity' => frontmatter['activity'],
+          'routing' => frontmatter['routing'],
+          'entities_tools' => frontmatter['entities_tools'] || [],
+          'entities_projects' => frontmatter['entities_projects'] || [],
+          'entities_concepts' => frontmatter['entities_concepts'] || []
         }
       end
 

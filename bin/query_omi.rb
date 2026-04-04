@@ -8,7 +8,7 @@ options = Appydave::Tools::BrainContextOptions.new
 options.omi = true
 
 def setup_options(options)
-  OptionParser.new do |opts|
+  OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
     opts.banner = 'Usage: query_omi [options]'
 
     opts.on('--brain NAME', 'Find OMI sessions mentioning this brain') do |name|

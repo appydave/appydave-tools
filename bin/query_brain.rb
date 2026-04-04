@@ -7,7 +7,7 @@ require 'appydave/tools'
 options = Appydave::Tools::BrainContextOptions.new
 
 def setup_options(options)
-  OptionParser.new do |opts|
+  OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
     opts.banner = 'Usage: query_brain [options]'
 
     opts.on('--find TERM', 'Find brain by name, tag, or alias (repeatable)') do |term|

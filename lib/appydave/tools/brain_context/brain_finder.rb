@@ -223,12 +223,12 @@ module Appydave
 
       def build_meta_entry(name, category, data)
         {
-          'name'           => name,
-          'category'       => category,
+          'name' => name,
+          'category' => category,
           'activity_level' => data['activity_level'],
-          'status'         => data['status'],
-          'tags'           => data['tags'] || [],
-          'file_count'     => data['file_count'] || 0
+          'status' => data['status'],
+          'tags' => data['tags'] || [],
+          'file_count' => data['file_count'] || 0
         }
       end
     end
