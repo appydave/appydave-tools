@@ -1,3 +1,10 @@
+# [0.82.0](https://github.com/appydave/appydave-tools/compare/v0.81.0...v0.82.0) (2026-04-04)
+
+
+### Features
+
+* add random_context tool — randomly surfaces brain/OMI content for discovery; config at ~/.config/appydave/random-queries.yml bootstrapped from bundled seed ([1a98813](https://github.com/appydave/appydave-tools/commit/1a98813951283db7e777b3e7d6a48d60aaa840ad))
+
 # [0.81.0](https://github.com/appydave/appydave-tools/compare/v0.80.0...v0.81.0) (2026-04-04)
 
 
