@@ -1,0 +1,25 @@
+{
+  "generated": "2026-04-05",
+  "generator": "system-context",
+  "project": "sample-app",
+  "pattern": "rvets",
+  "globs": {
+    "docs": ["docs/**/*.md"],
+    "config": ["*.config.*"],
+    "services": ["server/src/services/**/*.ts"],
+    "routes": ["server/src/routes/**/*.ts"],
+    "components": ["client/src/components/**/*.tsx"],
+    "views": ["client/src/views/**/*.tsx"],
+    "context": ["CLAUDE.md", "CONTEXT.md"]
+  },
+  "aliases": {
+    "backend": ["services", "routes"],
+    "frontend": ["components", "views"],
+    "api": ["routes"]
+  },
+  "composites": {
+    "understand": ["context", "docs", "config"],
+    "codebase": ["services", "routes", "components", "views"],
+    "full": ["*"]
+  }
+}

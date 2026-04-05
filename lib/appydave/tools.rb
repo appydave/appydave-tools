@@ -41,6 +41,10 @@ require 'appydave/tools/brain_context/options'
 require 'appydave/tools/brain_context/brain_finder'
 require 'appydave/tools/brain_context/omi_finder'
 
+require 'appydave/tools/app_context/options'
+require 'appydave/tools/app_context/globs_loader'
+require 'appydave/tools/app_context/app_finder'
+
 require 'appydave/tools/random_context/query_entry'
 require 'appydave/tools/random_context/randomizer'
 
@@ -52,6 +56,7 @@ require 'appydave/tools/configuration/models/settings_config'
 require 'appydave/tools/configuration/models/brands_config'
 require 'appydave/tools/configuration/models/channels_config'
 require 'appydave/tools/configuration/models/youtube_automation_config'
+require 'appydave/tools/configuration/example_installer'
 require 'appydave/tools/name_manager/project_name'
 
 require 'appydave/tools/prompt_tools/prompt_completion'

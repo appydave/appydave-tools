@@ -235,5 +235,15 @@ RSpec.describe Appydave::Tools::ZshHistory::Config do
 
       expect(File.read(File.join(config_path, 'config.txt'))).to eq('custom content')
     end
+
+    it 'uses the current username (interpolated, not static) in the process listing exclusion pattern' do
+      username = ENV.fetch('USER', '')
+      skip 'No USER env var available' if username.empty?
+
+      described_class.create_default_config(config_path)
+
+      content = File.read(File.join(config_path, 'base_exclude.txt'))
+      expect(content).to include("^#{username}\\s+\\d+")
+    end
   end
 end

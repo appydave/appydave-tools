@@ -1,0 +1,24 @@
+{
+  "meta": { "version": "1.0" },
+  "categories": {},
+  "brands": {},
+  "clients": {},
+  "locations": [
+    {
+      "key": "sample-app",
+      "path": "SAMPLE_PROJECT_PATH",
+      "jump": "jsample",
+      "type": "tool",
+      "tags": ["typescript", "rvets"],
+      "description": "Sample RVETS application for testing"
+    },
+    {
+      "key": "no-globs-app",
+      "path": "/tmp/nonexistent-app",
+      "jump": "jnoglobs",
+      "type": "tool",
+      "tags": [],
+      "description": "App without context.globs.json"
+    }
+  ]
+}
