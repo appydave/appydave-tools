@@ -1,3 +1,10 @@
+# [0.84.0](https://github.com/appydave/appydave-tools/compare/v0.83.0...v0.84.0) (2026-04-05)
+
+
+### Features
+
+* add jump query subcommand for scriptable location lookup ([fe3429b](https://github.com/appydave/appydave-tools/commit/fe3429bc08ccb6167c1a0575c2154852fba29ccd))
+
 # [0.83.0](https://github.com/appydave/appydave-tools/compare/v0.82.0...v0.83.0) (2026-04-04)
 
 
