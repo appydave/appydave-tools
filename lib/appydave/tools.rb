@@ -109,6 +109,7 @@ require 'appydave/tools/jump/commands/remove'
 require 'appydave/tools/jump/commands/validate'
 require 'appydave/tools/jump/commands/report'
 require 'appydave/tools/jump/commands/generate'
+require 'appydave/tools/jump/commands/query'
 require 'appydave/tools/jump/cli'
 
 require 'appydave/tools/youtube_manager/models/youtube_details'

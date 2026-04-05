@@ -54,6 +54,8 @@ module Appydave
             run_remove(args)
           when 'validate'
             run_validate(args)
+          when 'query'
+            run_query(args)
           when 'report'
             run_report(args)
           when 'generate'
@@ -125,6 +127,35 @@ module Appydave
           result = search.search(query)
 
           format_output(result, format)
+          exit_code_for(result)
+        end
+
+        def run_query(args)
+          meta_mode = args.delete('--meta')
+
+          find_terms = extract_multi_option(args, '--find')
+          type_filter = extract_option(args, '--type')
+          brand_filter = extract_option(args, '--brand')
+          args.delete('--path-only')
+
+          cmd = Commands::Query.new(
+            load_config,
+            find: find_terms,
+            type: type_filter,
+            brand: brand_filter
+          )
+          result = cmd.run
+
+          if result[:success]
+            if meta_mode
+              format_output(result, 'json')
+            else
+              format_output(result, 'paths')
+            end
+          else
+            warn result[:error]
+          end
+
           exit_code_for(result)
         end
 
@@ -350,6 +381,20 @@ module Appydave
           attrs
         end
 
+        def extract_multi_option(args, flag)
+          values = []
+          loop do
+            index = args.index(flag)
+            break unless index
+
+            value = args[index + 1]
+            args.delete_at(index + 1)
+            args.delete_at(index)
+            values << value if value
+          end
+          values
+        end
+
         def extract_option(args, flag)
           index = args.index(flag)
           return nil unless index
@@ -407,6 +452,7 @@ module Appydave
               search <terms>        Fuzzy search across all location metadata
               get <key>             Get location by exact key
               list                  List all locations
+              query                 Scriptable location lookup (pipeline-friendly)
 
             CRUD Operations:
               add                   Add a new location
@@ -445,6 +491,8 @@ module Appydave
           topic = args.first
 
           case topic
+          when 'query'
+            show_query_help
           when 'search'
             show_search_help
           when 'add'
@@ -462,6 +510,36 @@ module Appydave
           else
             show_main_help
           end
+        end
+
+        def show_query_help
+          output.puts <<~HELP
+            jump query - Scriptable location lookup (pipeline-friendly)
+
+            Usage: jump query [--find <term>] [--type <type>] [--brand <brand>] [--path-only|--meta]
+
+            Filters (all are AND-combined):
+              --find <term>     Match term against key, name, brand, type, tags, description
+                                Repeat for AND logic: --find appydave --find ruby
+              --type <type>     Filter by location type (e.g. tool, gem, product)
+              --brand <brand>   Filter by brand (e.g. appydave, flivideo)
+
+            Output modes:
+              (default)         One path per line — pipeable (same as --path-only)
+              --path-only       Explicit path-per-line mode
+              --meta            JSON array with key, path, description, type, brand, status
+
+            Exit codes:
+              0                 Matches found
+              1                 No matches (NOT_FOUND)
+
+            Examples:
+              jump query --find flivideo
+              jump query --find flivideo --meta
+              jump query --type tool
+              jump query --find appydave --type tool
+              jump query --find flivideo | xargs llm_context -b
+          HELP
         end
 
         def show_search_help
