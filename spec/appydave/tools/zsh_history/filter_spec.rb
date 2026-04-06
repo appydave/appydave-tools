@@ -123,6 +123,19 @@ RSpec.describe Appydave::Tools::ZshHistory::Filter do
   end
 
   describe 'exclude patterns' do
+    it 'excludes process listing output for the current user' do
+      username = ENV.fetch('USER', '')
+      skip 'No USER env var available' if username.empty?
+
+      result = filter.apply([make_command(text: "#{username}   12345 ruby my-script.rb")])
+      expect(result.unwanted.size).to eq(1)
+    end
+
+    it 'does not hardcode a specific username' do
+      patterns_source = Appydave::Tools::ZshHistory::Filter::DEFAULT_EXCLUDE_PATTERNS
+      expect(patterns_source.join).not_to include('davidcruwys')
+    end
+
     it 'excludes single letter commands' do
       result = filter.apply([make_command(text: 'x')])
       expect(result.unwanted.size).to eq(1)

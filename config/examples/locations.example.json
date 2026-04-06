@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Jump locations — edit paths to match your dev folder structure, then run: jump generate"
+  },
+  "categories": {
+    "type": {
+      "description": "Kind of location",
+      "values": ["brand", "client", "gem", "video", "brain", "site", "tool", "config"]
+    },
+    "technology": {
+      "description": "Primary language/framework",
+      "values": ["ruby", "javascript", "typescript", "python", "astro"]
+    }
+  },
+  "brands": {},
+  "clients": {},
+  "locations": [
+    {
+      "key": "dev",
+      "path": "~/dev",
+      "alias": "jdev",
+      "description": "Root dev folder",
+      "type": "tool"
+    },
+    {
+      "key": "brain",
+      "path": "~/dev/brains",
+      "alias": "jbrain",
+      "description": "Second brain knowledge base",
+      "type": "brain"
+    },
+    {
+      "key": "omi",
+      "path": "~/dev/raw-intake/omi",
+      "alias": "jomi",
+      "description": "OMI wearable transcripts",
+      "type": "brain"
+    },
+    {
+      "key": "clients",
+      "path": "~/dev/clients",
+      "alias": "jclients",
+      "description": "Client work root",
+      "type": "client"
+    }
+  ]
+}

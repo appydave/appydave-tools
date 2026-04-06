@@ -44,6 +44,102 @@ RSpec.describe Appydave::Tools::Jump::Formatters::TableFormatter do
       end
     end
 
+    context 'when formatting a mutation result (add/update/remove)' do
+      context 'with a successful add' do
+        let(:data) do
+          {
+            success: true,
+            message: "Location 'awb' added successfully",
+            location: {
+              key: 'awb',
+              path: '/Users/davidcruwys/dev/ad/apps/awb',
+              jump: 'jawb',
+              type: 'app'
+            }
+          }
+        end
+
+        it 'displays the success message' do
+          output = formatter.format
+          expect(output).to include("Location 'awb' added successfully")
+        end
+
+        it 'does not display "No locations found"' do
+          output = formatter.format
+          expect(output).not_to include('No locations found')
+        end
+
+        it 'does not display a table header' do
+          output = formatter.format
+          expect(output).not_to include('KEY')
+        end
+      end
+
+      context 'with a successful add and a path warning' do
+        let(:data) do
+          {
+            success: true,
+            message: "Location 'awb' added successfully",
+            warning: "Warning: Path '/Users/davidcruwys/dev/ad/apps/awb' does not exist",
+            location: {
+              key: 'awb',
+              path: '/Users/davidcruwys/dev/ad/apps/awb'
+            }
+          }
+        end
+
+        it 'displays the success message' do
+          output = formatter.format
+          expect(output).to include("Location 'awb' added successfully")
+        end
+
+        it 'displays the path warning' do
+          output = formatter.format
+          expect(output).to include('does not exist')
+        end
+      end
+
+      context 'with a successful update' do
+        let(:data) do
+          {
+            success: true,
+            message: "Location 'awb' updated successfully",
+            location: { key: 'awb', path: '/Users/davidcruwys/dev/ad/apps/awb' }
+          }
+        end
+
+        it 'displays the update success message' do
+          output = formatter.format
+          expect(output).to include("Location 'awb' updated successfully")
+        end
+
+        it 'does not display "No locations found"' do
+          output = formatter.format
+          expect(output).not_to include('No locations found')
+        end
+      end
+
+      context 'with a successful remove' do
+        let(:data) do
+          {
+            success: true,
+            message: "Location 'awb' removed successfully"
+            # remove has no :location key
+          }
+        end
+
+        it 'displays the remove success message' do
+          output = formatter.format
+          expect(output).to include("Location 'awb' removed successfully")
+        end
+
+        it 'does not display "No locations found"' do
+          output = formatter.format
+          expect(output).not_to include('No locations found')
+        end
+      end
+    end
+
     context 'when formatting info result' do
       let(:data) do
         {

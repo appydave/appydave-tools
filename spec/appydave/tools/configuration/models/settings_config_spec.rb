@@ -104,4 +104,54 @@ RSpec.describe Appydave::Tools::Configuration::Models::SettingsConfig do
       expect(reloaded_settings.download_image_folder).to eq('/path/to/download')
     end
   end
+
+  describe 'brain and omi path settings' do
+    let(:settings) { described_class.new }
+
+    context 'when brains-root-path is not set' do
+      it 'returns nil' do
+        expect(settings.brains_root_path).to be_nil
+      end
+    end
+
+    context 'when brains-root-path is configured' do
+      before do
+        settings.set('brains-root-path', '/custom/brains')
+        settings.save
+      end
+
+      it 'returns the configured path' do
+        reloaded = described_class.new
+        expect(reloaded.brains_root_path).to eq('/custom/brains')
+      end
+    end
+
+    context 'when omi-directory-path is not set' do
+      it 'returns nil' do
+        expect(settings.omi_directory_path).to be_nil
+      end
+    end
+
+    context 'when omi-directory-path is configured' do
+      before do
+        settings.set('omi-directory-path', '/custom/omi')
+        settings.save
+      end
+
+      it 'returns the configured path' do
+        reloaded = described_class.new
+        expect(reloaded.omi_directory_path).to eq('/custom/omi')
+      end
+    end
+
+    it 'persists both path settings together' do
+      settings.set('brains-root-path', '~/dev/my-brains')
+      settings.set('omi-directory-path', '~/dev/omi-data')
+      settings.save
+
+      reloaded = described_class.new
+      expect(reloaded.brains_root_path).to eq('~/dev/my-brains')
+      expect(reloaded.omi_directory_path).to eq('~/dev/omi-data')
+    end
+  end
 end

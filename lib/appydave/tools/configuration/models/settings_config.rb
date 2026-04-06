@@ -42,6 +42,18 @@ module Appydave
             get('current_user')
           end
 
+          # Path to the root brains directory (second-brain knowledge base)
+          # Configure via settings.json key: brains-root-path
+          def brains_root_path
+            get('brains-root-path')
+          end
+
+          # Path to the OMI wearable transcripts directory
+          # Configure via settings.json key: omi-directory-path
+          def omi_directory_path
+            get('omi-directory-path')
+          end
+
           def print
             log.subheading 'Settings Configuration'
 

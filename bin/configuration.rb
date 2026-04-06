@@ -29,6 +29,10 @@ OptionParser.new do |opts|
     options[:command] = :create
   end
 
+  opts.on('-x', '--install-examples', 'Install bundled example configs (safe — skips existing files)') do
+    options[:command] = :install_examples
+  end
+
   opts.on('-p', '--print [KEYS]', Array, 'Print configuration details for specified keys') do |keys|
     options[:command] = :print
     options[:keys] = keys
@@ -71,6 +75,22 @@ when :create
   if skipped.any?
     puts "\n⚠️  Skipped (already exist):"
     skipped.each { |name| puts "  - #{name}" }
+  end
+when :install_examples
+  Appydave::Tools::Configuration::Config.configure
+  installer = Appydave::Tools::Configuration::ExampleInstaller.new
+  result = installer.install
+
+  puts "\n✅ Installed example configurations:"
+  if result[:installed].any?
+    result[:installed].each { |name| puts "  - #{name}" }
+  else
+    puts '  (none — all examples already present)'
+  end
+
+  if result[:skipped].any?
+    puts "\n⚠️  Skipped (already exist):"
+    result[:skipped].each { |name| puts "  - #{name}" }
   end
 when :print
   Appydave::Tools::Configuration::Config.configure

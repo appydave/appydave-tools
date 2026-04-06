@@ -34,8 +34,7 @@ module Appydave
           '^head ',
           '^tail ',
           '^echo \\$',
-          '^\\[\\d+\\]',              # Output like [1234]
-          '^davidcruwys\\s+\\d+',     # Process listing output
+          '^\\[\\d+\\]', # Output like [1234]
           '^zsh: command not found',
           '^X Process completed',
           '^Coverage report',
@@ -138,9 +137,16 @@ module Appydave
         end
 
         def load_exclude_patterns
-          # Try loading from config, fall back to defaults
+          # Try loading from config, fall back to defaults (with dynamic user pattern appended)
           config_patterns = config.exclude_patterns
-          config_patterns || DEFAULT_EXCLUDE_PATTERNS
+          config_patterns || default_exclude_patterns_with_user
+        end
+
+        def default_exclude_patterns_with_user
+          username = ENV.fetch('USER', ENV.fetch('USERNAME', ''))
+          return DEFAULT_EXCLUDE_PATTERNS if username.empty?
+
+          DEFAULT_EXCLUDE_PATTERNS + ["^#{username}\\s+\\d+"]
         end
 
         def load_include_patterns

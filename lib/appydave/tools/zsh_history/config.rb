@@ -108,8 +108,8 @@ module Appydave
             ^Finished in \\d
             ^\\d+ examples, \\d+ failures
 
-            # Process listing output
-            ^davidcruwys\\s+\\d+
+            # Process listing output (current user)
+            ^#{ENV.fetch('USER', ENV.fetch('USERNAME', ''))}\\s+\\d+
           PATTERNS
 
           # Create crash-recovery profile

@@ -34,11 +34,15 @@ module Appydave
         @tokens = false
         @base_dir = Dir.pwd
 
-        @omi_dir = File.expand_path('~/dev/raw-intake/omi')
+        configured_omi = read_setting('omi-directory-path')
+        @omi_dir = configured_omi || File.expand_path('~/dev/raw-intake/omi')
       end
 
       def brains_root
-        @brains_root ||= File.expand_path('~/dev/ad/brains')
+        @brains_root ||= begin
+          configured = read_setting('brains-root-path')
+          configured || File.expand_path('~/dev/ad/brains')
+        end
       end
 
       def brains_index_path
@@ -51,6 +55,19 @@ module Appydave
 
       def omi_query?
         omi
+      end
+
+      private
+
+      # Read a path value from settings config, expanding ~ if set.
+      # Returns nil if config is unavailable or key is absent/blank.
+      def read_setting(key)
+        value = Appydave::Tools::Configuration::Config.settings.get(key)
+        return nil if value.nil? || value.to_s.strip.empty?
+
+        File.expand_path(value)
+      rescue StandardError
+        nil
       end
     end
   end

@@ -27,7 +27,7 @@ Two-phase validation for the 75-commit DAM enhancement sprint (9e49668 → 4228b
 - **Shareable individually** - Tools can be featured in standalone videos
 - **Language flexible** - Currently Ruby, could be rewritten if needed
 
-**System context**: See [CONTEXT.md](CONTEXT.md) for purpose, domain concepts, design rationale, and scope boundaries.
+**System context**: See [CONTEXT.md](CONTEXT.md) for purpose, core abstractions, key workflows, design decisions, non-obvious constraints, expert mental model, scope limits, and failure modes.
 
 ## Documentation Discovery Protocol
 

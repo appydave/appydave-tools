@@ -1,0 +1,9 @@
+{
+  "video-projects-root": "~/dev/video-projects",
+  "ecamm-recording-folder": "~/ecamm",
+  "download-folder": "~/Downloads",
+  "download-image-folder": "~/Downloads/images",
+  "aliases-output-path": "~/.config/appydave/aliases.sh",
+  "brains-root-path": "~/dev/brains",
+  "omi-directory-path": "~/dev/raw-intake/omi"
+}

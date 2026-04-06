@@ -1,0 +1,24 @@
+{
+  "generated": "2026-04-05",
+  "generator": "system-context",
+  "project": "appydave-tools",
+  "pattern": "ruby-gem",
+  "globs": {
+    "docs": ["docs/**/*.md"],
+    "config": ["config/**/*.json"],
+    "lib": ["lib/**/*.rb"],
+    "bin": ["bin/*"],
+    "tests": ["spec/**/*_spec.rb"],
+    "planning": ["docs/planning/**/*.md"],
+    "context": ["CLAUDE.md", "CONTEXT.md"]
+  },
+  "aliases": {
+    "source": ["lib", "bin"],
+    "specs": ["tests"]
+  },
+  "composites": {
+    "understand": ["context", "docs", "config"],
+    "codebase": ["lib", "bin"],
+    "full": ["*"]
+  }
+}

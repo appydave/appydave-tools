@@ -67,6 +67,27 @@ RSpec.describe Appydave::Tools::Jump::CLI do
 
         expect(File.exist?(aliases_output_path)).to be false
       end
+
+      it 'shows success message after add' do
+        cli.run(['add', '--key', 'new-project', '--path', '~/dev/new-path'])
+
+        expect(output.string).to include("Location 'new-project' added successfully")
+      end
+
+      it 'does not show "No locations found" after add' do
+        cli.run(['add', '--key', 'new-project', '--path', '~/dev/new-path'])
+
+        expect(output.string).not_to include('No locations found')
+      end
+
+      it 'shows warning when path does not exist' do
+        no_path_validator = TestPathValidator.new(valid_paths: [])
+        bad_cli = described_class.new(config: config, path_validator: no_path_validator, output: output)
+        bad_cli.run(['add', '--key', 'ghost', '--path', '~/dev/ghost'])
+
+        expect(output.string).to include('does not exist')
+        expect(output.string).to include("Location 'ghost' added successfully")
+      end
     end
 
     context 'when updating a location' do

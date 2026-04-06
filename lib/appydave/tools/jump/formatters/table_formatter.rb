@@ -24,11 +24,12 @@ module Appydave
           #
           # @return [String] Formatted table
           def format
-            return format_error unless success?
-            return format_info if info_result?
-            return format_summary if summary_result?
-            return format_groups unless groups.empty?
-            return format_empty if results.empty?
+            return format_error    unless success?
+            return format_info     if info_result?
+            return format_summary  if summary_result?
+            return format_groups   unless groups.empty?
+            return format_mutation if mutation_result?
+            return format_empty    if results.empty?
             return format_definition_report if definition_report?
             return format_count_report if count_report?
             return format_category_report if category_report?
@@ -42,6 +43,16 @@ module Appydave
             lines = []
             lines << colorize("Error: #{error_message}", :red)
             lines << colorize(suggestion, :yellow) if suggestion
+            lines.join("\n")
+          end
+
+          def mutation_result?
+            data.key?(:message) && (data.key?(:location) || data[:message].to_s.match?(/removed|updated|added/i))
+          end
+
+          def format_mutation
+            lines = [colorize(data[:message], :green)]
+            lines << colorize(data[:warning], :yellow) if data[:warning]
             lines.join("\n")
           end
 
