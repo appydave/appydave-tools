@@ -8,6 +8,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Commands](#commands)
+- [Archive Range Pattern](#archive-range-pattern)
 - [Examples](#examples)
 - [Workflows](#workflows)
 - [Troubleshooting](#troubleshooting)
@@ -19,9 +20,6 @@
 ```bash
 # Install appydave-tools gem
 gem install appydave-tools
-
-# Initialize configuration
-dam init
 
 # List available brands
 dam list
@@ -49,147 +47,115 @@ dam s3-status appydave b65
 gem install appydave-tools
 ```
 
-### Initialize Configuration
-
-```bash
-dam init
-```
-
-This creates `~/.dam-config` pointing to your video projects directory.
-
 ### AWS CLI Setup
 
-DAM uses the AWS CLI for S3 operations. Install and configure:
+DAM uses named AWS profiles for S3 operations. Install and configure:
 
 ```bash
 # Install AWS CLI (macOS)
 brew install awscli
 
-# Configure AWS credentials (if not using .video-tools.env)
-aws configure
+# Configure a named profile (matching brands.json aws.profile)
+aws configure --profile david-appydave
 ```
 
 ---
 
 ## Configuration
 
-### System Configuration (`~/.dam-config`)
+DAM is configured via two JSON files in `~/.config/appydave/`:
 
-Created by `dam init`:
+### System Settings (`~/.config/appydave/settings.json`)
 
-```bash
-VIDEO_PROJECTS_ROOT=/Users/yourname/dev/video-projects
+```json
+{
+  "video-projects-root": "/Users/yourname/dev/video-projects",
+  "ecamm-recording-folder": "/Users/yourname/ecamm",
+  "download-folder": "/Users/yourname/Downloads",
+  "download-image-folder": "/Users/yourname/Downloads/images",
+  "current_user": "david",
+  "aliases-output-path": "~/.oh-my-zsh/custom/aliases-jump.zsh"
+}
 ```
 
-### Brand Configuration (`.video-tools.env`)
+The `video-projects-root` key is required — it points to the root containing all brand folders (`v-appydave/`, `v-voz/`, etc.).
 
-Each brand directory contains a `.video-tools.env` file:
+### Brands Config (`~/.config/appydave/brands.json`)
 
-```bash
-# AWS Configuration
-AWS_ACCESS_KEY_ID=AKIA...
-AWS_SECRET_ACCESS_KEY=...
-AWS_REGION=ap-southeast-1
-S3_BUCKET=your-bucket-name
-S3_STAGING_PREFIX=staging/v-appydave/
+Defines each brand's AWS settings, storage paths, team members, and workflow type:
 
-# SSD Backup Path
-SSD_BASE=/Volumes/T7/youtube-PUBLISHED/appydave
+```json
+{
+  "brands": {
+    "appydave": {
+      "name": "AppyDave",
+      "shortcut": "ad",
+      "type": "owned",
+      "youtube_channels": ["appydave"],
+      "team": ["david", "jan"],
+      "git_remote": "git@github.com:appydave-video-projects/v-appydave.git",
+      "locations": {
+        "video_projects": "/Users/yourname/dev/video-projects/v-appydave",
+        "ssd_backup": "/Volumes/T7/youtube-PUBLISHED/appydave"
+      },
+      "aws": {
+        "profile": "david-appydave",
+        "region": "ap-southeast-1",
+        "s3_bucket": "appydave-video-projects",
+        "s3_prefix": "staging/v-appydave/"
+      },
+      "settings": {
+        "s3_cleanup_days": 90
+      }
+    }
+  },
+  "users": {
+    "david": {
+      "name": "David Cruwys",
+      "email": "david@appydave.com",
+      "role": "owner",
+      "default_aws_profile": "david-appydave"
+    }
+  }
+}
 ```
 
-**Example template**: See `v-shared/video-asset-tools/.env.example` in your video-projects folder.
+To create or edit these files:
+
+```bash
+ad_config -c   # Create missing config files (safe — won't overwrite)
+ad_config -e   # Open configs in VS Code
+ad_config -l   # List all config locations
+```
 
 ---
 
 ## Commands
 
-### Initialization & Help
-
-#### `dam init`
-Initialize DAM configuration.
-
-```bash
-dam init
-```
-
-#### `dam help [command]`
-Show help information.
-
-```bash
-dam help                # Overview
-dam help s3-up          # Command-specific help
-dam help brands         # List available brands
-dam help workflows      # Explain FliVideo vs Storyline
-```
-
 ### Project Discovery
 
-#### `dam list [--summary] [brand] [pattern]`
+#### `dam list [brand] [pattern]`
 List brands and projects.
 
-**Mode 1: Brands only (clean list)**
 ```bash
-dam list
-# Output: Brands: appydave, aitldr, joy, kiros, ss, voz
-```
-
-**Mode 2: Brands with project counts (summary)**
-```bash
-dam list --summary
-# Output:
-# appydave: 27 projects
-# voz: 3 projects
-# aitldr: 2 projects
-```
-
-**Mode 3: Specific brand's projects**
-```bash
-dam list appydave
-# Output: Lists all AppyDave projects
-```
-
-**Mode 3b: Pattern matching**
-```bash
-dam list appydave 'b6*'
-# Output: Lists b60, b61, b62...b69 projects
+dam list                    # List all configured brands
+dam list appydave           # List all projects for a brand
+dam list appydave 'b6*'     # Pattern matching (b60–b69)
+dam list appydave 'b[1-5]*' # All b10–b59 projects
 ```
 
 ### Status & Monitoring
 
 #### `dam status [brand] [project]`
-Show unified status for project or brand (local, S3, SSD, git).
+Show unified status for a project or brand (local, S3, SSD, git).
 
-**Brand status:**
 ```bash
-dam status appydave
+dam status appydave           # Brand-level summary
+dam status appydave b65       # Project-level detail
+dam status                    # Auto-detect from current directory
 ```
 
-**Output:**
-```
-📊 Brand Status: v-appydave
-📡 Git Remote: git@github.com:klueless-io/v-appydave.git
-
-🌿 Branch: main
-📡 Remote: git@github.com:klueless-io/v-appydave.git
-✓ Working directory clean
-✓ Up to date with remote
-
-📋 Manifest Summary:
-   Total projects: 114
-   Local: 74
-   S3 staging: 12
-   SSD backup: 67
-
-   Storyline projects: 3
-   FliVideo projects: 111
-```
-
-**Project status:**
-```bash
-dam status appydave b65
-```
-
-**Output:**
+**Output (project level):**
 ```
 📊 Status: v-appydave/b65-guy-monroe-marketing-plan
 
@@ -206,90 +172,18 @@ Storage:
 
 Git:
   🌿 Branch: main
-  📡 Remote: git@github.com:klueless-io/v-appydave.git
+  📡 Remote: git@github.com:appydave-video-projects/v-appydave.git
   ↕️  Status: Clean working directory
   🔄 Sync: Up to date
 ```
 
-**Auto-detect from PWD:**
-```bash
-cd ~/dev/video-projects/v-appydave/b65-project
-dam status
-```
-
-### Git Repository Commands
-
-#### `dam repo-status [brand] [--all]`
-Check git status for brand repositories.
+#### `dam ssd-status [brand] [--all]`
+Check whether the SSD is mounted and available for each brand.
 
 ```bash
-# Single brand
-dam repo-status appydave
-
-# All brands
-dam repo-status --all
+dam ssd-status appydave    # Check one brand's SSD
+dam ssd-status --all       # Check all brands
 ```
-
-**Output:**
-```
-🔍 Git Status: v-appydave
-
-🌿 Branch: main
-📡 Remote: git@github.com:klueless-io/v-appydave.git
-✓ Working directory clean
-✓ Up to date with remote
-```
-
-#### `dam repo-sync [brand] [--all]`
-Pull updates for brand repositories.
-
-```bash
-# Single brand
-dam repo-sync appydave
-
-# All brands
-dam repo-sync --all
-```
-
-**Output:**
-```
-🔄 Syncing: v-appydave
-
-✓ Already up to date
-```
-
-**Safety features:**
-- Skips brands with uncommitted changes (prevents conflicts)
-- Shows summary when syncing multiple brands
-
-#### `dam repo-push [brand] [project]`
-Push changes for brand repository.
-
-```bash
-# Push all changes
-dam repo-push appydave
-
-# Validate project exists before push
-dam repo-push appydave b65
-```
-
-**Output:**
-```
-📤 Pushing: v-appydave
-
-✓ Project validated: b65-guy-monroe-marketing-plan
-
-📤 Pushing 2 commit(s)...
-
-✓ Push successful
-
-  main -> main
-```
-
-**Safety features:**
-- Warns if uncommitted changes detected
-- Optional project validation against manifest
-- Shows push summary
 
 ### S3 Sync Commands
 
@@ -297,41 +191,23 @@ dam repo-push appydave b65
 Upload files from local `s3-staging/` to S3.
 
 ```bash
-# With explicit args
-dam s3-up appydave b65
-
-# Auto-detect from current directory
-cd ~/dev/video-projects/v-appydave/b65-project
-dam s3-up
-
-# Dry-run (preview without uploading)
-dam s3-up appydave b65 --dry-run
+dam s3-up appydave b65           # Upload
+dam s3-up appydave b65 --dry-run # Preview without uploading
+dam s3-up                        # Auto-detect from current directory
 ```
 
-**What it does:**
-- Uploads files from `project/s3-staging/` to S3
-- Skips files already in sync (MD5 comparison)
-- Shows progress and summary
+Skips files already in sync (MD5 comparison). Shows progress and summary.
 
 #### `dam s3-down [brand] [project] [--dry-run]`
 Download files from S3 to local `s3-staging/`.
 
 ```bash
-# With explicit args
 dam s3-down appydave b65
-
-# Auto-detect
-cd ~/dev/video-projects/v-appydave/b65-project
-dam s3-down
-
-# Dry-run
 dam s3-down voz boy-baker --dry-run
+dam s3-down                       # Auto-detect
 ```
 
-**What it does:**
-- Downloads files from S3 to `project/s3-staging/`
-- Skips files already in sync
-- Creates `s3-staging/` if it doesn't exist
+Creates `s3-staging/` if it doesn't exist. Skips files already in sync.
 
 #### `dam s3-status [brand] [project]`
 Check sync status between local and S3.
@@ -363,57 +239,78 @@ Status:
 Delete S3 staging files for a project.
 
 ```bash
-# Preview what would be deleted
-dam s3-cleanup-remote appydave b65 --dry-run
-
-# Delete with confirmation prompt
-dam s3-cleanup-remote appydave b65
-
-# Delete without confirmation
-dam s3-cleanup-remote appydave b65 --force
+dam s3-cleanup-remote appydave b65 --dry-run   # Preview
+dam s3-cleanup-remote appydave b65 --force     # Execute
 ```
 
-**Warning:** This deletes files from S3. Use `--dry-run` first!
-
-**Note:** The old `dam s3-cleanup` command still works but shows a deprecation warning.
-
 #### `dam s3-cleanup-local [brand] [project] [--dry-run] [--force]`
-Delete local s3-staging files for a project.
+Delete local `s3-staging/` files for a project.
 
 ```bash
-# Preview what would be deleted
 dam s3-cleanup-local appydave b65 --dry-run
-
-# Delete with confirmation prompt
-dam s3-cleanup-local appydave b65
-
-# Delete without confirmation
 dam s3-cleanup-local appydave b65 --force
 ```
 
-**Warning:** This deletes local files in the s3-staging directory. Use `--dry-run` first!
-
-### Project Management
-
-#### `dam manifest [brand] [--all]`
-Generate project manifest for a brand (tracks projects across local + SSD storage).
+#### `dam s3-discover [brand] [project] [--shareable]`
+List files currently in S3 for a project.
 
 ```bash
-# Generate manifest for specific brand
-dam manifest appydave
-
-# Generate manifests for all configured brands
-dam manifest --all
+dam s3-discover appydave b65              # List S3 files
+dam s3-discover appydave b65 --shareable  # Generate pre-signed URLs
 ```
 
-**What it does:**
-- Scans local and SSD storage locations
-- Tracks project distribution (local only, SSD only, or both)
-- Calculates disk usage statistics
-- Validates project ID formats
-- Outputs `projects.json` in brand directory
+#### `dam s3-share [brand] [project] [file] [--expires 7d] [--download]`
+Generate a time-limited pre-signed URL for sharing a specific S3 file.
 
-**Example output:**
+```bash
+dam s3-share appydave b65 intro.mp4
+dam s3-share appydave b65 intro.mp4 --expires 3d --download
+```
+
+### Archive & SSD Commands
+
+#### `dam archive [brand] [project] [--dry-run] [--force]`
+Archive completed project to SSD backup location.
+
+```bash
+dam archive appydave b63 --dry-run    # Preview
+dam archive appydave b63              # Copy to SSD, keep local
+dam archive appydave b63 --force      # Copy to SSD, delete local (frees disk)
+```
+
+Verifies SSD is mounted before archiving. Shows size before copying.
+
+#### `dam sync-ssd [brand] [--dry-run]`
+Restore light files (subtitles, images, docs) from SSD to local for archived projects.
+
+**Important:** Does NOT sync heavy video files (MP4, MOV, etc.).
+
+```bash
+dam sync-ssd appydave             # Sync all AppyDave projects from SSD
+dam sync-ssd appydave --dry-run   # Preview
+dam sync-ssd voz
+```
+
+**What it syncs:**
+- Includes: `.srt`, `.vtt`, `.txt`, `.md`, `.jpg`, `.jpeg`, `.png`, `.webp`, `.json`, `.yml`
+- Excludes: `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`
+
+**Requirements:**
+- `projects.json` manifest must exist (`dam manifest <brand>` first)
+- SSD must be mounted
+
+Restored files are placed in `archived/{range}/{project}/` — see [Archive Range Pattern](#archive-range-pattern).
+
+#### `dam manifest [brand] [--all] [--verbose]`
+Generate `projects.json` for a brand — tracks all projects across local + SSD storage.
+
+```bash
+dam manifest appydave          # Generate for one brand
+dam manifest --all             # Generate for all brands
+dam manifest appydave --verbose # Show validation warnings
+```
+
+**Output example:**
 ```
 📊 Generating manifest for appydave...
 
@@ -433,61 +330,76 @@ Disk Usage:
 ✅ All validations passed!
 ```
 
-#### `dam archive [brand] [project] [--dry-run] [--force]`
-Archive completed project to SSD backup location.
+### Git Repository Commands
 
+#### `dam repo-status [brand] [--all]`
 ```bash
-# Preview archive operation
-dam archive appydave b63 --dry-run
-
-# Copy to SSD (leaves local copy intact)
-dam archive appydave b63
-
-# Copy to SSD and delete local copy
-dam archive appydave b63 --force
+dam repo-status appydave
+dam repo-status --all
 ```
 
-**What it does:**
-- Copies entire project directory to SSD backup location
-- Verifies SSD is mounted before archiving
-- Shows project size before copying
-- Optional: Delete local copy after successful archive (--force)
-
-**Configuration:** Uses `ssd_backup` location from `brands.json` config.
-
-#### `dam sync-ssd [brand] [--dry-run]`
-Restore light files (subtitles, images, docs) from SSD to local for archived projects.
-
-**Important:** Does NOT sync heavy video files (MP4, MOV, etc.)
+#### `dam repo-sync [brand] [--all]`
+Pull git updates. Skips brands with uncommitted changes.
 
 ```bash
-# Sync all AppyDave projects from SSD
-dam sync-ssd appydave
-
-# Preview what would be synced
-dam sync-ssd appydave --dry-run
-
-# Sync VOZ projects
-dam sync-ssd voz
+dam repo-sync appydave
+dam repo-sync --all
 ```
 
-**What it does:**
-- Reads `projects.json` manifest to find projects on SSD
-- Syncs ALL eligible projects for the brand (not one at a time)
-- Only copies light files: `.srt`, `.vtt`, `.jpg`, `.png`, `.md`, `.txt`, `.json`, `.yml`
-- Excludes heavy files: `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`
-- Creates `archived/{range}/{project}/` directory structure
-- Skips files already synced (size comparison)
+#### `dam repo-push [brand] [project]`
+Push changes. Optional project validation against manifest.
 
-**Requirements:**
-- Must have `projects.json` manifest (run: `dam manifest <brand>` first)
-- SSD must be mounted
-- Projects must exist on SSD
+```bash
+dam repo-push appydave
+dam repo-push appydave b65
+```
 
-**Use Cases:**
-- Restore subtitles and images without huge video files
-- Access project documentation from archived projects
-- Prepare project for re-editing (get metadata, then manually copy videos if needed)
+### Help
+
+```bash
+dam help                # Overview
+dam help s3-up          # Command-specific help
+dam help brands         # List available brands
+dam help workflows      # FliVideo vs Storyline explanation
+```
+
+---
+
+## Archive Range Pattern
+
+When projects are archived to SSD or restored locally via `sync-ssd`, they are organized into **50-number range folders** with letter prefixes.
+
+**Rule:** `(number / 50) * 50` → range start; range end = start + 49
+
+| Project ID | Range Folder |
+|------------|-------------|
+| `b00`–`b49` | `b00-b49` |
+| `b50`–`b99` | `b50-b99` |
+| `a00`–`a49` | `a00-a49` |
+| `a50`–`a99` | `a50-a99` |
+| Non-matching | `000-099` (legacy fallback) |
+
+**SSD structure:**
+```
+/Volumes/T7/youtube-PUBLISHED/appydave/
+├── b00-b49/
+│   └── b40-some-project/
+└── b50-b99/
+    └── b65-guy-monroe-marketing-plan/
+```
+
+**Local restored structure (after `sync-ssd`):**
+```
+~/dev/video-projects/v-appydave/
+├── b70-active-project/            ← flat = still active
+└── archived/
+    ├── b00-b49/
+    │   └── b40-some-project/      ← light files only
+    └── b50-b99/
+        └── b65-guy-monroe.../     ← light files only (no .mp4/.mov)
+```
+
+The manifest distinguishes between `flat` (active) and `archived` (restored) local structure.
 
 ---
 
@@ -498,60 +410,44 @@ dam sync-ssd voz
 **David (uploads to S3):**
 ```bash
 cd ~/dev/video-projects/v-appydave/b65-guy-monroe
-# Place files in s3-staging/
 mkdir -p s3-staging
 cp ~/Downloads/intro-footage.mp4 s3-staging/
 
-# Upload to S3
 dam s3-up appydave b65
 ```
 
 **Jan (downloads from S3):**
 ```bash
-cd ~/dev/video-projects/v-appydave/b65-guy-monroe
-
-# Check what's available
-dam s3-status appydave b65
-
-# Download files
-dam s3-down appydave b65
-
-# Edit files in s3-staging/
-# ...
-
-# Upload edited files back
-dam s3-up appydave b65
+dam s3-status appydave b65   # Check what's available
+dam s3-down appydave b65     # Download files
+# ... edit files in s3-staging/ ...
+dam s3-up appydave b65       # Upload edited files back
 ```
 
-### Example 2: Pattern Matching
+### Example 2: Cleanup After Project Completion
 
 ```bash
-# List all b60-series projects
-dam list appydave 'b6*'
+dam archive appydave b63 --dry-run      # Preview
+dam archive appydave b63                # Copy to SSD
 
-# List all completed projects
-dam list appydave 'b[1-5]*'
+dam s3-cleanup-remote appydave b63 --dry-run   # Preview S3 cleanup
+dam s3-cleanup-remote appydave b63 --force     # Delete from S3
 ```
 
-### Example 3: Cleanup After Project Completion
+### Example 3: Restore Light Files from Cold Storage
 
 ```bash
-# Archive to SSD
-dam archive appydave b63
-
-# Verify sync status
-dam s3-status appydave b63
-
-# Clean up S3 (saves storage costs)
-dam s3-cleanup-remote appydave b63 --dry-run  # Preview
-dam s3-cleanup-remote appydave b63 --force     # Execute
+dam manifest appydave               # Refresh manifest first
+dam ssd-status appydave             # Confirm SSD is mounted
+dam sync-ssd appydave --dry-run     # Preview what will be restored
+dam sync-ssd appydave               # Restore subtitles, images, docs
 ```
 
 ---
 
 ## Workflows
 
-### FliVideo Workflow (AppyDave Brand)
+### FliVideo Workflow (AppyDave, AITLDR)
 
 **Pattern:** Sequential, chapter-based recording
 
@@ -559,7 +455,7 @@ dam s3-cleanup-remote appydave b63 --force     # Execute
 
 **Short Name Support:**
 ```bash
-dam s3-up appydave b65  # Expands to full project name
+dam s3-up appydave b65   # Expands to full project name
 ```
 
 **Typical Flow:**
@@ -567,9 +463,9 @@ dam s3-up appydave b65  # Expands to full project name
 2. Upload raw footage to S3 for collaboration
 3. Download edited chapters from S3
 4. Publish final video
-5. Archive to SSD
+5. Archive to SSD (`dam archive appydave b65 --force`)
 
-### Storyline Workflow (VOZ, AITLDR Brands)
+### Storyline Workflow (VOZ, Kiros)
 
 **Pattern:** Script-first, narrative-driven content
 
@@ -577,213 +473,107 @@ dam s3-up appydave b65  # Expands to full project name
 
 **Full Name Required:**
 ```bash
-dam s3-up voz boy-baker  # Use full project name
+dam s3-up voz boy-baker   # Full project name required
 ```
-
-**Typical Flow:**
-1. Write script
-2. Record A-roll (main footage)
-3. Upload raw footage to S3
-4. Download edited version from S3
-5. Publish and archive
 
 ---
 
 ## Brand Shortcuts
 
-DAM supports brand shortcuts for faster typing:
+| Shortcut | Full Name | Type |
+|----------|-----------|------|
+| `appydave` (or `ad`) | `v-appydave` | owned |
+| `voz` | `v-voz` | client |
+| `aitldr` | `v-aitldr` | owned |
+| `kiros` | `v-kiros` | client |
+| `joy` | `v-beauty-and-joy` | owned |
+| `ss` | `v-supportsignal` | client |
 
-| Shortcut | Full Name | Purpose |
-|----------|-----------|---------|
-| `appydave` | `v-appydave` | AppyDave brand videos |
-| `voz` | `v-voz` | VOZ client projects |
-| `aitldr` | `v-aitldr` | AITLDR brand videos |
-| `kiros` | `v-kiros` | Kiros client projects |
-| `joy` | `v-beauty-and-joy` | Beauty & Joy brand |
-| `ss` | `v-supportsignal` | SupportSignal client |
+---
 
-**Usage:**
-```bash
-# Both are equivalent
-dam list appydave
-dam list v-appydave
+## Command Safety Reference
 
-# Both are equivalent
-dam s3-up joy project-name
-dam s3-up v-beauty-and-joy project-name
-```
+| Command | Dry-Run | Force Required | Action |
+|---------|---------|----------------|--------|
+| `s3-up` | ✅ | No | Upload to S3 |
+| `s3-down` | ✅ | No | Download from S3 |
+| `s3-cleanup-remote` | ✅ | Yes | Delete from S3 |
+| `s3-cleanup-local` | ✅ | No | Delete local staging |
+| `archive` | ✅ | Optional (deletes local) | Copy to SSD |
+| `sync-ssd` | ✅ | No | Restore light files from SSD |
+| `list` | — | — | Read-only |
+| `manifest` | — | — | Generates JSON |
+| `s3-status` | — | — | Read-only |
 
 ---
 
 ## Troubleshooting
 
-### "VIDEO_PROJECTS_ROOT not configured"
+### "video-projects-root not configured"
 
-**Solution:**
 ```bash
-dam init
+ad_config -e   # Edit settings.json and add video-projects-root
 ```
 
 ### "Brand directory not found"
 
-**Check available brands:**
 ```bash
-dam list
-```
-
-**Verify config:**
-```bash
-cat ~/.dam-config
+dam list                   # See configured brands
+ad_config -p brands        # Print brands.json
 ```
 
 ### "No project found matching 'b65'"
 
-**Possible causes:**
-1. Project doesn't exist in brand directory
-2. Wrong brand specified
-
-**Debug:**
 ```bash
-# List all projects
-dam list appydave
-
-# Use full project name
-dam s3-up appydave b65-full-project-name
+dam list appydave          # See all projects for brand
+dam list appydave 'b6*'    # Check b60–b69 range
 ```
 
 ### "AWS credentials not found"
 
-**Solution 1:** Add to `.video-tools.env` in brand directory
 ```bash
-AWS_ACCESS_KEY_ID=AKIA...
-AWS_SECRET_ACCESS_KEY=...
-AWS_REGION=ap-southeast-1
+aws configure --profile david-appydave   # Set up named profile
 ```
 
-**Solution 2:** Configure AWS CLI
+Profile name must match `aws.profile` in `brands.json`.
+
+### "SSD not mounted"
+
 ```bash
-aws configure
+dam ssd-status --all       # Check all brands
+# Connect the external SSD, then retry
+```
+
+### "projects.json not found" (sync-ssd fails)
+
+```bash
+dam manifest appydave      # Generate manifest first
+```
+
+### Files Not Syncing (Always "Skipped")
+
+Files with matching MD5 are skipped. To force re-upload:
+
+```bash
+dam s3-cleanup-remote appydave b65 --force
+dam s3-up appydave b65
 ```
 
 ### "Could not detect brand and project from current directory"
 
-**Solution:** Either:
-1. Provide explicit args: `dam s3-up appydave b65`
-2. Ensure you're in project directory: `cd v-appydave/b65-project`
+Either provide explicit args or ensure you're inside the project directory:
 
-### Files Not Syncing (Always "Skipped")
-
-**Cause:** Files haven't changed (MD5 hash matches)
-
-**Solution:** If you need to force re-upload, delete from S3 first:
 ```bash
-dam s3-cleanup appydave b65 --force
 dam s3-up appydave b65
+# or
+cd ~/dev/video-projects/v-appydave/b65-project && dam s3-up
 ```
 
 ---
 
-## Advanced Usage
+**Last Updated:** 2026-04-08
 
-### Auto-Detection from PWD
-
-All S3 commands support auto-detection:
-
-```bash
-cd ~/dev/video-projects/v-appydave/b65-project
-
-# These auto-detect brand and project
-dam s3-up
-dam s3-down
-dam s3-status
-```
-
-### Command Safety Features
-
-#### Dry-Run Support
-
-All filesystem-modifying commands support `--dry-run` to preview changes before execution:
-
-| Command | Dry-Run Support | Force Flag Required | What It Previews |
-|---------|----------------|---------------------|------------------|
-| **s3-up** | ✅ Yes | No | Files to upload to S3 |
-| **s3-down** | ✅ Yes | No | Files to download from S3 |
-| **s3-cleanup-remote** | ✅ Yes | **Yes (`--force`)** | S3 files to delete |
-| **s3-cleanup-local** | ✅ Yes | **Yes (`--force`)** | Local s3-staging files to delete |
-| **archive** | ✅ Yes | Optional (`--force` = delete local) | Project to copy to SSD |
-| **sync-ssd** | ✅ Yes | No | Light files to restore from SSD |
-
-#### Read-Only Commands (No Dry-Run Needed)
-
-These commands only read data and don't modify files:
-
-| Command | Type | What It Does |
-|---------|------|--------------|
-| **list** | Read-only | List brands/projects |
-| **manifest** | Generates JSON | Generate `projects.json` manifest |
-| **s3-status** | Read-only | Check sync status |
-| **help** | Read-only | Show help information |
-
-#### Safety Workflow Examples
-
-**Always preview destructive operations first:**
-
-```bash
-# Preview S3 upload
-dam s3-up appydave b65 --dry-run
-# Review output, then execute
-dam s3-up appydave b65
-
-# Preview S3 cleanup (requires --force)
-dam s3-cleanup-remote appydave b65 --force --dry-run
-# Review output, then execute
-dam s3-cleanup-remote appydave b65 --force
-
-# Preview archive (with or without local deletion)
-dam archive appydave b63 --dry-run              # Copy only
-dam archive appydave b63 --force --dry-run      # Copy + delete local
-# Review output, then execute
-dam archive appydave b63                        # Copy only
-dam archive appydave b63 --force                # Copy + delete local
-
-# Preview SSD sync
-dam sync-ssd appydave --dry-run
-# Review output, then execute
-dam sync-ssd appydave
-```
-
-#### Force Flag Behavior
-
-Commands requiring `--force` provide extra protection for destructive operations:
-
-- **s3-cleanup-remote**: Must use `--force` to delete S3 files (prevents accidental deletion)
-- **s3-cleanup-local**: Must use `--force` to delete local staging files
-- **archive**: Optional `--force` flag deletes local copy after successful SSD backup
-  - Without `--force`: Copies to SSD, keeps local copy intact
-  - With `--force`: Copies to SSD, then deletes local copy (frees disk space)
-
-### Interactive Selection
-
-When multiple projects match short name:
-
-```bash
-dam s3-up appydave b65
-# Output:
-# ⚠️  Multiple projects match 'b65':
-#   1. b65-first-project
-#   2. b65-second-project
-# Select project (1-2):
-```
-
----
-
-## See Also
-
-- **AWS Setup Guide:** [docs/usage/dam/aws-setup.md](./dam/aws-setup.md)
-- **Architecture:** [docs/usage/dam/architecture.md](./dam/architecture.md)
-- **Onboarding:** [docs/usage/dam/onboarding.md](./dam/onboarding.md)
-- **Integration Brief:** [docs/dam-integration-plan.md](../dam-integration-plan.md)
-
----
-
-**Last Updated:** 2025-11-10
+**See Also:**
+- [DAM Data Model](../../architecture/dam/dam-data-model.md)
+- [DAM Vision](../../architecture/dam/dam-vision.md)
+- [Configuration Guide](../configuration-setup.md)

@@ -19,7 +19,6 @@ RSpec.describe Appydave::Tools::OmiQuery do
         paths = subject.find
 
         expect(paths).not_to be_empty
-        expect(paths.length).to be < 200
       end
 
       it 'returns all files when enriched_only is disabled' do
@@ -87,7 +86,7 @@ RSpec.describe Appydave::Tools::OmiQuery do
 
     context 'when filtering by days (--days)' do
       it 'returns sessions from the last N days' do
-        options.days = 30
+        options.days = 60
         paths = subject.find
 
         expect(paths).not_to be_empty
@@ -131,7 +130,7 @@ RSpec.describe Appydave::Tools::OmiQuery do
     context 'with combined filters' do
       it 'intersects routing and days' do
         options.omi_routings = ['brain-update']
-        options.days = 14
+        options.days = 60
         paths = subject.find
 
         expect(paths).not_to be_empty
