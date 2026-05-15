@@ -56,7 +56,13 @@ require 'appydave/tools/configuration/models/settings_config'
 require 'appydave/tools/configuration/models/brands_config'
 require 'appydave/tools/configuration/models/channels_config'
 require 'appydave/tools/configuration/models/youtube_automation_config'
+require 'appydave/tools/configuration/models/bank_reconciliation_config'
 require 'appydave/tools/configuration/example_installer'
+
+require 'appydave/tools/bank_reconciliation/models/transaction'
+require 'appydave/tools/bank_reconciliation/clean/read_transactions'
+require 'appydave/tools/bank_reconciliation/clean/mapper'
+require 'appydave/tools/bank_reconciliation/clean/clean_transactions'
 require 'appydave/tools/name_manager/project_name'
 
 require 'appydave/tools/prompt_tools/prompt_completion'
@@ -132,6 +138,7 @@ Appydave::Tools::Configuration::Config.set_default do |config|
   config.register(:brands, Appydave::Tools::Configuration::Models::BrandsConfig)
   config.register(:channels, Appydave::Tools::Configuration::Models::ChannelsConfig)
   config.register(:youtube_automation, Appydave::Tools::Configuration::Models::YoutubeAutomationConfig)
+  config.register(:bank_reconciliation, Appydave::Tools::Configuration::Models::BankReconciliationConfig)
 end
 
 module Appydave

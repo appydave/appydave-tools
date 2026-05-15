@@ -55,4 +55,3 @@ Gemfile.lock
 .byebug_history
 
 **/deprecated/*
-bin/bank_reconciliation.rb
