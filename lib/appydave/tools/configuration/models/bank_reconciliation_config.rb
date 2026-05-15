@@ -30,8 +30,10 @@ module Appydave
           end
 
           def get_bank_account(account_number, bsb = nil)
+            normalized_bsb = bsb.to_s.empty? ? nil : bsb
             account_data = data['bank_accounts'].find do |account|
-              account['account_number'] == account_number && (bsb.nil? || account['bsb'] == bsb)
+              acct_bsb = account['bsb'].to_s.empty? ? nil : account['bsb']
+              account['account_number'] == account_number && (normalized_bsb.nil? || acct_bsb == normalized_bsb)
             end
 
             BankAccount.new(account_data) if account_data

@@ -55,3 +55,7 @@ Gemfile.lock
 .byebug_history
 
 **/deprecated/*
+
+# Private golden-master fixtures (real personal data — never committed).
+# Copy from ~/dev/bank-reconciliation/-old-tax-reconciliation/... on a per-machine basis.
+spec/fixtures-private/
