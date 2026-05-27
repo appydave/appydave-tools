@@ -1,0 +1,4 @@
+﻿"Date","Time","Time zone","Name","Type","Status","Currency","Amount","Fees","Total","Exchange Rate","Receipt ID","Balance","Transaction ID","Item Title"
+"01/09/2024","10:00:00","AEST","Acme Co","PayPal Reward","Completed","AUD","12.50","0.00","12.50","","","112.50","TXN001","Reward Commission"
+"15/09/2024","12:00:00","AEST","Acme USA","PayPal Reward","Completed","USD","100.00","0.00","100.00","1.50","","262.50","TXN002","US Commission"
+"30/09/2024","09:00:00","AEST","","User Initiated Withdrawal","Completed","AUD","-150.00","0.00","-150.00","","","112.50","TXN003","Withdraw to bank"

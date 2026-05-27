@@ -10,6 +10,9 @@ module Appydave
                                '"Source fee currency","Target fee amount","Target fee currency","Source name",' \
                                '"Source amount (after fees)","Source currency","Target name",' \
                                '"Target amount (after fees)","Target currency","Exchange rate",Reference,Batch'
+          PAYPAL_HEADER_PREFIX = '"Date","Time","Time zone","Name","Type","Status","Currency",' \
+                                 '"Amount","Fees","Total","Exchange Rate","Receipt ID","Balance",' \
+                                 '"Transaction ID","Item Title"'
           attr_reader :platform
           attr_reader :transactions
 
@@ -19,6 +22,7 @@ module Appydave
 
           def read
             csv_lines = File.read(@file).lines
+            csv_lines[0] = csv_lines[0].sub("\xEF\xBB\xBF", '') if csv_lines[0]&.start_with?("\xEF\xBB\xBF")
 
             @platform = detect_platform(csv_lines)
 
@@ -31,6 +35,8 @@ module Appydave
               read_commonwealth1(csv_lines)
             when :wise
               read_wise(csv_lines)
+            when :paypal
+              read_paypal(csv_lines)
             else
               raise Appydave::Tools::Error, 'Unknown platform X'
             end
@@ -137,6 +143,43 @@ module Appydave
             @transactions
           end
 
+          # PayPal CSV header:
+          # "Date","Time","Time zone","Name","Type","Status","Currency","Amount","Fees","Total",
+          # "Exchange Rate","Receipt ID","Balance","Transaction ID","Item Title"
+          def read_paypal(csv_lines)
+            @transactions = []
+
+            CSV.parse(csv_lines.join, headers: true).each do |row|
+              next if row['Date'].to_s.strip.empty?
+
+              name      = row['Name'].to_s.strip
+              item      = row['Item Title'].to_s.strip
+              narration = name.empty? ? item : name
+              currency  = row['Currency'].to_s.strip
+              narration = "#{narration} (#{currency})" if !currency.empty? && currency != 'AUD'
+
+              amount = row['Amount'].to_s.strip
+              debit  = amount.to_f.negative? ? amount : ''
+              credit = amount.to_f.positive? ? amount : ''
+
+              transaction = Models::Transaction.new(
+                bsb_number: '',
+                account_number: 'PAYPAL',
+                transaction_date: row['Date'],
+                narration: narration,
+                cheque_number: '',
+                debit: debit,
+                credit: credit,
+                balance: row['Balance'],
+                transaction_type: row['Type'].to_s
+              )
+              transaction.add_source_file(@file)
+              @transactions << transaction
+            end
+
+            @transactions
+          end
+
           # For bankwest the first row is the CSV will look like:
           # BSB Number,Account Number,Transaction Date,Narration,Cheque Number,Debit,Credit,Balance,Transaction Type
           def detect_platform(csv_lines)
@@ -145,6 +188,7 @@ module Appydave
             return :commonwealth1 if csv_lines.first.start_with?('bsb_number,account_number,transaction_date,amount,description,balance') # Standard Account
             return :commonwealth2 if csv_lines.first.start_with?('transaction_date,narration,debit_credit_amount,debit_credit_currency,balance_amount,balance_currency') # Travel Money
             return :wise if csv_lines.first.start_with?(WISE_HEADER_PREFIX)
+            return :paypal if csv_lines.first.start_with?(PAYPAL_HEADER_PREFIX)
 
             puts "Unknown platform detected. CSV columns are: #{csv_lines.first.strip}"
             raise Appydave::Tools::Error, 'Unknown platform'

@@ -6,6 +6,28 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::ReadTransactions do
   let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'bank-west.csv') }
 
   describe '#read' do
+    context 'when the file is a PayPal CSV' do
+      let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'paypal-sample.csv') }
+
+      it 'detects :paypal even with a UTF-8 BOM' do
+        subject.read
+        expect(subject.platform).to eq(:paypal)
+      end
+
+      it 'emits one transaction per data row' do
+        txns = subject.read
+        expect(txns.size).to eq(3)
+      end
+
+      it 'splits debits/credits by sign and tags non-AUD currency in narration' do
+        txns = subject.read
+        expect(txns[0].credit.to_f).to eq(12.50)
+        expect(txns[1].narration).to include('(USD)')
+        expect(txns[2].debit.to_f).to eq(-150.00)
+        expect(txns[2].narration).to eq('Withdraw to bank')
+      end
+    end
+
     context 'when the file is from BankWest' do
       before { subject.read }
 
