@@ -6,6 +6,10 @@ module Appydave
       module Clean
         # Read transactions from a CSV file
         class ReadTransactions
+          WISE_HEADER_PREFIX = 'ID,Status,Direction,"Created on","Finished on","Source fee amount",' \
+                               '"Source fee currency","Target fee amount","Target fee currency","Source name",' \
+                               '"Source amount (after fees)","Source currency","Target name",' \
+                               '"Target amount (after fees)","Target currency","Exchange rate",Reference,Batch'
           attr_reader :platform
           attr_reader :transactions
 
@@ -105,7 +109,11 @@ module Appydave
             @transactions
           end
 
-          # ID,Status,Direction,"Created on","Finished on","Source fee amount","Source fee currency","Target fee amount","Target fee currency","Source name","Source amount (after fees)","Source currency","Target name","Target amount (after fees)","Target currency","Exchange rate",Reference,Batch
+          # Wise CSV header:
+          # ID,Status,Direction,"Created on","Finished on","Source fee amount","Source fee currency",
+          # "Target fee amount","Target fee currency","Source name","Source amount (after fees)",
+          # "Source currency","Target name","Target amount (after fees)","Target currency",
+          # "Exchange rate",Reference,Batch
           def read_wise(csv_lines)
             @transactions = []
 
@@ -136,9 +144,7 @@ module Appydave
             return :bankwest2 if csv_lines.first.start_with?('Account Name,BSB / Account Number,Transaction Date,Narration,Cheque Number,Debit,Credit,Balance,Transaction Type')
             return :commonwealth1 if csv_lines.first.start_with?('bsb_number,account_number,transaction_date,amount,description,balance') # Standard Account
             return :commonwealth2 if csv_lines.first.start_with?('transaction_date,narration,debit_credit_amount,debit_credit_currency,balance_amount,balance_currency') # Travel Money
-            if csv_lines.first.start_with?('ID,Status,Direction,"Created on","Finished on","Source fee amount","Source fee currency","Target fee amount","Target fee currency","Source name","Source amount (after fees)","Source currency","Target name","Target amount (after fees)","Target currency","Exchange rate",Reference,Batch')
-              return :wise
-            end
+            return :wise if csv_lines.first.start_with?(WISE_HEADER_PREFIX)
 
             puts "Unknown platform detected. CSV columns are: #{csv_lines.first.strip}"
             raise Appydave::Tools::Error, 'Unknown platform'

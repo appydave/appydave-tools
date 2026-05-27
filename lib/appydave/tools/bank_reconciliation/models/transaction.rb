@@ -134,7 +134,6 @@ module Appydave
             []
           end
 
-
           def parse_date(date_string)
             formats = ['%d/%m/%Y', '%Y-%m-%d %H:%M:%S']
             formats.each do |format|

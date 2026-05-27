@@ -45,6 +45,8 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::CleanTransactions, :r
   let(:output_filename) { 'output.csv' }
   let(:output_path) { File.join(output_dir, output_filename) }
 
+  let(:cleaner) { described_class.new(transaction_folder: inputs_dir, output_folder: output_dir) }
+
   before do
     skip 'Private fixtures absent — see file header for setup instructions' unless File.exist?(july_2025_snapshot)
     skip 'Current baseline absent — capture via the spec or fixture-setup script' unless File.exist?(current_baseline_path)
@@ -61,11 +63,11 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::CleanTransactions, :r
     end
 
     # Avoid clobbering the user's clipboard during test runs.
-    allow_any_instance_of(described_class).to receive(:csv_to_clipboard)
+    allow(cleaner).to receive(:csv_to_clipboard)
   end
 
   after do
-    FileUtils.remove_entry(output_dir) if Dir.exist?(output_dir)
+    FileUtils.rm_rf(output_dir)
     Appydave::Tools::Configuration::Config.reset
   end
 
@@ -74,7 +76,6 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::CleanTransactions, :r
     # SHAPE of output as the original: same row count, same columns. They
     # ignore COA categorisation drift (which evolved post-generation).
     before do
-      cleaner = described_class.new(transaction_folder: inputs_dir, output_folder: output_dir)
       cleaner.clean_transactions(['*.csv'], output_filename)
     end
 
@@ -98,7 +99,6 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::CleanTransactions, :r
     # the baseline (e.g., after a fix), regenerate baseline-2026-05-15.csv (or
     # rename to a new dated baseline) and commit alongside the change.
     before do
-      cleaner = described_class.new(transaction_folder: inputs_dir, output_folder: output_dir)
       cleaner.clean_transactions(['*.csv'], output_filename)
     end
 
