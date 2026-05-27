@@ -6,6 +6,32 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::ReadTransactions do
   let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'bank-west.csv') }
 
   describe '#read' do
+    context 'when the file is a CBA simple-format CSV' do
+      let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'commonwealth-simple-sample.csv') }
+
+      it 'detects :commonwealth_simple' do
+        subject.read
+        expect(subject.platform).to eq(:commonwealth_simple)
+      end
+
+      it 'emits one transaction per row and splits debits/credits by sign' do
+        txns = subject.read
+        expect(txns.size).to eq(4)
+        expect(txns[0].credit.to_f).to eq(1000.00)
+        expect(txns[0].debit).to eq('')
+        expect(txns[1].debit.to_f).to eq(-250.50)
+        expect(txns[1].credit).to eq('')
+      end
+
+      it 'parses signed amounts with +, -, no-prefix, and zero' do
+        txns = subject.read
+        expect(txns[2].debit).to eq('')
+        expect(txns[2].credit).to eq('')
+        expect(txns[3].credit.to_f).to eq(3300.00)
+        expect(txns[0].balance.to_f).to eq(1000.00)
+      end
+    end
+
     context 'when the file is a PayPal CSV' do
       let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'paypal-sample.csv') }
 

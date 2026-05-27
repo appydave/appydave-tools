@@ -1,0 +1,5 @@
+Date,Amount,Description,Balance
+01/07/2024,"+1000.00","Opening Transfer From Savings","+1000.00"
+15/08/2024,"-250.50","Direct Debit To Utility Co","+749.50"
+02/09/2024,"0.00","Adjustment Entry","+749.50"
+30/06/2025,"3300.00","Fast Transfer From Acme No Prefix","+4049.50"
