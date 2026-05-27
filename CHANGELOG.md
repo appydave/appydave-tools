@@ -1,3 +1,11 @@
+# [0.85.0](https://github.com/appydave/appydave-tools/compare/v0.84.0...v0.85.0) (2026-04-06)
+
+
+### Features
+
+* add query_apps CLI tool for app file discovery via context.globs.json ([4afd53d](https://github.com/appydave/appydave-tools/commit/4afd53da75793f9e8a8a4c211d84d4a5ab2a5701))
+* show success message after jump add/update/remove instead of misleading 'No locations found' notice ([740eed3](https://github.com/appydave/appydave-tools/commit/740eed32fcf37ba235bca5c561fc860c00cc98ec))
+
 # [0.84.0](https://github.com/appydave/appydave-tools/compare/v0.83.0...v0.84.0) (2026-04-05)
 
 
