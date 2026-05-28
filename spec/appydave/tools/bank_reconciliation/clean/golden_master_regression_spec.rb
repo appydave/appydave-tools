@@ -2,9 +2,13 @@
 
 # Golden-master regression: runs the resurrected pipeline against 9 historical
 # raw bank exports and compares the output against a baseline captured on
-# 2026-05-15. This proves the resurrection is structurally identical and
+# 2026-05-28. This proves the resurrection is structurally identical and
 # locks down behavior going forward — any code or config change that produces
 # a different output triggers a failure.
+#
+# Baseline history:
+#   baseline-2026-05-15.csv — original resurrection baseline (Wise all rows as debit)
+#   baseline-2026-05-28.csv — re-captured after Wise Direction fix (IN→credit, OUT→debit)
 #
 # Note: the original July-2025 `clean_transactions.csv` is preserved at
 # spec/fixtures-private/golden/clean_transactions.csv but is NOT used as the
@@ -38,7 +42,7 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::CleanTransactions, :r
   let(:fixtures_dir) { File.expand_path('../../../../fixtures-private', __dir__) }
   let(:golden_dir) { File.join(fixtures_dir, 'golden') }
   let(:july_2025_snapshot) { File.join(golden_dir, 'clean_transactions.csv') }
-  let(:current_baseline_path) { File.join(golden_dir, 'baseline-2026-05-15.csv') }
+  let(:current_baseline_path) { File.join(golden_dir, 'baseline-2026-05-28.csv') }
   let(:golden_config_path) { File.join(golden_dir, 'bank-reconciliation.json') }
   let(:inputs_dir) { File.join(fixtures_dir, 'golden-inputs') }
   let(:output_dir) { Dir.mktmpdir('golden-master-output-') }

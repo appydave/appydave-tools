@@ -129,16 +129,21 @@ module Appydave
           def read_wise(csv_lines)
             @transactions = []
 
-            # Skip the header line and parse each subsequent line
             CSV.parse(csv_lines.join, headers: true).each do |row|
+              amount   = row['Source amount (after fees)']
+              incoming = row['Direction'].to_s.strip.upcase == 'IN'
+
+              puts "Wise: unexpected Direction '#{row['Direction']}' on row #{row['ID']} — defaulting to debit" \
+                unless %w[IN OUT].include?(row['Direction'].to_s.strip.upcase)
+
               transaction = Models::Transaction.new(
                 bsb_number: '',
                 account_number: 'WISE',
                 transaction_date: row['Created on'],
                 narration: row['Reference'] || '',
-                cheque_number: "#{row['Source currency']}|#{row['Target currency']}|#{row['Exchange rate']}|#{row['Target name']}", # DON"T have a better field yet
-                debit: row['Source amount (after fees)'],
-                credit: '',
+                cheque_number: "#{row['Source currency']}|#{row['Target currency']}|#{row['Exchange rate']}|#{row['Target name']}",
+                debit: incoming ? '' : amount,
+                credit: incoming ? amount : '',
                 balance: '',
                 transaction_type: ''
               )

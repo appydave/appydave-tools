@@ -1,0 +1,4 @@
+ID,Status,Direction,"Created on","Finished on","Source fee amount","Source fee currency","Target fee amount","Target fee currency","Source name","Source amount (after fees)","Source currency","Target name","Target amount (after fees)","Target currency","Exchange rate",Reference,Batch
+TXN-IN-001,COMPLETED,IN,"2024-09-01 10:00:00","2024-09-01 10:01:00","0.00","AUD",,,"Acme Corp","500.00","AUD","David Test","500.00","AUD","1.0","Invoice 001",
+TXN-OUT-001,COMPLETED,OUT,"2024-09-02 10:00:00","2024-09-02 10:01:00","2.00","AUD",,,"David Test","150.00","AUD","Supplier Co","5850.0","PHP","39.0","Sep payment",
+TXN-BLANK-001,COMPLETED,,"2024-09-03 10:00:00","2024-09-03 10:01:00","0.00","AUD",,,"Unknown","75.00","AUD","Other","75.00","AUD","1.0","Misc",

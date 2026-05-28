@@ -6,6 +6,28 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::ReadTransactions do
   let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'bank-west.csv') }
 
   describe '#read' do
+    context 'when the file is a Wise CSV' do
+      let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'wise-direction-sample.csv') }
+
+      it 'records Direction=IN rows as credit, not debit' do
+        txns = subject.read
+        expect(txns[0].credit).to eq('500.00')
+        expect(txns[0].debit).to eq('')
+      end
+
+      it 'records Direction=OUT rows as debit, not credit' do
+        txns = subject.read
+        expect(txns[1].debit).to eq('150.00')
+        expect(txns[1].credit).to eq('')
+      end
+
+      it 'defaults blank Direction to debit for back-compat' do
+        txns = subject.read
+        expect(txns[2].debit).to eq('75.00')
+        expect(txns[2].credit).to eq('')
+      end
+    end
+
     context 'when the file is a CBA simple-format CSV' do
       let(:file_path) { File.join('spec', 'fixtures', 'bank-reconciliation', 'commonwealth-simple-sample.csv') }
 
