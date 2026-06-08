@@ -36,6 +36,12 @@ RSpec.describe Appydave::Tools::BankReconciliation::Clean::ReadTransactions do
         expect(subject.platform).to eq(:commonwealth_simple)
       end
 
+      it 'tags rows with the generic CBA-SIMPLE account identifier (real account is in config)' do
+        txns = subject.read
+        expect(txns[0].account_number).to eq('CBA-SIMPLE')
+        expect(txns[0].bsb_number).to eq('')
+      end
+
       it 'emits one transaction per row and splits debits/credits by sign' do
         txns = subject.read
         expect(txns.size).to eq(4)

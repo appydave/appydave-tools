@@ -191,11 +191,11 @@ module Appydave
             @transactions
           end
 
-          # CBA GoalSaver 4-column export: Date,Amount,Description,Balance
-          # Hardcoded to BSB XXX-XXX / account XXXX-XXXX (GoalSaver) — the only CBA
-          # account currently producing this format. If a second CBA account uses the
-          # same 4-column format in future, add a filename-to-account config map or
-          # a constructor account-hint parameter rather than a second platform code.
+          # CBA 4-column export (Date,Amount,Description,Balance). The CSV carries
+          # no account identity, so we tag rows with the generic identifier 'CBA-SIMPLE'
+          # and let the downstream mapper resolve it via the local
+          # ~/.config/appydave/bank-reconciliation.json config (same pattern as WISE
+          # and PAYPAL). Real BSB / account number stay out of source.
           def read_commonwealth_simple(csv_lines)
             @transactions = []
 
@@ -207,8 +207,8 @@ module Appydave
               credit = amount.positive? ? amount.to_s('F') : ''
 
               transaction = Models::Transaction.new(
-                bsb_number: 'XXX-XXX',
-                account_number: 'XXXX-XXXX',
+                bsb_number: '',
+                account_number: 'CBA-SIMPLE',
                 transaction_date: row['Date'],
                 narration: row['Description'].to_s,
                 cheque_number: nil,

@@ -9,6 +9,12 @@
 #    https://gist.github.com/octocat/9257657
 
 /_/
+
+# Local-only session scaffolding — handovers between PO/dev sessions often
+# contain real paths, account numbers, client names, etc. Keep them off the
+# public repo.
+docs/handovers/
+docs/notes/
 /.bundle/
 /.history/
 /node_modules
