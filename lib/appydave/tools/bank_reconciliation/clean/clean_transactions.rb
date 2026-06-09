@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'clipboard'
+
 module Appydave
   module Tools
     module BankReconciliation
@@ -147,7 +149,7 @@ module Appydave
           end
 
           def csv_to_clipboard(output_file)
-            IO.popen('pbcopy', 'w') { |f| f << File.read(full_output_file(output_file)) }
+            Clipboard.copy(File.read(full_output_file(output_file)))
             log_info('Transactions copied to clipboard')
           end
         end
