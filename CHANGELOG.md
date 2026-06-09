@@ -1,3 +1,10 @@
+## [0.86.1](https://github.com/appydave/appydave-tools/compare/v0.86.0...v0.86.1) (2026-06-09)
+
+
+### Bug Fixes
+
+* ci: bump pnpm/action-setup to v6 and actions/cache to v5 (Node 24) ([25a7df3](https://github.com/appydave/appydave-tools/commit/25a7df315db36eb9f7930c1ee3a678a1127e00ef))
+
 # [0.86.0](https://github.com/appydave/appydave-tools/compare/v0.85.0...v0.86.0) (2026-06-09)
 
 
