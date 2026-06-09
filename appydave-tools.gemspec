@@ -50,6 +50,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'googleauth'
   spec.add_dependency 'i18n', '~> 1.14'
   spec.add_dependency 'k_log', '~> 0'
+  # representable (transitive dep of google-api-client) requires multi_json at
+  # load time but doesn't declare it in its gemspec, so we need it explicitly.
+  spec.add_dependency 'multi_json', '~> 1.15'
   spec.add_dependency 'pstore' # Ruby 3.5+ compatibility (removed from default gems)
   spec.add_dependency 'ruby-openai', '~> 8'
   spec.add_dependency 'webrick'
