@@ -146,7 +146,7 @@ RSpec.describe Appydave::Tools::Jump::Search do
       result = search.get('ad-tool') # similar to ad-tools
 
       expect(result[:success]).to be false
-      expect(result[:suggestion]).to match(/Did you mean/)
+      expect(result[:suggestion]).to include('Did you mean')
     end
   end
 

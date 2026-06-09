@@ -39,7 +39,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'does not include PATH column in default view' do
       output = capture_stdout { described_class.list_brands_with_counts }
-      expect(output).not_to match(/PATH/)
+      expect(output).not_to include('PATH')
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'does not include PATH column in default view' do
       output = capture_stdout { described_class.list_brand_projects('appydave') }
-      expect(output).not_to match(/PATH/)
+      expect(output).not_to include('PATH')
     end
   end
 
@@ -105,7 +105,7 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
 
     it 'does not include PATH column in default view' do
       output = capture_stdout { described_class.list_with_pattern('appydave', 'b6*') }
-      expect(output).not_to match(/PATH/)
+      expect(output).not_to include('PATH')
     end
   end
 
@@ -218,18 +218,18 @@ RSpec.describe Appydave::Tools::Dam::ProjectListing do
       it 'lists projects from subfolder, not brand root' do
         output = capture_stdout { described_class.list_brand_projects('supportsignal') }
 
-        expect(output).to match(/Projects in v-supportsignal:/)
-        expect(output).to match(/a01-first-project/)
-        expect(output).to match(/a02-second-project/)
-        expect(output).not_to match(/brand/)
-        expect(output).not_to match(/personas/)
+        expect(output).to include('Projects in v-supportsignal:')
+        expect(output).to include('a01-first-project')
+        expect(output).to include('a02-second-project')
+        expect(output).not_to include('brand')
+        expect(output).not_to include('personas')
       end
 
       it 'calculates sizes correctly for subfolder projects' do
         output = capture_stdout { described_class.list_brand_projects('supportsignal') }
 
         # Should show file sizes (both files have "content" = 7 bytes each)
-        expect(output).to match(/7\.0 B/)
+        expect(output).to include('7.0 B')
       end
     end
 
