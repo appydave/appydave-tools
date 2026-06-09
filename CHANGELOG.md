@@ -1,3 +1,24 @@
+# [0.86.0](https://github.com/appydave/appydave-tools/compare/v0.85.0...v0.86.0) (2026-06-09)
+
+
+### Bug Fixes
+
+* bank_reconciliation: remove hardcoded account identifiers from CBA reader, untrack handover docs ([92cc173](https://github.com/appydave/appydave-tools/commit/92cc173a298a537c607e891bd5871b34310297bb))
+* bank_reconciliation: respect Wise Direction (IN→credit, OUT→debit) ([324dfa3](https://github.com/appydave/appydave-tools/commit/324dfa35fdefb2d633b632fe946460e7cc075778))
+* bank_reconciliation: rubocop polish on clean + models ([bbb887e](https://github.com/appydave/appydave-tools/commit/bbb887e69869c7027b066da87d7c5f104613870e))
+* bank_reconciliation: use Clipboard gem instead of shelling out to pbcopy (cross-platform, fixes CI) ([778bda7](https://github.com/appydave/appydave-tools/commit/778bda7ae781bbd308cc78a8cadde3dd8e45ce33))
+* ci: bump actions/checkout from v4 to v5 (Node 24, deprecation deadline 2026-06-16) ([d013af7](https://github.com/appydave/appydave-tools/commit/d013af72464b30d696b7bed2be0bbd5c52f93c4f))
+* **dam,omi:** minor cleanups identified during 15 May 2026 session ([fab5195](https://github.com/appydave/appydave-tools/commit/fab51956c82ee4e3b19f38cd3807dff4633ab393))
+* deps: add multi_json (transitive load-time req of representable/google-api-client) to fix CI bundle ([3213467](https://github.com/appydave/appydave-tools/commit/3213467da050e193c86979fd4e6bf57cbde89fb7))
+* specs: replace simple-regex match() with include() to satisfy newer rubocop-rspec ([fa77a37](https://github.com/appydave/appydave-tools/commit/fa77a37f764fe12c59aa8b864b229225de3a66a7))
+
+
+### Features
+
+* bank_reconciliation: add CBA simple-format CSV reader ([772829b](https://github.com/appydave/appydave-tools/commit/772829b3094236fe40db527200f1f9cb7eb9699c))
+* bank_reconciliation: add PayPal CSV reader ([fa5102f](https://github.com/appydave/appydave-tools/commit/fa5102f09245ab8124a8051cee140fbba679e995))
+* **bank_reconciliation:** resurrect from deprecated/, externalize personal data ([052de75](https://github.com/appydave/appydave-tools/commit/052de75e7d63a3de76c33fce3866e041b21d8c3b))
+
 # [0.85.0](https://github.com/appydave/appydave-tools/compare/v0.84.0...v0.85.0) (2026-04-06)
 
 
