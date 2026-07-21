@@ -420,10 +420,10 @@ module Appydave
 
           # Get shortcut, key, and name with fallbacks
           shortcut = brand_info.shortcut&.strip
-          shortcut = nil if shortcut&.empty?
+          shortcut = nil if shortcut.to_s.empty?
           key = brand_info.key
           name = brand_info.name&.strip
-          name = nil if name&.empty?
+          name = nil if name.to_s.empty?
 
           # Get git status
           git_status = calculate_git_status(brand_path)
