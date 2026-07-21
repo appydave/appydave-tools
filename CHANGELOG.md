@@ -1,3 +1,11 @@
+## [0.86.2](https://github.com/appydave/appydave-tools/compare/v0.86.1...v0.86.2) (2026-07-21)
+
+
+### Bug Fixes
+
+* **dam:** satisfy Lint/SafeNavigationWithEmpty on newer rubocop ([9a3e0b3](https://github.com/appydave/appydave-tools/commit/9a3e0b308753b96aa5d283a375d40af1d076a6a4))
+* **jump:** stop `jump update` silently destroying location fields ([d100037](https://github.com/appydave/appydave-tools/commit/d1000373513d17f51e3cd1de4a99fdac0e270f5f))
+
 ## [0.86.1](https://github.com/appydave/appydave-tools/compare/v0.86.0...v0.86.1) (2026-06-09)
 
 
