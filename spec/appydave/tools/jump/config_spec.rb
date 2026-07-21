@@ -132,6 +132,70 @@ RSpec.describe Appydave::Tools::Jump::Config do
         config.update('unknown', description: 'test')
       end.to raise_error(ArgumentError, /not found/)
     end
+
+    # Regression: updating any field used to rebuild the entry from Location#to_h,
+    # which emitted only 8 keys — silently deleting status/context/git_remote/notes
+    # from locations.json. This is why `status` survived on only 6 of 139 entries.
+    context 'when the entry carries fields beyond the core eight' do
+      let(:rich_location) do
+        {
+          'key' => 'ss-legacy',
+          'path' => '~/dev/clients/supportsignal/legacy',
+          'jump' => 'jss-legacy',
+          'client' => 'supportsignal',
+          'type' => 'product',
+          'status' => 'deprecated',
+          'tags' => %w[nextjs legacy],
+          'description' => 'SupportSignal legacy application',
+          'git_remote' => 'git@github.com:SupportSignal/legacy.git',
+          'context' => 'CONTEXT.md',
+          'notes' => 'Superseded by the BMAD v6 rebuild'
+        }
+      end
+
+      it 'preserves them through an unrelated update' do
+        create_test_config(minimal_config(locations: [rich_location]))
+        config = described_class.new(config_path: config_path)
+
+        config.update('ss-legacy', description: 'Updated description')
+        config.save
+
+        entry = JSON.parse(File.read(config_path))['locations'].first
+
+        expect(entry['description']).to eq('Updated description')
+        expect(entry['status']).to eq('deprecated')
+        expect(entry['context']).to eq('CONTEXT.md')
+        expect(entry['git_remote']).to eq('git@github.com:SupportSignal/legacy.git')
+        expect(entry['notes']).to eq('Superseded by the BMAD v6 rebuild')
+      end
+
+      it 'keeps an explicit nil git_remote (local-only repo) distinct from absent' do
+        local_only = rich_location.merge('git_remote' => nil)
+        create_test_config(minimal_config(locations: [local_only]))
+        config = described_class.new(config_path: config_path)
+
+        config.update('ss-legacy', description: 'Updated')
+        config.save
+
+        entry = JSON.parse(File.read(config_path))['locations'].first
+
+        expect(entry).to have_key('git_remote')
+        expect(entry['git_remote']).to be_nil
+      end
+
+      it 'does not invent a git_remote key for a non-repo location' do
+        no_repo = rich_location.reject { |k, _| k == 'git_remote' }
+        create_test_config(minimal_config(locations: [no_repo]))
+        config = described_class.new(config_path: config_path)
+
+        config.update('ss-legacy', description: 'Updated')
+        config.save
+
+        entry = JSON.parse(File.read(config_path))['locations'].first
+
+        expect(entry).not_to have_key('git_remote')
+      end
+    end
   end
 
   describe '#remove' do

@@ -142,6 +142,66 @@ RSpec.describe Appydave::Tools::Jump::Location do
       expect(hash).not_to have_key(:client)
       expect(hash).not_to have_key(:description)
     end
+
+    # Regression: to_h used to emit only 8 keys, so `jump update` silently
+    # destroyed status/context/git_remote/notes on every entry that had them.
+    it 'round-trips every schema field, not just the core eight' do
+      attrs = {
+        key: 'ss-legacy',
+        path: '~/dev/clients/supportsignal/legacy',
+        jump: 'jss-legacy',
+        client: 'supportsignal',
+        type: 'product',
+        status: 'deprecated',
+        tags: %w[nextjs legacy],
+        description: 'SupportSignal legacy application',
+        git_remote: 'git@github.com:SupportSignal/legacy.git',
+        context: 'CONTEXT.md',
+        notes: 'Superseded by the BMAD v6 rebuild'
+      }
+
+      expect(described_class.new(attrs).to_h).to eq(attrs)
+    end
+
+    it 'orders keys to match the on-disk locations.json convention' do
+      location = described_class.new(
+        key: 'k', path: '~/p', type: 'tool', status: 'active',
+        tags: ['x'], description: 'd', git_remote: 'url', context: 'CONTEXT.md', notes: 'n'
+      )
+
+      expect(location.to_h.keys).to eq(
+        %i[key path jump type status tags description git_remote context notes]
+      )
+    end
+
+    context 'with the tri-state git_remote' do
+      def hash_for(attrs)
+        described_class.new({ key: 'k', path: '~/p' }.merge(attrs)).to_h
+      end
+
+      it 'keeps a remote URL' do
+        expect(hash_for(git_remote: 'git@github.com:a/b.git')[:git_remote])
+          .to eq('git@github.com:a/b.git')
+      end
+
+      # nil means "a git repo with no remote backup" — semantically distinct
+      # from the key being absent, which means "not a git repo at all".
+      it 'preserves an explicit nil rather than compacting it away' do
+        hash = hash_for(git_remote: nil)
+
+        expect(hash).to have_key(:git_remote)
+        expect(hash[:git_remote]).to be_nil
+      end
+
+      it 'omits the key entirely when it was never supplied' do
+        expect(hash_for({})).not_to have_key(:git_remote)
+      end
+
+      it 'reports whether git_remote was supplied' do
+        expect(described_class.new(key: 'k', path: '~/p', git_remote: nil)).to be_git_remote_given
+        expect(described_class.new(key: 'k', path: '~/p')).not_to be_git_remote_given
+      end
+    end
   end
 
   describe '#searchable_terms' do
