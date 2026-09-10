@@ -117,7 +117,15 @@ RSpec.describe Appydave::Tools::BrainContextOptions do
 
       it 'builds the index path relative to configured brains_root' do
         options = described_class.new
-        expect(options.brains_index_path).to eq('/custom/brains/audit/brains-index.json')
+        expect(options.brains_index_path).to eq('/custom/brains/.audit/brains-index.json')
+      end
+
+      # This spec previously asserted 'audit/' and so locked in the defect: the
+      # generator writes '.audit/' (tool-overlay state), while 'audit/' is a real
+      # curated brain that has never held an index. Every brain query raised.
+      it 'reads the dotted overlay folder, not the audit brain' do
+        options = described_class.new
+        expect(options.brains_index_path).not_to include('/brains/audit/')
       end
     end
   end

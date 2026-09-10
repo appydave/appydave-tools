@@ -54,7 +54,7 @@ module Appydave
 
         index_path = @options.brains_index_path
         unless File.exist?(index_path)
-          raise "brains-index.json not found at #{index_path}. Run: python ~/dev/ad/brains/.claude/skills/brain-librarian/scripts/build_brain_index.py build --all ~/dev/ad/brains"
+          raise "brains-index.json not found at #{index_path}. Run: python3 ~/dev/ad/appydave-plugins/appydave/skills/lexi/scripts/build_brain_index.py build --all ~/dev/ad/brains"
         end
 
         @index = JSON.parse(File.read(index_path))

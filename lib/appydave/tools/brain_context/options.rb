@@ -46,7 +46,12 @@ module Appydave
       end
 
       def brains_index_path
-        File.join(brains_root, 'audit', 'brains-index.json')
+        # '.audit', not 'audit'. The dotfolder is the tool-overlay state that
+        # build_brain_index.py writes; `audit/` is a real, curated brain that has never
+        # held an index. This read the wrong one, so EVERY brain query raised instead of
+        # returning files — and the raise looked like "no matches" to any caller that
+        # only read stdout.
+        File.join(brains_root, '.audit', 'brains-index.json')
       end
 
       def brain_query?
